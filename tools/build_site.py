@@ -13,7 +13,7 @@ their script, playground.css is this site's own).
 
 Output, all generated, never hand-edited:
 
-  docs/.nojekyll                       GitHub Pages serves the folder as is
+  docs/.nojekyll, docs/_headers        served as is (Cloudflare Pages, or GitHub Pages)
   docs/index.html                      lead, status summary, filter, every tool by tab and panel
   docs/<slug>.html                     one page per tool; the slug comes from the tool id
   docs/_assets/site.css                base.css + guide.css + playground.css
@@ -36,7 +36,16 @@ ROOT = os.path.dirname(HERE)
 CATALOG = os.path.join(ROOT, 'catalog.json')
 DOCS = os.path.join(ROOT, 'docs')
 SITE_SRC = os.path.join(HERE, 'site')
-SITE_URL = 'https://pynavis.github.io/Playground/'
+SITE_URL = 'https://playground.pynavis.com/'
+
+# Served by Cloudflare Pages from docs/ (the same headers as tools.pynavis.com).
+HEADERS = (
+    '/*\n'
+    '  X-Content-Type-Options: nosniff\n'
+    '  Referrer-Policy: strict-origin-when-cross-origin\n'
+    '/_assets/*\n'
+    '  Cache-Control: public, max-age=604800\n'
+)
 PYNAVIS_URL = 'https://github.com/pynavis/pyNavis'
 CSS_PARTS = ('base.css', 'guide.css', 'playground.css')
 
@@ -545,7 +554,7 @@ def build(catalog, ext_root=None):
     """{path under docs/ (forward slashes): str for text, bytes for icons}."""
     site = Site(catalog)
     ext_root = ext_root or os.path.join(ROOT, catalog['extension'])
-    out = {'.nojekyll': '', 'index.html': render_index(site)}
+    out = {'.nojekyll': '', '_headers': HEADERS, 'index.html': render_index(site)}
     for index, tool in enumerate(site.tools):
         out[site.url(tool)] = render_tool(site, index)
     out['_assets/site.css'] = render_css()

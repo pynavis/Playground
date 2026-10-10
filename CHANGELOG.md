@@ -27,7 +27,7 @@ Status changes of single tools are not listed here: `status.yaml` is their histo
   that runs each tool under `pynavis run` on a sample model; `dev/runner/RESULTS.md`
   records the first full pass and what it can and cannot show.
 - `SECURITY.md`: what the in-app installer checks and where it writes.
-- The public catalog site at https://pynavis.github.io/Playground/, generated into `docs/`
+- The public catalog site at https://playground.pynavis.com/, generated into `docs/`
   from `catalog.json` by `tools/build_site.py`: an index with a status summary, a filter by
   text and status, and every tool by tab and panel; one page per tool with its status and
   evidence, the public ask behind it, its stack siblings, hooks and files, how to install

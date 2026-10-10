@@ -10,7 +10,7 @@ Nothing here is a finished pyNavis tool. Every tool carries an honest status, an
 have never run inside Navisworks. Install the ones you need, try them on a real model,
 tweak them, and tell us what happened. Tools that prove themselves graduate into pyNavis.
 
-Browse the catalog online: https://pynavis.github.io/Playground/
+Browse the catalog online: https://playground.pynavis.com/
 
 ## Install
 
