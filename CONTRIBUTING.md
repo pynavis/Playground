@@ -110,3 +110,7 @@ extension under pyNavis' own rules and review; the Playground copy is then retir
 inside the zip only) and writes its SHA-256 into `catalog.json`. `python tools\package.py
 --check` and `python tools\build_catalog.py --check` fail when the committed catalog is
 stale.
+
+## Publishing the catalog site
+
+The site in `docs/` is served at https://playground.pynavis.com/ by Cloudflare Workers static assets (`wrangler.jsonc`). It is not rebuilt on push: after `python tools/build_site.py`, a maintainer signed in to the pyNavis Cloudflare account runs `npx wrangler deploy` from the repo root.

@@ -4,3 +4,10 @@ __pycache__/
 .pytest_cache/
 # runner ledgers (dev/runner/batch.py)
 ledger*.jsonl
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example

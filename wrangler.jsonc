@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pynavis-playground",
+  "compatibility_date": "2026-10-06",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "docs",
+    "not_found_handling": "none"
+  },
+  "routes": [
+    {
+      "pattern": "playground.pynavis.com",
+      "custom_domain": true
+    }
+  ]
+}
