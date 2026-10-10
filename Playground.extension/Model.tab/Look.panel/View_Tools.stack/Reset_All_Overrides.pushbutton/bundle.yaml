@@ -1,0 +1,3 @@
+title: Reset Overrides
+tooltip: Puts back the model colors, transparency, hidden items, moved items or required and frozen flags you choose, all in one undo step.
+context: doc

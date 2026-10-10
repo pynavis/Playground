@@ -1,0 +1,3 @@
+title: Photo\nPins
+tooltip: Pins site photos to a point in the model, with a caption and the level, grid and object found there, and draws the pins in the view. Click the point, choose the photos, then type a caption. Shift+Click for settings.
+context: doc

@@ -1,0 +1,3 @@
+title: Data\nValidator
+tooltip: Checks the model against BEP rules kept as JSON files in the team rules folder (every duct has a system name, every element a level, marks filled in, comments matching a pattern). Reports passes and failures per rule with element links, and can export to Excel and save a selection set per failing rule. Shift+Click for settings.
+context: doc

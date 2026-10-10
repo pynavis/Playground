@@ -1,0 +1,5 @@
+{
+  "Model.tab/Look.panel/Presentation_Mode.toggle": "Not run: it has no runner guard and calls user32 ShowWindow(SW_MAXIMIZE) on the Navisworks main window (presentation.py:271), which would show the hidden runner instance on the desktop, and it hides the ribbon and every add-in's dock panels.",
+  "Coordinate.tab/Issues.panel/Issues.dockpane": "Not runnable headless: a dock pane script receives its panel as __pane__, which only a real Navisworks dock panel provides.",
+  "Project.tab/Models.panel/Source_Files.dockpane": "Not runnable headless: a dock pane script receives its panel as __pane__, which only a real Navisworks dock panel provides."
+}

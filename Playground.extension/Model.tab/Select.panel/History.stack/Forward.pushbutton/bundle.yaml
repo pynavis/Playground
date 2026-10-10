@@ -1,0 +1,4 @@
+title: Forward
+tooltip: Restores the next selection after going Back.
+shortcut: Alt+Right
+context: doc

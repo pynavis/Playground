@@ -1,0 +1,655 @@
+class Autodesk.Navisworks.Api.Interop.LcTlCsvExportSWIG : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlCsvExportSWIG::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTlCsvExportSWIG::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlCsvExportSWIG::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTlCsvExportSWIG
+  Autodesk.Navisworks.Api.Interop.LcTlCsvExportSWIG::IsExportAvailable() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTlCsvExportSWIG::Export(LcOpState state, String filename) -> static LcOpPluginExportStatus
+class Autodesk.Navisworks.Api.Interop.LcTlCurrentTask : Autodesk.Navisworks.Api.Interop.LcOpStateWatcher
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTask::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTask::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTask::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTlCurrentTask
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTask::Initialise() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTask::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTask::IsInitialised() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTask::GetInstance(LcOpState state) -> static LcTlCurrentTask
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTask::OnGotFocus() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTask::GetCurrentTask() -> TimelinerTask
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTask::SetCurrentTask(TimelinerTask task, Boolean is_from_interop) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTask::SetCurrentTask(TimelinerTask task, Boolean is_from_interop, Int32 comment_index) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTask::ClearCurrentTask(Boolean is_from_interop) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTask::SetNotify(LcTlCurrentTaskNotify notify) -> Void
+class Autodesk.Navisworks.Api.Interop.LcTlCurrentTaskNotify : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTaskNotify::.ctor()
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTaskNotify::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTaskNotify::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTaskNotify::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTlCurrentTaskNotify
+  Autodesk.Navisworks.Api.Interop.LcTlCurrentTaskNotify::OnCurrentTaskChanged(Boolean is_from_interop) -> Void
+class Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8 : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTlDataSourceProviderV8
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8::GetProvider() -> LcTlDataSourceProviderV8Provider
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8::GetV8Id() -> String
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8::GetProgId() -> String
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8::GetId() -> String
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8::GetName() -> String
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8::FindByProvider(LcTlDataSourceProviderV8Provider provider) -> static LcTlDataSourceProviderV8
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8::FindByV8Id(String v8Id) -> static LcTlDataSourceProviderV8
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8::FindById(String id) -> static LcTlDataSourceProviderV8
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8::GetEntryCount() -> static Int32
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8::GetEntry(Int32 ndx) -> static LcTlDataSourceProviderV8
+enum Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8Provider : System.Enum
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8Provider.AstaPP = enum value
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8Provider.MSProject = enum value
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8Provider.MSProjectMPX = enum value
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8Provider.P3 = enum value
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8Provider.P6WebServices = enum value
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8Provider.P6WebServices7 = enum value
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8Provider.P6WebServices8 = enum value
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8Provider.P6WebServices82 = enum value
+  Autodesk.Navisworks.Api.Interop.LcTlDataSourceProviderV8Provider.CSV = enum value
+class Autodesk.Navisworks.Api.Interop.LcTlGUISettingsElement : Autodesk.Navisworks.Api.Interop.LcOpElement
+  Autodesk.Navisworks.Api.Interop.LcTlGUISettingsElement::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTlGUISettingsElement::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlGUISettingsElement::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTlGUISettingsElement
+  Autodesk.Navisworks.Api.Interop.LcTlGUISettingsElement::GetUserColumnName(Int32 index, String& name, LcOpState state) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTlGUISettingsElement::SetUserColumnName(Int32 index, String newName, LcOpState state) -> static Void
+class Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper : Autodesk.Navisworks.Api.Interop.LcOpStateWatcher
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::Instance : static LcTlSimulationHelper {get}
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTlSimulationHelper
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::Initialise(LcOpState pState) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::OnCreateGUI(IntPtr hWnd) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::OnDestroyGUI() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::SetGUIActive(Boolean b) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::IsGUIActive() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::DisplaySettingsDialog() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::ReverseWind() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::ReverseStep() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::ReversePlay() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::Pause() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::Stop() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::Play() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::Step() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::Wind() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::GetTimeControlsEnabled() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::GetTimeControlsValid() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::GetStartTime() -> DateTime
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::GetEndTime() -> DateTime
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::GetSimulationTime() -> DateTime
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::SetSimulationTime(DateTime time) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::GetSingleStepSizeInSeconds() -> Int64
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::GetShowTasksInInterval() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::GetViewType() -> LcTlSimulationHelperViewType
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::GetSimulationState() -> LcTlSimulationHelperSimulationState
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::IsActiveTask(TimelinerTask task) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::RegisterDelegate(LcTlSimulationHelperCallbacks pDelegate) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelper::UnRegisterDelegate(LcTlSimulationHelperCallbacks pDelegate) -> Void
+class Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperCallbacks : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperCallbacks::.ctor()
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperCallbacks::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperCallbacks::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperCallbacks::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTlSimulationHelperCallbacks
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperCallbacks::OnUpdateTimeControls() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperCallbacks::OnHighlightTask(TimelinerTask task) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperCallbacks::OnAnimatorStateChanged() -> Void
+enum Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperSimulationState : System.Enum
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperSimulationState.eSTOPPED_AT_START = enum value
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperSimulationState.eREVERSE_PLAYING = enum value
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperSimulationState.ePAUSED = enum value
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperSimulationState.ePLAYING = enum value
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperSimulationState.eSTOPPED_AT_END = enum value
+enum Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperViewType : System.Enum
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperViewType.ePLANNED = enum value
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperViewType.eACTUAL = enum value
+  Autodesk.Navisworks.Api.Interop.LcTlSimulationHelperViewType.ePvA = enum value
+class Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement : Autodesk.Navisworks.Api.Interop.LcOpSavedItemsElement
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTlTimelinerElement
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::ClearHierarchy() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::GetDataSourcesRoot() -> FolderItem
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::GetTasksRoot() -> FolderItem
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::GetSimulationTaskTypesRoot() -> FolderItem
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::GetSimulationAppearancesRoot() -> FolderItem
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::GetSettings() -> TimelinerSettings
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::SimulationAppearanceInsertItem(LcOpState state, Int32 index, SimulationAppearance appearance) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::SimulationAppearanceDeleteItem(LcOpState state, Int32 index) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::SimulationAppearanceReplaceItem(LcOpState state, Int32 index, SimulationAppearance appearance) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::SimulationAppearanceRenameItem(LcOpState state, Int32 index, String newName) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::SimulationTaskTypeInsertItem(LcOpState state, Int32 index, SimulationTaskType taskType) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::SimulationTaskTypeDeleteItem(LcOpState state, Int32 index) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::SimulationTaskTypeReplaceItem(LcOpState state, Int32 index, SimulationTaskType taskType) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::SimulationTaskTypeRenameItem(LcOpState state, Int32 index, String newName) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::DataSourceInsertItem(LcOpState state, Int32 index, TimelinerDataSource source) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::DataSourceDeleteItem(LcOpState state, Int32 index) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::DataSourceReplaceItem(LcOpState state, Int32 index, TimelinerDataSource source) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::DataSourceRenameItem(LcOpState state, Int32 index, String newName) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::TaskInsertItem(LcOpState state, GroupItem parent, Int32 index, TimelinerTask task) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::TaskDeleteItem(LcOpState state, GroupItem parent, Int32 index) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::TaskReplaceItem(LcOpState state, GroupItem parent, Int32 index, TimelinerTask task) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::TaskMoveItem(LcOpState state, GroupItem newParent, Int32 newIndex, TimelinerTask task) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::TaskEditItem(LcOpState state, GroupItem parent, Int32 index, TimelinerTask task, SavedItemParts edit_parts) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::TaskMergeRebuild(LcOpState state, TimelinerTask imported_root, Boolean set_task_type) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::TaskMergeSynchronize(LcOpState state, TimelinerTask imported_root, Boolean set_task_type) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::TaskSummaryRecalculateDates(LcOpState state, TimelinerTask task) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::TaskSummaryHierarchyRecalculateDates(GroupItem root) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::TaskSummaryRecalculateCosts(LcOpState state, TimelinerTask task, Boolean changed) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::TaskSummaryHierarchyRecalculateCosts(GroupItem root) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::TaskSortByField(LcOpState state, TaskField fieldId, Boolean ascending) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::SettingsReplaceItem(LcOpState state, TimelinerSettings settings) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::GetCostMultiplier() -> static Double
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::Create() -> static LcOpElement
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::GetClass() -> static LcOpElementClass
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::Edit(LcOpState state, LcOpLock lock) -> static LcTlTimelinerElement
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::Get(LcOpState state) -> static LcTlTimelinerElement
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::GetElementClassName() -> static String
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::GetClassUserName() -> static String
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerElement::Delete(LcOpState state, LcOpLock lock) -> static Boolean
+class Autodesk.Navisworks.Api.Interop.LcTlTimelinerManager : Autodesk.Navisworks.Api.Interop.LcOpStateWatcher
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerManager::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerManager::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerManager::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTlTimelinerManager
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerManager::IsValid() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerManager::InitialiseState(LcOpState state) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerManager::TerminateState() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerManager::LoadDefaultRules(LcOpState state, RuleCollection ruleVec) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerManager::GetTimeBounds(DateTime& min, DateTime& max) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerManager::GetComPluginContainer() -> static Int64
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerManager::CoCreateInstance(String prog_id) -> static Int64
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerManager::AddCommentToTimelinerTask(TimelinerTask task, String body) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlTimelinerManager::ShowDataSourceFieldSelectorDialog(LcOpState state, TimelinerDataSource dataSource, LcTlValidator validator) -> static Boolean
+class Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelper : Autodesk.Navisworks.Api.Interop.LcOpStateWatcher
+  Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelper::Instance : static LcTlUserColumnHelper {get}
+  Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelper::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelper::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelper::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTlUserColumnHelper
+  Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelper::Initialise(LcOpState pState) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelper::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelper::RegisterDelegate(LcTlUserColumnHelperCallback pDelegate) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelper::UnRegisterDelegate(LcTlUserColumnHelperCallback pDelegate) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelper::GetNewColumnName(String currentName, String& newName) -> Boolean
+class Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelperCallback : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelperCallback::.ctor()
+  Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelperCallback::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelperCallback::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelperCallback::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTlUserColumnHelperCallback
+  Autodesk.Navisworks.Api.Interop.LcTlUserColumnHelperCallback::OnUpdateUserColumns() -> Void
+class Autodesk.Navisworks.Api.Interop.LcTlValidator : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlValidator::.ctor()
+  Autodesk.Navisworks.Api.Interop.LcTlValidator::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTlValidator::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTlValidator::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTlValidator
+  Autodesk.Navisworks.Api.Interop.LcTlValidator::Validate(TimelinerDataSource dataSource, String& message, String& caption, String& details, Boolean& blocking) -> Boolean
+class Autodesk.Navisworks.Api.Interop.TimelinerCurrentTask : System.Object
+  Autodesk.Navisworks.Api.Interop.TimelinerCurrentTask::CurrentTask : static TimelinerTask {get;set}
+  Autodesk.Navisworks.Api.Interop.TimelinerCurrentTask::Initialise() -> static Void
+  Autodesk.Navisworks.Api.Interop.TimelinerCurrentTask::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.TimelinerCurrentTask::IsInitialised() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.TimelinerCurrentTask::OnGotFocus() -> static Void
+  Autodesk.Navisworks.Api.Interop.TimelinerCurrentTask::ClearCurrentTask() -> static Void
+  Autodesk.Navisworks.Api.Interop.TimelinerCurrentTask::CurrentTaskChanged : event EventHandler<TimelinerCurrentTaskNotifyEventArgs>
+class Autodesk.Navisworks.Api.Interop.TimelinerCurrentTaskNotifyEventArgs : System.EventArgs
+  Autodesk.Navisworks.Api.Interop.TimelinerCurrentTaskNotifyEventArgs::IsFromSelf : Boolean {get}
+class Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner : System.Object
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::Settings : TimelinerSettings {get}
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationAppearances : SavedItemCollection {get}
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationTaskTypes : SavedItemCollection {get}
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::DataSources : SavedItemCollection {get}
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::Tasks : SavedItemCollection {get}
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TasksRoot : GroupItem {get}
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::Value : TimelinerData {get}
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TimelinerInstance(Document doc) -> static DocumentTimeliner
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::InternalCreateInstance(Document document) -> static DocumentTimeliner
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskCreateIndexPath(TimelinerTask task) -> Collection<Int32>
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskResolveIndexPath(IEnumerable<Int32> path) -> TimelinerTask
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationAppearanceAddCopy(SimulationAppearance appearance) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationAppearanceInsertCopy(Int32 index, SimulationAppearance appearance) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationAppearanceEditDisplayName(Int32 index, String newName) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationAppearanceReplaceWithCopy(Int32 index, SimulationAppearance appearance) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationAppearanceRemoveByDisplayName(String named) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationAppearanceRemoveAt(Int32 index) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationAppearanceFindByDisplayName(String named) -> SimulationAppearance
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationAppearancesClear() -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationAppearancesCopyFrom(SavedItemCollection value) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationAppearancesCopyFrom(IEnumerable<SavedItem> value) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationTaskTypeAddCopy(SimulationTaskType taskType) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationTaskTypeInsertCopy(Int32 index, SimulationTaskType taskType) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationTaskTypeEditDisplayName(Int32 index, String newName) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationTaskTypeReplaceWithCopy(Int32 index, SimulationTaskType taskType) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationTaskTypeRemoveByDisplayName(String named) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationTaskTypeRemoveAt(Int32 index) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationTaskTypeFindByDisplayName(String named) -> SimulationTaskType
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationTaskTypesClear() -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationTaskTypesCopyFrom(SavedItemCollection value) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SimulationTaskTypesCopyFrom(IEnumerable<SavedItem> value) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::DataSourceAddCopy(TimelinerDataSource dataSource) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::DataSourceInsertCopy(Int32 index, TimelinerDataSource dataSource) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::DataSourceEditDisplayName(Int32 index, String newName) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::DataSourceReplaceWithCopy(Int32 index, TimelinerDataSource dataSource) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::DataSourceRemoveByDisplayName(String named) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::DataSourceRemoveAt(Int32 index) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::DataSourceFindByDisplayName(String named) -> TimelinerDataSource
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::DataSourcesClear() -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::DataSourcesCopyFrom(SavedItemCollection value) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::DataSourcesCopyFrom(IEnumerable<SavedItem> value) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskAddCopy(GroupItem parent, TimelinerTask task) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskAddCopy(TimelinerTask task) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskInsertCopy(GroupItem parent, Int32 index, TimelinerTask task) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskInsertCopy(Int32 index, TimelinerTask task) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskReplaceWithCopy(GroupItem parent, Int32 index, TimelinerTask task) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskReplaceWithCopy(Int32 index, TimelinerTask task) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskRemoveAt(GroupItem parent, Int32 index) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskRemoveAt(Int32 index) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskMove(GroupItem oldParent, Int32 oldIndex, GroupItem newParent, Int32 newIndex) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskMove(Int32 newIndex, Int32 oldIndex) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskTotalTasks() -> UInt32
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TasksCopyFrom(SavedItemCollection value) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TasksCopyFrom(IEnumerable<SavedItem> value) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskEdit(GroupItem parent, Int32 index, TimelinerTask newValues) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskEdit(Int32 index, TimelinerTask newValues) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskEditDisplayName(TimelinerTask task, String newName) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskMergeRebuild(TimelinerTask tasks, Boolean importTaskType) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskMergeSynchronize(TimelinerTask tasks, Boolean importTaskType) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TasksClear() -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TasksSort(TaskField byField, Boolean ascending) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskSummaryRecalculateDates(TimelinerTask task) -> Boolean
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskSummaryHierarchyRecalculateDates(TimelinerTask task) -> static Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskSummaryRecalculateCosts(TimelinerTask task) -> Boolean
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::TaskSummaryHierarchyRecalculateCosts(TimelinerTask task) -> static Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::SettingsReplaceWithCopy(TimelinerSettings settings) -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::Clear() -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::Dispose() -> Void
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::Changing : event EventHandler<EventArgs>
+  Autodesk.Navisworks.Api.Timeliner.DocumentTimeliner::Changed : event EventHandler<SavedItemChangedEventArgs>
+class Autodesk.Navisworks.Api.Timeliner.SimulationAppearance : Autodesk.Navisworks.Api.SavedItem
+  Autodesk.Navisworks.Api.Timeliner.SimulationAppearance::.ctor(String name, Color color, Double transparency)
+  Autodesk.Navisworks.Api.Timeliner.SimulationAppearance::.ctor()
+  Autodesk.Navisworks.Api.Timeliner.SimulationAppearance::Transparency : Double {get;set}
+  Autodesk.Navisworks.Api.Timeliner.SimulationAppearance::Color : Color {get;set}
+  Autodesk.Navisworks.Api.Timeliner.SimulationAppearance::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.SimulationAppearance::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Timeliner.SimulationAppearance::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static SimulationAppearance
+  Autodesk.Navisworks.Api.Timeliner.SimulationAppearance::CreateCopy() -> SimulationAppearance
+enum Autodesk.Navisworks.Api.Timeliner.SimulationAppearanceMode : System.Enum
+  Autodesk.Navisworks.Api.Timeliner.SimulationAppearanceMode.None = enum value
+  Autodesk.Navisworks.Api.Timeliner.SimulationAppearanceMode.Default = enum value
+  Autodesk.Navisworks.Api.Timeliner.SimulationAppearanceMode.Hidden = enum value
+  Autodesk.Navisworks.Api.Timeliner.SimulationAppearanceMode.UserAppearance = enum value
+class Autodesk.Navisworks.Api.Timeliner.SimulationStatus : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Timeliner.SimulationStatus::.ctor()
+  Autodesk.Navisworks.Api.Timeliner.SimulationStatus::SimulationAppearanceName : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.SimulationStatus::AppearanceMode : SimulationAppearanceMode {get;set}
+  Autodesk.Navisworks.Api.Timeliner.SimulationStatus::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.SimulationStatus::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Timeliner.SimulationStatus::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static SimulationStatus
+  Autodesk.Navisworks.Api.Timeliner.SimulationStatus::CreateCopy() -> SimulationStatus
+  Autodesk.Navisworks.Api.Timeliner.SimulationStatus::CopyFrom(SimulationStatus value) -> Void
+  Autodesk.Navisworks.Api.Timeliner.SimulationStatus::IsEqual(SimulationStatus other) -> Boolean
+class Autodesk.Navisworks.Api.Timeliner.SimulationTaskType : Autodesk.Navisworks.Api.SavedItem
+  Autodesk.Navisworks.Api.Timeliner.SimulationTaskType::.ctor()
+  Autodesk.Navisworks.Api.Timeliner.SimulationTaskType::SimulationStartStatus : SimulationStatus {get;set}
+  Autodesk.Navisworks.Api.Timeliner.SimulationTaskType::OverrunStatus : SimulationStatus {get;set}
+  Autodesk.Navisworks.Api.Timeliner.SimulationTaskType::UnderrunStatus : SimulationStatus {get;set}
+  Autodesk.Navisworks.Api.Timeliner.SimulationTaskType::EndStatus : SimulationStatus {get;set}
+  Autodesk.Navisworks.Api.Timeliner.SimulationTaskType::StartStatus : SimulationStatus {get;set}
+  Autodesk.Navisworks.Api.Timeliner.SimulationTaskType::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.SimulationTaskType::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Timeliner.SimulationTaskType::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static SimulationTaskType
+  Autodesk.Navisworks.Api.Timeliner.SimulationTaskType::CreateCopy() -> SimulationTaskType
+enum Autodesk.Navisworks.Api.Timeliner.TaskField : System.Enum
+  Autodesk.Navisworks.Api.Timeliner.TaskField.Active = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.ActualEndDate = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.ActualStartDate = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.AnimationBehavior = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.AnimationPath = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.DataSourceName = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.DisplayId = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.EquipmentCost = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.LaborCost = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.MaterialCost = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.PlannedEndDate = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.PlannedStartDate = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.ProgressPercent = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.ScriptPath = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.Selection = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.SimulationTaskType = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.SubcontractorCost = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.TaskStatus = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.TotalCost = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.User1 = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.User2 = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.User3 = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.User4 = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.User5 = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.User6 = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.User7 = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.User8 = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.User9 = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.User10 = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskField.DisplayName = enum value
+enum Autodesk.Navisworks.Api.Timeliner.TaskStatus : System.Enum
+  Autodesk.Navisworks.Api.Timeliner.TaskStatus.None = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskStatus.Same = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskStatus.Before = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskStatus.After = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskStatus.EarlyStartLateFinish = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskStatus.LateStartEarlyFinish = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskStatus.EarlyStart = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskStatus.LateFinish = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskStatus.EarlyStartFinish = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskStatus.LateStartFinish = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskStatus.ActualOnly = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskStatus.PlannedOnly = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskStatus.EarlyFinish = enum value
+  Autodesk.Navisworks.Api.Timeliner.TaskStatus.LateStart = enum value
+class Autodesk.Navisworks.Api.Timeliner.TimelinerComDataSourceProvider : Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProvider
+  Autodesk.Navisworks.Api.Timeliner.TimelinerComDataSourceProvider::ProgId : String {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerComDataSourceProvider::IsAvailable : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerComDataSourceProvider::CreateDataSource(String displayName) -> TimelinerDataSource
+  Autodesk.Navisworks.Api.Timeliner.TimelinerComDataSourceProvider::UpdateDataSource(TimelinerDataSource dataSource) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerComDataSourceProvider::ValidateSettings(TimelinerDataSource dataSource) -> TimelinerValidateSettingsResult
+  Autodesk.Navisworks.Api.Timeliner.TimelinerComDataSourceProvider::OnUnloading() -> Void
+class Autodesk.Navisworks.Api.Timeliner.TimelinerData : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Timeliner.TimelinerData::Settings : TimelinerSettings {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerData::SimulationAppearancesRoot : FolderItem {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerData::SimulationTaskTypesRoot : FolderItem {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerData::TasksRoot : FolderItem {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerData::DataSourcesRoot : FolderItem {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerData::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerData::SimulationAppearances : SavedItemCollection {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerData::SimulationTaskTypes : SavedItemCollection {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerData::DataSources : SavedItemCollection {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerData::Tasks : SavedItemCollection {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerData::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Timeliner.TimelinerData::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static TimelinerData
+  Autodesk.Navisworks.Api.Timeliner.TimelinerData::CreateCopy() -> TimelinerData
+class Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource : Autodesk.Navisworks.Api.SavedItem
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::.ctor(String name)
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::.ctor()
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::CsvUserDateTimeFormat : String {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::CsvInternalDisplayId : String {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::CsvInternalTaskName : String {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::CsvUseUserDateTimeFormat : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::CsvUseRow1AsHeader : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::CsvNumberOfRows : Int32 {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::AvailableFields : TimelinerDataSourceFieldCollection {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::LastSyncTime : DateTime {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::TaskSubcontractorCostField : TimelinerDataSourceField {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::TaskEquipmentCostField : TimelinerDataSourceField {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::TaskLaborCostField : TimelinerDataSourceField {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::TaskMaterialCostField : TimelinerDataSourceField {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::TaskActualEndField : TimelinerDataSourceField {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::TaskActualStartField : TimelinerDataSourceField {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::TaskPlannedEndField : TimelinerDataSourceField {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::TaskPlannedStartField : TimelinerDataSourceField {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::TaskSynchronizationIdField : TimelinerDataSourceField {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::TaskTypeField : TimelinerDataSourceField {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::ProjectIdentifier : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::DataSourceProviderVersion : Double {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::DataSourceProviderName : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::DataSourceProviderId : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static TimelinerDataSource
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::CreateCopy() -> TimelinerDataSource
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::SetUserFieldByIndex(Int32 index, TimelinerDataSourceField value) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSource::GetUserFieldByIndex(Int32 index) -> TimelinerDataSourceField
+class Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceField : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceField::.ctor(String id, String displayName)
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceField::Undefined : static TimelinerDataSourceField {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceField::IsUndefined : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceField::DisplayName : String {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceField::Id : String {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceField::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceField::ToString() -> String
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceField::GetHashCode() -> Int32
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceField::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceField::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static TimelinerDataSourceField
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceField::Equals(Object obj) -> Boolean
+class Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::.ctor(TimelinerDataSourceFieldCollection from)
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::.ctor()
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::Item[Int32] : TimelinerDataSourceField {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::InternalIsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::Count : Int32 {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::Add(TimelinerDataSourceField item) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::Clear() -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::Contains(TimelinerDataSourceField item) -> Boolean
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::CopyTo(ICollection<TimelinerDataSourceField> to) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::CopyTo(TimelinerDataSourceField[] array, Int32 arrayIndex) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::InternalGetEnumerator() -> IEnumerator
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::GetEnumerator() -> IEnumerator<TimelinerDataSourceField>
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::Remove(TimelinerDataSourceField item) -> Boolean
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::IndexOf(TimelinerDataSourceField item) -> Int32
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::Insert(Int32 index, TimelinerDataSourceField item) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::RemoveAt(Int32 index) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::AddRange(IEnumerable<TimelinerDataSourceField> from) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::CopyFrom(IEnumerable<TimelinerDataSourceField> from) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceFieldCollection::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static TimelinerDataSourceFieldCollection
+class Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProvider : Autodesk.Navisworks.Api.Plugins.CustomPlugin
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProvider::IsAvailable : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProvider::CreateDataSource(String displayName) -> TimelinerDataSource
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProvider::UpdateDataSource(TimelinerDataSource dataSource) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProvider::ImportTasks(TimelinerDataSource dataSource) -> TimelinerImportTasksResult
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProvider::ValidateSettings(TimelinerDataSource dataSource) -> TimelinerValidateSettingsResult
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProvider::TryValidateSettings(TimelinerDataSource dataSource) -> TimelinerValidateSettingsResult
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProvider::FindDataSourceProvider(TimelinerDataSource dataSource) -> static CustomPluginRecord
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProvider::Dispose() -> Void
+class Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProviderException : System.InvalidOperationException
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProviderException::.ctor(TimelinerDataSourceProviderExceptionStatus status, String message, Exception innerException)
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProviderException::.ctor(TimelinerDataSourceProviderExceptionStatus status, String message)
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProviderException::.ctor(String message, Exception innerException)
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProviderException::.ctor(String message)
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProviderException::.ctor()
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProviderException::Status : TimelinerDataSourceProviderExceptionStatus {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProviderException::GetObjectData(SerializationInfo info, StreamingContext context) -> Void
+enum Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProviderExceptionStatus : System.Enum
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProviderExceptionStatus.Error = enum value
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProviderExceptionStatus.NotAvailable = enum value
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProviderExceptionStatus.Canceled = enum value
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProviderExceptionStatus.FailedToOpen = enum value
+class Autodesk.Navisworks.Api.Timeliner.TimelinerDocumentExtensions : System.Object
+  Autodesk.Navisworks.Api.Timeliner.TimelinerDocumentExtensions::GetTimeliner(Document doc) -> static DocumentTimeliner
+class Autodesk.Navisworks.Api.Timeliner.TimelinerImportTasksResult : System.Object
+  Autodesk.Navisworks.Api.Timeliner.TimelinerImportTasksResult::.ctor()
+  Autodesk.Navisworks.Api.Timeliner.TimelinerImportTasksResult::RootTask : TimelinerTask {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerImportTasksResult::TaskTypeWasSet : Nullable<Boolean> {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerImportTasksResult::ImportWarning : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerImportTasksResult::InvalidTaskTypesFound : Boolean {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerImportTasksResult::DuplicateChildSynchronizationIdFound : Boolean {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerImportTasksResult::MissingChildSynchronizationIdFound : Boolean {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerImportTasksResult::ReservedChildSynchronizationIdRemoved : Boolean {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerImportTasksResult::RootSynchronizationIdCorrected : Boolean {get;set}
+class Autodesk.Navisworks.Api.Timeliner.TimelinerSelection : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::.ctor(Search from)
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::.ctor(ModelItemCollection from)
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::.ctor(SelectionSourceCollection from)
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::.ctor(Selection from)
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::.ctor(TimelinerSelection from)
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::.ctor()
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::IsClear : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::SelectionSources : SelectionSourceCollection {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::HasSelectionSources : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::Search : Search {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::HasSearch : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::ExplicitSelection : ModelItemCollection {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::HasExplicitSelection : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::DisplayString : String {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::GetSelectedItems(Document document) -> ModelItemCollection
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::CopyFrom(Search from) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::CopyFrom(ModelItemCollection from) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::CopyFrom(SelectionSourceCollection from) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::CopyFrom(Selection from) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::CopyFrom(TimelinerSelection from) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::CopyFrom(IEnumerable<ModelItem> from) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static TimelinerSelection
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::ValueEquals(TimelinerSelection value) -> Boolean
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::ValueEquals(TimelinerSelection value1, TimelinerSelection value2) -> static Boolean
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSelection::Clear() -> Void
+class Autodesk.Navisworks.Api.Timeliner.TimelinerSettings : Autodesk.Navisworks.Api.SavedItem
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSettings::.ctor()
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSettings::DefaultSimulationStatus : SimulationStatus {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSettings::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSettings::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSettings::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static TimelinerSettings
+  Autodesk.Navisworks.Api.Timeliner.TimelinerSettings::CreateCopy() -> TimelinerSettings
+class Autodesk.Navisworks.Api.Timeliner.TimelinerTask : Autodesk.Navisworks.Api.GroupItem
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::.ctor()
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::IsTotalCostComplete : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::DataSourceRootTaskIdentifier : static String {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::IsDataSourceRootTask : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::SimulationTaskTypeName : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::DataSourceName : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::ScriptPath : SavedItemReference {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::AnimationBehavior : AnimationBehavior {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::AnimationPath : SavedItemReference {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::Selection : TimelinerSelection {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::TaskStatus : TaskStatus {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::DisplayId : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::SynchronizationId : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::IsPlannedEnabled : Boolean {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::IsActualEnabled : Boolean {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::IsEnabled : Boolean {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::User10 : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::User9 : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::User8 : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::User7 : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::User6 : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::User5 : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::User4 : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::User3 : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::User2 : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::User1 : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::ProgressPercent : Nullable<Double> {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::PlannedDuration : Nullable<TimeSpan> {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::ActualDuration : Nullable<TimeSpan> {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::PlannedEndDate : Nullable<DateTime> {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::PlannedStartDate : Nullable<DateTime> {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::ActualEndDate : Nullable<DateTime> {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::ActualStartDate : Nullable<DateTime> {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::TotalCost : Nullable<Double> {get}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::SubcontractorCost : Nullable<Double> {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::EquipmentCost : Nullable<Double> {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::LaborCost : Nullable<Double> {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::MaterialCost : Nullable<Double> {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::FormatDataSourceRootTaskName(String dataSourceName) -> static String
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static TimelinerTask
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::CreateCopy() -> TimelinerTask
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::CreateCopyWithoutChildren() -> TimelinerTask
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::SetUserFieldByIndex(Int32 index, String value) -> Void
+  Autodesk.Navisworks.Api.Timeliner.TimelinerTask::GetUserFieldByIndex(Int32 index) -> String
+class Autodesk.Navisworks.Api.Timeliner.TimelinerValidateSettingsResult : System.Object
+  Autodesk.Navisworks.Api.Timeliner.TimelinerValidateSettingsResult::.ctor(Boolean success)
+  Autodesk.Navisworks.Api.Timeliner.TimelinerValidateSettingsResult::IsBlocking : Boolean {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerValidateSettingsResult::DisplayDetails : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerValidateSettingsResult::DisplayCaption : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerValidateSettingsResult::DisplayMessage : String {get;set}
+  Autodesk.Navisworks.Api.Timeliner.TimelinerValidateSettingsResult::Success : Boolean {get;set}
+class Autodesk.Navisworks.Internal.ApiImplementation.AstaSecurityEx : System.Object
+  Autodesk.Navisworks.Internal.ApiImplementation.AstaSecurityEx::.ctor()
+  Autodesk.Navisworks.Internal.ApiImplementation.AstaSecurityEx::OpenLocalProject(Object projects, String file, String user, SecureString pwd) -> static Object
+class Autodesk.Navisworks.Internal.ApiImplementation.TimelinerImpl : System.Object
+  Autodesk.Navisworks.Internal.ApiImplementation.TimelinerImpl::.ctor()
+  Autodesk.Navisworks.Internal.ApiImplementation.TimelinerImpl::InitialiseAPI(Document document) -> static Void
+  Autodesk.Navisworks.Internal.ApiImplementation.TimelinerImpl::TerminateAPI(Document document) -> static Void
+  Autodesk.Navisworks.Internal.ApiImplementation.TimelinerImpl::IsApiInitialised() -> static Boolean
+class Autodesk.Navisworks.Internal.Timeliner.BaseProject : System.Object
+  Autodesk.Navisworks.Internal.Timeliner.BaseProject::.ctor(BaseProjectProvider provider)
+  Autodesk.Navisworks.Internal.Timeliner.BaseProject::Activities : List<BaseProjectActivity> {get}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProject::ActivityCount : Int32 {get}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProject::IndentificationString : String {get}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProject::ProjectFields : List<BaseProjectField> {get}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProject::Provider : BaseProjectProvider {get}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProject::SelectProject(String identificationString) -> Boolean
+  Autodesk.Navisworks.Internal.Timeliner.BaseProject::RetrieveActivities(List<BaseProjectField> fields) -> Boolean
+class Autodesk.Navisworks.Internal.Timeliner.BaseProjectActivity : System.Object
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectActivity::.ctor()
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectActivity::GUIDPrefix : String {get}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectActivity::OutlineLevel : Int32 {get}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectActivity::Item[String] : String {get}
+class Autodesk.Navisworks.Internal.Timeliner.BaseProjectField : System.Object
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectField::.ctor(Type fieldType, FieldUse fieldUse, String fieldName, Legacy_nwETLFieldFlags legacyFlags)
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectField::FieldKey : String {get}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectField::LegacyFieldFlags : Legacy_nwETLFieldFlags {get}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectField::FieldName : String {get}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectField::FieldUsage : FieldUse {get}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectField::FieldType : Type {get}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectField::CompareTo(Object rhs) -> Int32
+class Autodesk.Navisworks.Internal.Timeliner.BaseProjectProvider : System.Object
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectProvider::.ctor()
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectProvider::LastException : Exception {get;set}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectProvider::ParentWindow : PluginParentWindow {get}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectProvider::DefaultFields : List<BaseProjectField> {get}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectProvider::ProviderAvailable : Boolean {get}
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectProvider::CreateProject() -> BaseProject
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectProvider::LocaliseString(String stringID) -> String
+  Autodesk.Navisworks.Internal.Timeliner.BaseProjectProvider::LocaliseControl(Control ctrl) -> Void
+class Autodesk.Navisworks.Internal.Timeliner.DataSourceUtils : System.Object
+  Autodesk.Navisworks.Internal.Timeliner.DataSourceUtils::.ctor()
+  Autodesk.Navisworks.Internal.Timeliner.DataSourceUtils::LoadLegacyProviders() -> static Void
+  Autodesk.Navisworks.Internal.Timeliner.DataSourceUtils::ShowDataSourceFieldSelectorDialog(LcOpState state, TimelinerDataSource dataSource) -> static Boolean
+enum Autodesk.Navisworks.Internal.Timeliner.FieldUse : System.Enum
+  Autodesk.Navisworks.Internal.Timeliner.FieldUse.AsText = enum value
+  Autodesk.Navisworks.Internal.Timeliner.FieldUse.UniqueID = enum value
+  Autodesk.Navisworks.Internal.Timeliner.FieldUse.Date = enum value
+  Autodesk.Navisworks.Internal.Timeliner.FieldUse.StartDate = enum value
+  Autodesk.Navisworks.Internal.Timeliner.FieldUse.FinishDate = enum value
+  Autodesk.Navisworks.Internal.Timeliner.FieldUse.Duration = enum value
+enum Autodesk.Navisworks.Internal.Timeliner.Legacy_nwETLFieldFlags : System.Enum
+  Autodesk.Navisworks.Internal.Timeliner.Legacy_nwETLFieldFlags.eFieldFlags_DEFAULT = enum value
+  Autodesk.Navisworks.Internal.Timeliner.Legacy_nwETLFieldFlags.eFieldFlags_TASK_STATUS = enum value
+  Autodesk.Navisworks.Internal.Timeliner.Legacy_nwETLFieldFlags.eFieldFlags_UNIQUEID = enum value
+  Autodesk.Navisworks.Internal.Timeliner.Legacy_nwETLFieldFlags.eFieldFlags_START = enum value
+  Autodesk.Navisworks.Internal.Timeliner.Legacy_nwETLFieldFlags.eFieldFlags_END = enum value
+class Autodesk.Navisworks.Internal.Timeliner.PluginParentWindow : System.Object
+  Autodesk.Navisworks.Internal.Timeliner.PluginParentWindow::.ctor(IntPtr mainWindow)
+  Autodesk.Navisworks.Internal.Timeliner.PluginParentWindow::Handle : IntPtr {get}
+class Autodesk.Navisworks.Internal.Timeliner.SettingsValidator : Autodesk.Navisworks.Api.Interop.LcTlValidator
+  Autodesk.Navisworks.Internal.Timeliner.SettingsValidator::.ctor()
+  Autodesk.Navisworks.Internal.Timeliner.SettingsValidator::Validate(TimelinerDataSource dataSource, String& message, String& caption, String& details, Boolean& blocking) -> Boolean
+class Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate : Autodesk.Navisworks.Api.Timeliner.TimelinerDataSourceProvider
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate::.ctor()
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate::IsAvailable : Boolean {get}
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate::CreateDataSource(String displayName) -> TimelinerDataSource
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate::UpdateDataSource(TimelinerDataSource dataSource) -> Void
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate::ValidateSettings(TimelinerDataSource dataSource) -> TimelinerValidateSettingsResult
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate::ImportTasksCore(TimelinerDataSource dataSource) -> TimelinerImportTasksResult
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate::SetIsAvailableDelegate(IsAvailableDelegate dele) -> Void
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate::SetCreateDataSourceDelegate(CreateDataSourceDelegate dele) -> Void
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate::SetUpdateDataSourceDelegate(UpdateDataSourceDelegate dele) -> Void
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate::SetValidateSettingsDelegate(ValidateSettingsDelegate dele) -> Void
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate::SetImportTasksCoreDelegate(ImportTasksCoreDelegate dele) -> Void
+class Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+CreateDataSourceDelegate : System.MulticastDelegate
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+CreateDataSourceDelegate::.ctor(Object A_0, IntPtr A_1)
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+CreateDataSourceDelegate::Invoke(String displayName) -> TimelinerDataSource
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+CreateDataSourceDelegate::BeginInvoke(String displayName, AsyncCallback callback, Object obj) -> IAsyncResult
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+CreateDataSourceDelegate::EndInvoke(IAsyncResult result) -> TimelinerDataSource
+class Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+ImportTasksCoreDelegate : System.MulticastDelegate
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+ImportTasksCoreDelegate::.ctor(Object A_0, IntPtr A_1)
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+ImportTasksCoreDelegate::Invoke(TimelinerDataSource dataSource) -> TimelinerImportTasksResult
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+ImportTasksCoreDelegate::BeginInvoke(TimelinerDataSource dataSource, AsyncCallback callback, Object obj) -> IAsyncResult
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+ImportTasksCoreDelegate::EndInvoke(IAsyncResult result) -> TimelinerImportTasksResult
+class Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+IsAvailableDelegate : System.MulticastDelegate
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+IsAvailableDelegate::.ctor(Object A_0, IntPtr A_1)
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+IsAvailableDelegate::Invoke() -> Boolean
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+IsAvailableDelegate::BeginInvoke(AsyncCallback callback, Object obj) -> IAsyncResult
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+IsAvailableDelegate::EndInvoke(IAsyncResult result) -> Boolean
+class Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+UpdateDataSourceDelegate : System.MulticastDelegate
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+UpdateDataSourceDelegate::.ctor(Object A_0, IntPtr A_1)
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+UpdateDataSourceDelegate::Invoke(TimelinerDataSource dataSource) -> Void
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+UpdateDataSourceDelegate::BeginInvoke(TimelinerDataSource dataSource, AsyncCallback callback, Object obj) -> IAsyncResult
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+UpdateDataSourceDelegate::EndInvoke(IAsyncResult result) -> Void
+class Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+ValidateSettingsDelegate : System.MulticastDelegate
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+ValidateSettingsDelegate::.ctor(Object A_0, IntPtr A_1)
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+ValidateSettingsDelegate::Invoke(TimelinerDataSource dataSource) -> TimelinerValidateSettingsResult
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+ValidateSettingsDelegate::BeginInvoke(TimelinerDataSource dataSource, AsyncCallback callback, Object obj) -> IAsyncResult
+  Autodesk.Navisworks.Internal.Timeliner.TimelinerDataSourceProviderDelegate+ValidateSettingsDelegate::EndInvoke(IAsyncResult result) -> TimelinerValidateSettingsResult

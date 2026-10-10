@@ -1,0 +1,7 @@
+layout:
+  - Level_Sectioner
+  - Level_Up
+  - Level_Down
+  - Camera_Sync
+  - Spotter
+  - Sheet

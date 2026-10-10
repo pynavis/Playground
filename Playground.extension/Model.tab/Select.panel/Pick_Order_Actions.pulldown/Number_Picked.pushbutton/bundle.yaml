@@ -1,0 +1,3 @@
+title: Number Picked
+tooltip: Writes Playground > Sequence = 1, 2, 3... onto the picked items in pick order, keeping their other Playground properties. One undo step.
+context: doc

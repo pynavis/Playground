@@ -1,0 +1,2 @@
+title: Scheduled\nReports
+tooltip: Runs report templates on a model on a timetable through Windows Task Scheduler and the pyNavis command line runner, then mails or copies the results.

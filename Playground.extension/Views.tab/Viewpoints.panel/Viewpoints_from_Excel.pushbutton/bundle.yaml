@@ -1,0 +1,3 @@
+title: Viewpoints\nfrom Excel
+tooltip: Exports saved viewpoints to an Excel workbook (folder, name, eye, target, up, lens, comment) in model units, or creates and updates viewpoints from one by folder and name.
+context: doc

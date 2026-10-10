@@ -1,0 +1,305 @@
+{
+ "agent": "model_views",
+ "date": "2026-10-09",
+ "tools": {
+  "Model.tab/Data.panel/Count_by_Property.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Data.panel/Data_Tools.stack/Clear_Labels.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Data.panel/Data_Tools.stack/Model_Tree_Export.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Data.panel/Data_Validator.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Data.panel/Property_Explorer.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Data.panel/Property_Exporter.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Model.tab/Data.panel/Property_Labels.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Data.panel/Write_Data.pulldown/Bulk_Property_Writer.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Model.tab/Data.panel/Write_Data.pulldown/External_Data_Link.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Model.tab/Data.panel/Write_Data.pulldown/Find_and_Replace.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Data.panel/Write_Data.pulldown/Property_Mapper.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Find.panel/Batch_Sets.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Find.panel/Quick_Find.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Find.panel/Search_Set_Wizard.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Find.panel/Set_Exchange.stack/Export_Sets.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Model.tab/Find.panel/Set_Exchange.stack/Import_Sets.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Model.tab/Find.panel/Set_Exchange.stack/Search_In_Repair.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Model.tab/Find.panel/Sets_Library.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Model.tab/Inspect.panel/Inspect_Tools.stack/Copy_IDs.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Inspect.panel/Inspect_Tools.stack/Open_in_Explorer.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Model.tab/Inspect.panel/Properties_Plus.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Inspect.panel/Selection_HUD.toggle": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Inspect.panel/What_Is_It.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Look.panel/Color_Presets.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Model.tab/Look.panel/Color_by_Property.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Model.tab/Look.panel/Look_Tools.stack/Exploded_View.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Look.panel/Look_Tools.stack/Legend_Maker.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Look.panel/Look_Tools.stack/Match_Appearance.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Look.panel/Presentation_Mode.toggle": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Look.panel/Status_Painter.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Look.panel/Trade_Ghost.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Look.panel/View_Tools.stack/Background.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Look.panel/View_Tools.stack/Reset_All_Overrides.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Select.panel/Filter_Selection.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Select.panel/History.stack/Back.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Select.panel/History.stack/Forward.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Select.panel/History.stack/History_List.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Select.panel/Pick_Order.toggle": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Select.panel/Pick_Order_Actions.pulldown/Clear_Picked.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Select.panel/Pick_Order_Actions.pulldown/Color_Picked.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Select.panel/Pick_Order_Actions.pulldown/Export_Picked.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Select.panel/Pick_Order_Actions.pulldown/Number_Picked.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Select.panel/Pick_Order_Actions.pulldown/Select_Picked.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Select.panel/Quick.stack/Invert.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Model.tab/Select.panel/Quick.stack/Save_as_Set.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Select.panel/Quick.stack/Select_by_File.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Model.tab/Select.panel/Select_Similar.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Views.tab/Capture.panel/Batch_Image_Export.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Views.tab/Capture.panel/Batch_PDF.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Views.tab/Capture.panel/Viewpoints_to_Images.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Views.tab/Navigate.panel/Camera_Sync.toggle": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Views.tab/Navigate.panel/Level_Sectioner.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Views.tab/Navigate.panel/Sheet.stack/Clear_Sheet.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Views.tab/Navigate.panel/Sheet.stack/Sheet_Overlay.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Views.tab/Navigate.panel/Spotter.stack/Clear_Spots.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Views.tab/Navigate.panel/Spotter.stack/Coordinate_Spotter.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Views.tab/Viewpoints.panel/Batch_Viewpoints.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Views.tab/Viewpoints.panel/Export_Viewpoints.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Views.tab/Viewpoints.panel/Viewpoint_Sync.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  },
+  "Views.tab/Viewpoints.panel/Viewpoints_from_Excel.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. Candidate page listed under leads."
+  },
+  "Views.tab/Viewpoints.panel/Where_Am_I.pushbutton": {
+   "found": false,
+   "note": "Autodesk Community and Reddit pages would not open for fetching; web search returned only summaries, no verbatim asker snippet, so no quote recorded. No close candidate found in the searches run."
+  }
+ },
+ "leads": {
+  "Model.tab/Select.panel/Select_Similar.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-api-forum/select-same-properties/m-p/3761914"
+  ],
+  "Views.tab/Viewpoints.panel/Export_Viewpoints.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/export-saved-viewpoints/td-p/7179433"
+  ],
+  "Views.tab/Capture.panel/Viewpoints_to_Images.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/render-multiple-viewpoints/m-p/2855578"
+  ],
+  "Views.tab/Capture.panel/Batch_Image_Export.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/render-multiple-viewpoints/m-p/2855578"
+  ],
+  "Model.tab/Data.panel/Write_Data.pulldown/Bulk_Property_Writer.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/adding-new-properties-to-an-object-with-an-sql-string-through/m-p/6220511"
+  ],
+  "Model.tab/Data.panel/Write_Data.pulldown/External_Data_Link.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/adding-new-properties-to-an-object-with-an-sql-string-through/m-p/6220511"
+  ],
+  "Model.tab/Data.panel/Property_Exporter.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/selection-inspector-help/m-p/13028663"
+  ],
+  "Model.tab/Look.panel/Color_by_Property.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/appearance-profiler-automatic/m-p/11091266"
+  ],
+  "Model.tab/Look.panel/Color_Presets.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/appearance-profiler-automatic/m-p/11091266",
+   "https://forums.autodesk.com/t5/navisworks-forum/search-sets-and-appearance-profiler-not-transferring-between/td-p/11756377"
+  ],
+  "Model.tab/Find.panel/Set_Exchange.stack/Export_Sets.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/search-sets-search-in-import-export-transfer-to-other-projects/td-p/12256463",
+   "https://forums.autodesk.com/t5/navisworks-forum/selection-set-xml-export-and-import-navisworks-manage-2009-and/td-p/2686191"
+  ],
+  "Model.tab/Find.panel/Set_Exchange.stack/Import_Sets.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/search-sets-search-in-import-export-transfer-to-other-projects/td-p/12256463"
+  ],
+  "Model.tab/Find.panel/Set_Exchange.stack/Search_In_Repair.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/search-sets-search-in-import-export-transfer-to-other-projects/td-p/12256463"
+  ],
+  "Model.tab/Find.panel/Sets_Library.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/search-sets-and-appearance-profiler-not-transferring-between/td-p/11756377"
+  ],
+  "Model.tab/Inspect.panel/Inspect_Tools.stack/Open_in_Explorer.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/source-file-for-nwd-model/td-p/11570067"
+  ],
+  "Model.tab/Select.panel/Quick.stack/Invert.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-api-forum/isolate-selection/m-p/6710568"
+  ],
+  "Views.tab/Navigate.panel/Spotter.stack/Coordinate_Spotter.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/how-to-export-transform-position-from-navisworks/m-p/9097026"
+  ],
+  "Views.tab/Viewpoints.panel/Viewpoints_from_Excel.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-api-forum/excel-cell-hyperlink-to-navisworks-viewpoint/td-p/12314303"
+  ]
+ }
+}

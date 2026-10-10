@@ -1,0 +1,4 @@
+title: Camera\nSync
+title_on: Syncing
+tooltip: Mirrors the camera live between two Navisworks windows on this computer, for two model versions side by side. Turn it on in both windows; the one you move leads.
+tooltip_on: Camera Sync is on: this window follows and leads the other Navisworks window. Click to stop.

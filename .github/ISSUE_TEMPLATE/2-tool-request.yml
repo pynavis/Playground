@@ -1,0 +1,43 @@
+name: Tool request with the original ask
+description: Ask for a tool, and point at the public place where the need was first asked.
+title: "[Request] "
+labels: ["tool-request", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Playground tools start from real asks. A link to where someone asked for it (a forum
+        thread, an idea board, a post) and their own words help most. Never paste anything
+        private: only links anyone can open.
+  - type: textarea
+    id: need
+    attributes:
+      label: What the tool should do
+      description: One or two sentences, in the words a Navisworks user would use.
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Where it was asked
+      description: The public page where the need was asked. Leave empty if it is your own ask.
+      placeholder: https://
+  - type: textarea
+    id: quote
+    attributes:
+      label: The ask, word for word
+      description: A short verbatim quote from that page (40 words or fewer). Do not reword it.
+  - type: input
+    id: existing
+    attributes:
+      label: Closest existing tool
+      description: A Playground or pyNavis tool that comes close, if any, and what it lacks.
+  - type: dropdown
+    id: navis-edition
+    attributes:
+      label: Navisworks edition it is for
+      options:
+        - Manage
+        - Simulate
+        - Freedom
+        - Any

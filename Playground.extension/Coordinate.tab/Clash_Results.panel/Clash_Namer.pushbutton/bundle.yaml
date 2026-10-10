@@ -1,0 +1,3 @@
+title: Clash\nNamer
+tooltip: Renames clashes and result groups from a template like {test} {n:000} {grid} {level}, with a live before and after preview. Pick the tests, type the template, check the preview, then Rename. Shift+Click for settings.
+context: clash-results

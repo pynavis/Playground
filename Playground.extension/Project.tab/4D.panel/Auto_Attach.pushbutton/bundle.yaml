@@ -1,0 +1,3 @@
+title: Auto\nAttach
+tooltip: Attaches model items to TimeLiner tasks by rules, such as task names like L3 Ducts to items on Level 3 in the duct layer, or names containing Slab to a selection set. Previews every task first and attaches in one undo step. Shift+Click loads saved rule templates.
+context: doc

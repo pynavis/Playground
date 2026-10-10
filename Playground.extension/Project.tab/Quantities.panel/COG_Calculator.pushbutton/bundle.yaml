@@ -1,0 +1,3 @@
+title: COG\nCalculator
+tooltip: Weighs the selected objects from closed-mesh volumes and material densities (or their Weight property), marks the combined centre of gravity in the view and lists every object with its weight, centroid and method. Shift+Click for densities.
+context: selection

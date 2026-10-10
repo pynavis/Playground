@@ -1,0 +1,3 @@
+title: TimeLiner\nfrom Excel
+tooltip: Builds or updates TimeLiner tasks from an Excel or CSV schedule (Task ID, Parent ID or WBS, dates, task type, attachments, progress), checking every row before anything changes. Write a template first to start from the tasks already in the model.
+context: doc

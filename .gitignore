@@ -1,0 +1,6 @@
+dist/
+__pycache__/
+*.pyc
+.pytest_cache/
+# runner ledgers (dev/runner/batch.py)
+ledger*.jsonl

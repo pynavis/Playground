@@ -1,0 +1,3 @@
+title: Snapshot
+tooltip: Records the current results of the chosen clash tests as a snapshot that Clash Delta and Clash Trends compare with. Shift+Click to snapshot automatically on save, or to delete old snapshots.
+context: clash-tests

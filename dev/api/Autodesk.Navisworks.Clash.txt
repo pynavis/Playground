@@ -1,0 +1,655 @@
+class Autodesk.Navisworks.Api.Clash.ClashResult : Autodesk.Navisworks.Api.SavedItem
+  Autodesk.Navisworks.Api.Clash.ClashResult::.ctor()
+  Autodesk.Navisworks.Api.Clash.ClashResult::ExternalLink : ExternalLink {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResult::HasRedlines : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::HasSavedViewpoint : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::CompositeItemSelection2 : ModelItemCollection {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::CompositeItemSelection1 : ModelItemCollection {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::Selection2 : ModelItemCollection {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::Selection1 : ModelItemCollection {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::CompositeItem2 : ModelItem {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::CompositeItem1 : ModelItem {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::Item2 : ModelItem {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::Item1 : ModelItem {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::Center : Point3D {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResult::ViewBounds : BoundingBox3D {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::BoundingBox : BoundingBox3D {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResult::RepresentativeResult : ClashResult {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::SimulationName : String {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::ResolvedBy : Assignee {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResult::AssignedTo : Assignee {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResult::ApprovedBy : Assignee {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResult::Distance : Double {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResult::Priority : Int32 {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResult::Description : String {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResult::TestType : ClashTestType {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::Status : ClashResultStatus {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResult::DisplayName : String {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResult::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::AssignedToVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::SimulationTypeVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::SimulationEventNameVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::CreatedTimeVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::ResolvedTimeVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::ResolvedByVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::ApprovedTimeVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::ApprovedByVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::TestTypeVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::Comments : CommentCollection {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::SimulationEndTime : Nullable<DateTime> {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::SimulationStartTime : Nullable<DateTime> {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::SimulationType : Nullable<SimulationType> {get}
+  Autodesk.Navisworks.Api.Clash.ClashResult::ResolvedTime : Nullable<DateTime> {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResult::ApprovedTime : Nullable<DateTime> {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResult::CreatedTime : Nullable<DateTime> {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResult::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Clash.ClashResult::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static ClashResult
+  Autodesk.Navisworks.Api.Clash.ClashResult::UserTransitionStatus(ClashResultStatus new_status, Assignee who) -> SavedItemParts
+  Autodesk.Navisworks.Api.Clash.ClashResult::CreateCopyWithoutChildren() -> ClashResult
+class Autodesk.Navisworks.Api.Clash.ClashResultGroup : Autodesk.Navisworks.Api.GroupItem
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::.ctor()
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::ExternalLink : ExternalLink {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::HasRedlines : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::HasSavedViewpoint : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::CompositeItemSelection2 : ModelItemCollection {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::CompositeItemSelection1 : ModelItemCollection {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::Selection2 : ModelItemCollection {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::Selection1 : ModelItemCollection {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::SimulationTypeVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::ResolvedTimeVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::ApprovedTimeVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::CreatedTimeVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::Center : Point3D {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::ViewBounds : BoundingBox3D {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::BoundingBox : BoundingBox3D {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::RepresentativeResult : ClashResult {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::SimulationEventNameVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::SimulationName : String {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::ResolvedByVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::ResolvedBy : Assignee {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::AssignedToVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::AssignedTo : Assignee {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::ApprovedByVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::ApprovedBy : Assignee {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::Distance : Double {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::Priority : Int32 {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::Description : String {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::TestTypeVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::TestType : ClashTestType {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::Status : ClashResultStatus {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::DisplayName : String {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::Comments : CommentCollection {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::SimulationEndTime : Nullable<DateTime> {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::SimulationStartTime : Nullable<DateTime> {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::SimulationType : Nullable<SimulationType> {get}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::ResolvedTime : Nullable<DateTime> {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::ApprovedTime : Nullable<DateTime> {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::CreatedTime : Nullable<DateTime> {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static ClashResultGroup
+  Autodesk.Navisworks.Api.Clash.ClashResultGroup::UserTransitionStatus(ClashResultStatus new_status, Assignee who) -> SavedItemParts
+enum Autodesk.Navisworks.Api.Clash.ClashResultParts : System.Enum
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.Status = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.Description = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.Distance = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.CreatedTime = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.ApprovedTime = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.ApprovedBy = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.AssignedTo = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.BoundingBox = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.Center = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.Viewpoint = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.Redlines = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.ExternalLink = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.ResolvedTime = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.ResolvedBy = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.RunTestType = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultParts.Priority = enum value
+enum Autodesk.Navisworks.Api.Clash.ClashResultSortMode : System.Enum
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.DisplayNameSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.DescriptionSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.DistanceSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.StatusSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.CreatedTimeSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.AssignedToSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.ApprovedTimeSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.ApprovedBySort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.SimulationStartTimeSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.SimulationEndTimeSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.SimulationNameSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.GridIntersectionSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.GridLevelSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.ProximitySort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.CommentCountSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.ViewpointSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.LinkLabelSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultSortMode.Priority = enum value
+enum Autodesk.Navisworks.Api.Clash.ClashResultStatus : System.Enum
+  Autodesk.Navisworks.Api.Clash.ClashResultStatus.New = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultStatus.Active = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultStatus.Reviewed = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultStatus.Approved = enum value
+  Autodesk.Navisworks.Api.Clash.ClashResultStatus.Resolved = enum value
+class Autodesk.Navisworks.Api.Clash.ClashSelection : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Clash.ClashSelection::.ctor()
+  Autodesk.Navisworks.Api.Clash.ClashSelection::PrimitiveTypes : PrimitiveTypes {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashSelection::SelfIntersect : Boolean {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashSelection::Selection : Selection {get}
+  Autodesk.Navisworks.Api.Clash.ClashSelection::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashSelection::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Clash.ClashSelection::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static ClashSelection
+  Autodesk.Navisworks.Api.Clash.ClashSelection::ValueEquals(ClashSelection value) -> Boolean
+  Autodesk.Navisworks.Api.Clash.ClashSelection::ValueEquals(ClashSelection value1, ClashSelection value2) -> static Boolean
+  Autodesk.Navisworks.Api.Clash.ClashSelection::CopyFrom(ClashSelection other) -> Void
+enum Autodesk.Navisworks.Api.Clash.ClashSortDirection : System.Enum
+  Autodesk.Navisworks.Api.Clash.ClashSortDirection.SortAscending = enum value
+  Autodesk.Navisworks.Api.Clash.ClashSortDirection.SortDescending = enum value
+class Autodesk.Navisworks.Api.Clash.ClashTest : Autodesk.Navisworks.Api.GroupItem
+  Autodesk.Navisworks.Api.Clash.ClashTest::.ctor()
+  Autodesk.Navisworks.Api.Clash.ClashTest::MergeComposites : Boolean {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashTest::CustomTestName : String {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashTest::SimulationStep : Double {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashTest::AnimatorSimulation : SavedItemReference {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashTest::SimulationType : SimulationType {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashTest::IgnoreRules : RuleCollection {get}
+  Autodesk.Navisworks.Api.Clash.ClashTest::Tolerance : Double {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashTest::SelectionB : ClashSelection {get}
+  Autodesk.Navisworks.Api.Clash.ClashTest::SelectionA : ClashSelection {get}
+  Autodesk.Navisworks.Api.Clash.ClashTest::TestType : ClashTestType {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashTest::Priority : Int32 {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashTest::DefaultAssignee : Assignee {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashTest::Status : ClashTestStatus {get;set}
+  Autodesk.Navisworks.Api.Clash.ClashTest::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashTest::LastRun : Nullable<DateTime> {get}
+  Autodesk.Navisworks.Api.Clash.ClashTest::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Clash.ClashTest::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static ClashTest
+class Autodesk.Navisworks.Api.Clash.ClashTestFolder : Autodesk.Navisworks.Api.FolderItem
+  Autodesk.Navisworks.Api.Clash.ClashTestFolder::.ctor()
+  Autodesk.Navisworks.Api.Clash.ClashTestFolder::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashTestFolder::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Clash.ClashTestFolder::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static ClashTestFolder
+enum Autodesk.Navisworks.Api.Clash.ClashTestParts : System.Enum
+  Autodesk.Navisworks.Api.Clash.ClashTestParts.Status = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestParts.ClashTestType = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestParts.SelectionA = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestParts.SelectionB = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestParts.Tolerance = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestParts.IgnoreRules = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestParts.SimulationType = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestParts.AnimatorSimulation = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestParts.SimulationStep = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestParts.CustomTestName = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestParts.MergeComposites = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestParts.Priority = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestParts.DefaultAssignee = enum value
+class Autodesk.Navisworks.Api.Clash.ClashTestsData : System.Object
+  Autodesk.Navisworks.Api.Clash.ClashTestsData::.ctor()
+  Autodesk.Navisworks.Api.Clash.ClashTestsData::TestsRoot : ClashTestFolder {get}
+  Autodesk.Navisworks.Api.Clash.ClashTestsData::Tests : SavedItemCollection {get}
+  Autodesk.Navisworks.Api.Clash.ClashTestsData::IsDisposed : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashTestsData::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ClashTestsData::CreateCopy() -> ClashTestsData
+  Autodesk.Navisworks.Api.Clash.ClashTestsData::Dispose() -> Void
+enum Autodesk.Navisworks.Api.Clash.ClashTestSortMode : System.Enum
+  Autodesk.Navisworks.Api.Clash.ClashTestSortMode.DisplayNameSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestSortMode.StatusSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestSortMode.ResultsNumberSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestSortMode.ResultsNewSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestSortMode.ResultsActiveSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestSortMode.ResultsReviewedSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestSortMode.ResultsApprovedSort = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestSortMode.ResultsResolvedSort = enum value
+enum Autodesk.Navisworks.Api.Clash.ClashTestStatus : System.Enum
+  Autodesk.Navisworks.Api.Clash.ClashTestStatus.New = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestStatus.Old = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestStatus.Partial = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestStatus.Complete = enum value
+enum Autodesk.Navisworks.Api.Clash.ClashTestType : System.Enum
+  Autodesk.Navisworks.Api.Clash.ClashTestType.Hard = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestType.HardConservative = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestType.Clearance = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestType.Duplicate = enum value
+  Autodesk.Navisworks.Api.Clash.ClashTestType.Custom = enum value
+class Autodesk.Navisworks.Api.Clash.DocumentClash : System.Object
+  Autodesk.Navisworks.Api.Clash.DocumentClash::TestsData : DocumentClashTests {get}
+  Autodesk.Navisworks.Api.Clash.DocumentClash::ClashInstance(Document doc) -> static DocumentClash
+  Autodesk.Navisworks.Api.Clash.DocumentClash::CreateInstance(Document doc) -> static DocumentClash
+  Autodesk.Navisworks.Api.Clash.DocumentClash::TryCalculateMinimumClearance(ModelItemCollection selection1, ModelItemCollection selection2, Boolean useCenterlines, MinimumClearanceResult& clearanceResult) -> Boolean
+class Autodesk.Navisworks.Api.Clash.DocumentClashTests : System.Object
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::Tests : SavedItemCollection {get}
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::Value : ClashTestsData {get}
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::Id : String {get}
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::CreateReference(SavedItem item) -> SavedItemReference
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::ResolveReference(SavedItemReference reference) -> SavedItem
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::ResolveGuid(Guid value) -> SavedItem
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsCopyFrom(SavedItemCollection value) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsCopyFrom(IEnumerable<SavedItem> value) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::CopyFrom(ClashTestsData value) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::CreateCopy() -> ClashTestsData
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsAddCopy(GroupItem parent, SavedItem item) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsAddCopy(ClashTest test) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsInsertCopy(GroupItem parent, Int32 index, SavedItem item) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsInsertCopy(Int32 index, ClashTest test) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsReplaceWithCopy(GroupItem parent, Int32 index, SavedItem item) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsReplaceWithCopy(Int32 index, ClashTest test) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsEditResultStatus(IClashResult result, ClashResultStatus status, Assignee current_user) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsEditResultPriority(IClashResult result, Int32 priority) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsEditResultDescription(IClashResult result, String description) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsEditResultDistance(IClashResult result, Double distance) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsEditResultCreatedTime(IClashResult result, DateTime createdTime) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsEditResultApprovedTime(IClashResult result, DateTime approvedTime) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsEditResultApprovedBy(IClashResult result, Assignee approvedBy) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsEditResultAssignedTo(IClashResult result, Assignee assignedTo) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsEditResultBoundingBox(IClashResult result, BoundingBox3D boundingBox) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsEditResultCenter(IClashResult result, Point3D center) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsEditResultComments(IClashResult result, CommentCollection comments) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsEditResultExternalLink(IClashResult result, ExternalLink externalLink) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsEditTestFromCopy(ClashTest test, ClashTest copyFrom) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsEditDisplayName(SavedItem item, String name) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsMove(GroupItem oldParent, Int32 oldIndex, GroupItem newParent, Int32 newIndex) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsMove(Int32 oldIndex, Int32 newIndex) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsRemoveAt(GroupItem parent, Int32 index) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsRemoveAt(Int32 index) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsRemove(GroupItem parent, SavedItem item) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsRemove(ClashTest test) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsClear() -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsClearResults(ClashTest test) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsRunTest(ClashTest test) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsRunAllTests() -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsCompactTest(ClashTest test) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsCompactAllTests() -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsSortTests(ClashTestSortMode sortBy, ClashSortDirection direction) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsSortResults(ClashTest test, ClashResultSortMode sortBy, ClashSortDirection direction, Point3D proximityTo) -> Void
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsViewpointForResult(IClashResult result) -> Viewpoint
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::TestsImageForResult(IClashResult result, ImageGenerationStyle style, Int32 width, Int32 height) -> Bitmap
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::Changing : event EventHandler<EventArgs>
+  Autodesk.Navisworks.Api.Clash.DocumentClashTests::Changed : event EventHandler<SavedItemChangedEventArgs>
+class Autodesk.Navisworks.Api.Clash.DocumentExtensions : System.Object
+  Autodesk.Navisworks.Api.Clash.DocumentExtensions::GetClash(Document doc) -> static DocumentClash
+class Autodesk.Navisworks.Api.Clash.ExternalLink : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Clash.ExternalLink::.ctor()
+  Autodesk.Navisworks.Api.Clash.ExternalLink::Color : Color {get;set}
+  Autodesk.Navisworks.Api.Clash.ExternalLink::Type : String {get;set}
+  Autodesk.Navisworks.Api.Clash.ExternalLink::Data : String {get;set}
+  Autodesk.Navisworks.Api.Clash.ExternalLink::Label : String {get;set}
+  Autodesk.Navisworks.Api.Clash.ExternalLink::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.ExternalLink::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Clash.ExternalLink::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static ExternalLink
+  Autodesk.Navisworks.Api.Clash.ExternalLink::HasTag(String tag) -> Boolean
+  Autodesk.Navisworks.Api.Clash.ExternalLink::AddTag(String tag) -> Void
+  Autodesk.Navisworks.Api.Clash.ExternalLink::RemoveTag(String tag) -> Void
+class Autodesk.Navisworks.Api.Clash.ExternalLinkTags : System.Object
+  Autodesk.Navisworks.Api.Clash.ExternalLinkTags::.ctor()
+  Autodesk.Navisworks.Api.Clash.ExternalLinkTags::Alert : field static String
+interface Autodesk.Navisworks.Api.Clash.IClashResult
+  Autodesk.Navisworks.Api.Clash.IClashResult::ExternalLink : ExternalLink {get;set}
+  Autodesk.Navisworks.Api.Clash.IClashResult::Selection2 : ModelItemCollection {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::Selection1 : ModelItemCollection {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::CompositeItemSelection2 : ModelItemCollection {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::CompositeItemSelection1 : ModelItemCollection {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::HasRedlines : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::HasSavedViewpoint : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::AssignedToVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::SimulationTypeVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::SimulationEventNameVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::CreatedTimeVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::ResolvedTimeVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::ResolvedByVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::ApprovedTimeVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::ApprovedByVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::TestTypeVaries : Boolean {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::Center : Point3D {get;set}
+  Autodesk.Navisworks.Api.Clash.IClashResult::Comments : CommentCollection {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::ViewBounds : BoundingBox3D {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::BoundingBox : BoundingBox3D {get;set}
+  Autodesk.Navisworks.Api.Clash.IClashResult::RepresentativeResult : ClashResult {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::SimulationName : String {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::SimulationType : Nullable<SimulationType> {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::SimulationEndTime : Nullable<DateTime> {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::SimulationStartTime : Nullable<DateTime> {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::AssignedTo : Assignee {get;set}
+  Autodesk.Navisworks.Api.Clash.IClashResult::ResolvedBy : Assignee {get;set}
+  Autodesk.Navisworks.Api.Clash.IClashResult::ResolvedTime : Nullable<DateTime> {get;set}
+  Autodesk.Navisworks.Api.Clash.IClashResult::ApprovedBy : Assignee {get;set}
+  Autodesk.Navisworks.Api.Clash.IClashResult::ApprovedTime : Nullable<DateTime> {get;set}
+  Autodesk.Navisworks.Api.Clash.IClashResult::CreatedTime : Nullable<DateTime> {get;set}
+  Autodesk.Navisworks.Api.Clash.IClashResult::Distance : Double {get;set}
+  Autodesk.Navisworks.Api.Clash.IClashResult::Description : String {get;set}
+  Autodesk.Navisworks.Api.Clash.IClashResult::Priority : Int32 {get;set}
+  Autodesk.Navisworks.Api.Clash.IClashResult::TestType : ClashTestType {get}
+  Autodesk.Navisworks.Api.Clash.IClashResult::Status : ClashResultStatus {get;set}
+  Autodesk.Navisworks.Api.Clash.IClashResult::DisplayName : String {get;set}
+  Autodesk.Navisworks.Api.Clash.IClashResult::CreateCopy() -> IClashResult
+  Autodesk.Navisworks.Api.Clash.IClashResult::CreateCopyWithoutChildren() -> IClashResult
+class Autodesk.Navisworks.Api.Clash.MinimumClearanceResult : System.Object
+  Autodesk.Navisworks.Api.Clash.MinimumClearanceResult::Point2OnCenterline : Boolean {get;set}
+  Autodesk.Navisworks.Api.Clash.MinimumClearanceResult::Point1OnCenterline : Boolean {get;set}
+  Autodesk.Navisworks.Api.Clash.MinimumClearanceResult::ClosestPointOnSelection2 : Point3D {get;set}
+  Autodesk.Navisworks.Api.Clash.MinimumClearanceResult::ClosestPointOnSelection1 : Point3D {get;set}
+class Autodesk.Navisworks.Api.Interop.ClashCurrentIssue : System.Object
+  Autodesk.Navisworks.Api.Interop.ClashCurrentIssue::CurrentTest : static ClashTest {get;set}
+  Autodesk.Navisworks.Api.Interop.ClashCurrentIssue::CurrentIssue : static IClashResult {get;set}
+  Autodesk.Navisworks.Api.Interop.ClashCurrentIssue::Initialise() -> static Void
+  Autodesk.Navisworks.Api.Interop.ClashCurrentIssue::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.ClashCurrentIssue::IsInitialised() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.ClashCurrentIssue::OnGotFocus() -> static Void
+  Autodesk.Navisworks.Api.Interop.ClashCurrentIssue::SetCurrentIssue(IClashResult issue, Boolean show) -> static Void
+  Autodesk.Navisworks.Api.Interop.ClashCurrentIssue::ClearCurrentIssue() -> static Void
+  Autodesk.Navisworks.Api.Interop.ClashCurrentIssue::RefreshComment() -> static Void
+  Autodesk.Navisworks.Api.Interop.ClashCurrentIssue::ClearCurrentTest() -> static Void
+  Autodesk.Navisworks.Api.Interop.ClashCurrentIssue::PushDisable() -> static Void
+  Autodesk.Navisworks.Api.Interop.ClashCurrentIssue::PopDisable() -> static Void
+  Autodesk.Navisworks.Api.Interop.ClashCurrentIssue::CurrentTestChanged : event EventHandler<EventArgs>
+  Autodesk.Navisworks.Api.Interop.ClashCurrentIssue::CurrentIssueChanged : event EventHandler<CurrentIssueChangedEventArgs>
+class Autodesk.Navisworks.Api.Interop.CurrentIssueChangedEventArgs : System.EventArgs
+  Autodesk.Navisworks.Api.Interop.CurrentIssueChangedEventArgs::.ctor(Boolean show)
+  Autodesk.Navisworks.Api.Interop.CurrentIssueChangedEventArgs::ShowIssue : Boolean {get}
+class Autodesk.Navisworks.Api.Interop.DocumentClashTestsExceptions : System.Object
+  Autodesk.Navisworks.Api.Interop.DocumentClashTestsExceptions::LockFailedMessage : static String {get}
+  Autodesk.Navisworks.Api.Interop.DocumentClashTestsExceptions::InternalErrorMessage : static String {get}
+  Autodesk.Navisworks.Api.Interop.DocumentClashTestsExceptions::DuplicateGuidMessage : static String {get}
+  Autodesk.Navisworks.Api.Interop.DocumentClashTestsExceptions::UnsupportedSavedItemMessage : static String {get}
+  Autodesk.Navisworks.Api.Interop.DocumentClashTestsExceptions::NotInParentMessage : static String {get}
+  Autodesk.Navisworks.Api.Interop.DocumentClashTestsExceptions::PartIdNotMatchedMessage : static String {get}
+  Autodesk.Navisworks.Api.Interop.DocumentClashTestsExceptions::NotInClashMessage : static String {get}
+  Autodesk.Navisworks.Api.Interop.DocumentClashTestsExceptions::CannotSetPropertyMessage(String propertyName) -> static String
+class Autodesk.Navisworks.Api.Interop.LcClashReportResultSelector : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClashReportResultSelector::.ctor()
+  Autodesk.Navisworks.Api.Interop.LcClashReportResultSelector::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClashReportResultSelector::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClashReportResultSelector::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClashReportResultSelector
+  Autodesk.Navisworks.Api.Interop.LcClashReportResultSelector::AddGuid(Guid guid) -> Void
+  Autodesk.Navisworks.Api.Interop.LcClashReportResultSelector::Clear() -> Void
+  Autodesk.Navisworks.Api.Interop.LcClashReportResultSelector::ContainsGuid(Guid guid) -> Boolean
+class Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::CustomHighlightColors : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::ViewContextMode : ViewContextMode {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::Object2Highlight : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::Object1Highlight : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::AutoSimulate : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::HideOther : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::TransparentDimming : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::DimOther : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::HighlightAll : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::AnimateTransitions : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::AutoSave : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::AutoLoad : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::AutoZoom : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::LockPivot : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::AutoReveal : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::SelectionFiltering : SelectionFilteringMode {get;set}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashDisplaySettings::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClClashDisplaySettings
+class Autodesk.Navisworks.Api.Interop.LcClClashElementHelper : Autodesk.Navisworks.Api.Interop.LcOpStateWatcher
+  Autodesk.Navisworks.Api.Interop.LcClClashElementHelper::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClClashElementHelper::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashElementHelper::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClClashElementHelper
+  Autodesk.Navisworks.Api.Interop.LcClClashElementHelper::Initialise() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashElementHelper::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashElementHelper::IsInitialised() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashElementHelper::InitialiseForState(LcOpState state) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashElementHelper::TerminateForState(LcOpState state) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashElementHelper::GetInstance(LcOpState state) -> static LcClClashElementHelper
+class Autodesk.Navisworks.Api.Interop.LcClClashGUIProxy : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashGUIProxy::.ctor()
+  Autodesk.Navisworks.Api.Interop.LcClClashGUIProxy::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClClashGUIProxy::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashGUIProxy::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClClashGUIProxy
+  Autodesk.Navisworks.Api.Interop.LcClClashGUIProxy::PromptForFilename(String extension, String suggestedName, String filter, String& out_filename) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashGUIProxy::PromptForFolder(String title, String startFolder, String& out_folder) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashGUIProxy::ReportError(String error_msg) -> Void
+class Autodesk.Navisworks.Api.Interop.LcClClashProgress : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashProgress::.ctor()
+  Autodesk.Navisworks.Api.Interop.LcClClashProgress::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClClashProgress::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashProgress::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClClashProgress
+  Autodesk.Navisworks.Api.Interop.LcClClashProgress::Progress(Double fraction_done) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashProgress::ClashesFoundSoFar(Int32 num_clashes) -> Void
+class Autodesk.Navisworks.Api.Interop.LcClClashReport : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClClashReport
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::Initialise() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::IsInitialised() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::NumReportFields() -> static Int32
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::GetReportField(Int32 index) -> static LcClReportField
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::NumStatusFlags() -> static Int32
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::GetStatusFlag(Int32 index) -> static LcClStatusFlag
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::GroupModesEnabled(LcOpState state) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::NumGroupModes() -> static Int32
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::GetGroupModeName(Int32 index, String& groupMode) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::GetCurrentGroupMode() -> static Int32
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::SetCurrentGroupMode(Int32 index) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::NumReportDrivers() -> static Int32
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::GetReportDriverName(Int32 index, String& reportDriver) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::GetReportDriverInternalName(Int32 index, String& reportDriver) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::GetCurrentReportDriver() -> static Int32
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::SetCurrentReportDriver(Int32 index) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::NumReportFormatters() -> static Int32
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::GetReportFormatterName(Int32 index, String& reportFormatter) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::GetCurrentReportFormatter() -> static Int32
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::SetCurrentReportFormatter(Int32 index) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::GetReportFormatterInternalName(Int32 index, String& internalName) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::FormatterIsViewpoints(Int32 index) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::GetCurrentFilterMode() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::SetCurrentFilterMode(Boolean filter) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::GetViewpointsRespectHighlighting() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::SetViewpointsRespectHighlighting(Boolean highlight) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::WriteReport(LcOpState state, LcClClashGUIProxy guiProxy, LcClashReportResultSelector selection, String name_annotation) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashReport::CanWriteReport(LcOpState state) -> static Boolean
+class Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::DisplaySettings : LcClClashDisplaySettings {get}
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClClashResultHighlighter
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::Initialise() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::IsInitialised() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::InitialiseForState(LcOpState state) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::TerminateForState(LcOpState state) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::GetInstance(LcOpState state) -> static LcClClashResultHighlighter
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::BeginResultHighlighting(ClashTest test) -> Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::EndResultHighlighting() -> Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::IsResultHighlighting() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::HighlightResult(SavedItem item, ClashTest test) -> Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::OnVICButtonDown() -> Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::OnVICButtonUp() -> Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::IssueFilteredOut(SavedItem item) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::ResetCurrentResultSavedViewpoint() -> Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::SaveCurrentResultView() -> Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::SaveCurrentResultView(Boolean force_wipe_redlines) -> Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::SaveCurrentResultView(Boolean force_wipe_redlines, Boolean not_auto_save) -> Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::LoadCurrentResultView() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::DeleteCurrentResultView() -> Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::DeleteResultView() -> Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::DeleteResultView(SavedItem item) -> Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::DeleteResultView(SavedItem item, Boolean force_delete) -> Void
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::IsAnimating() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::ViewChangedSinceLoaded() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::MakeClashResultView(LcOpState state, ClashResultGroup result) -> static Viewpoint
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::MakeClashResultView(LcOpState state, ClashResult result) -> static Viewpoint
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::MakeClashResultImage(LcOmWin32Kernel kernel, ClashResultGroup result, Int32 width, Int32 height, ThumbnailGeneratorPurpose purpose) -> static LcOwDIB
+  Autodesk.Navisworks.Api.Interop.LcClClashResultHighlighter::MakeClashResultImage(LcOmWin32Kernel kernel, ClashResult result, Int32 width, Int32 height, ThumbnailGeneratorPurpose purpose) -> static LcOwDIB
+class Autodesk.Navisworks.Api.Interop.LcClClashRules : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashRules::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClClashRules::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashRules::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClClashRules
+  Autodesk.Navisworks.Api.Interop.LcClClashRules::Initialise() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashRules::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashRules::IsInitialised() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashRules::LoadBaseRuleSet(RuleCollection rules, LcOpState state) -> static Void
+class Autodesk.Navisworks.Api.Interop.LcClClashTestRunner : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashTestRunner::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClClashTestRunner::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashTestRunner::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClClashTestRunner
+  Autodesk.Navisworks.Api.Interop.LcClClashTestRunner::Initialise() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashTestRunner::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashTestRunner::IsInitialised() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashTestRunner::InitialiseForState(LcOpState state) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashTestRunner::TerminateForState(LcOpState state) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashTestRunner::GetInstance(LcOpState state) -> static LcClClashTestRunner
+  Autodesk.Navisworks.Api.Interop.LcClClashTestRunner::RunOneTest(ClashTest test) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashTestRunner::RunAllTests() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashTestRunner::CanRunTest(ClashTest test) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashTestRunner::CompactOneTest(ClashTest test) -> Void
+  Autodesk.Navisworks.Api.Interop.LcClClashTestRunner::CompactAllTests() -> Void
+  Autodesk.Navisworks.Api.Interop.LcClClashTestRunner::SetProgress(LcClClashProgress progress_controller) -> Void
+class Autodesk.Navisworks.Api.Interop.LcClClashUtils : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashUtils::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClClashUtils::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClClashUtils::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClClashUtils
+  Autodesk.Navisworks.Api.Interop.LcClClashUtils::Initialise() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashUtils::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashUtils::IsInitialised() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcClClashUtils::InitializeCustomTests(LcOpState state) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashUtils::AddFakeIgnorePluginForUnitTest(Int32 version) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashUtils::RegisterPluginsForUnitTest() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashUtils::SetPathsForUnitTest(ClashResult result, LcOpState state, Int32 whichPath1, Int32 whichPath2) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashUtils::SetHasViewpointForUnitTest(ClashResult result) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClClashUtils::SetHasViewpointForUnitTest(ClashResult result, Boolean add_redline) -> static Void
+class Autodesk.Navisworks.Api.Interop.LcClCurrentIssue : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClCurrentIssue
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::Initialise() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::IsInitialised() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::InitialiseForState(LcOpState state) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::TerminateForState(LcOpState state) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::GetInstance(LcOpState state) -> static LcClCurrentIssue
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::OnGotFocus() -> Void
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::GetCurrentIssueAsSavedItem() -> SavedItem
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::SetCurrentIssueFromSavedItem(SavedItem issue, Int32 comment_index, Boolean force_take_comment_element, Boolean show_issue) -> Void
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::ClearCurrentIssue() -> Void
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::GetCurrentTest() -> ClashTest
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::SetCurrentTest(ClashTest test) -> Void
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::ClearCurrentTest() -> Void
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::AddNotify(LcClCurrentIssueNotify notify) -> Void
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::DelNotify(LcClCurrentIssueNotify notify) -> Void
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::RefreshComment() -> Void
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::PushDisable() -> Void
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssue::PopDisable() -> Void
+class Autodesk.Navisworks.Api.Interop.LcClCurrentIssueNotify : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssueNotify::.ctor()
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssueNotify::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssueNotify::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssueNotify::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClCurrentIssueNotify
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssueNotify::OnCurrentIssueChanged(Boolean showIssue) -> Void
+  Autodesk.Navisworks.Api.Interop.LcClCurrentIssueNotify::OnCurrentTestChanged() -> Void
+class Autodesk.Navisworks.Api.Interop.LcClCustomClashTests : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClCustomClashTests::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClCustomClashTests::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClCustomClashTests::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClCustomClashTests
+  Autodesk.Navisworks.Api.Interop.LcClCustomClashTests::Count() -> static Int32
+  Autodesk.Navisworks.Api.Interop.LcClCustomClashTests::GetName(Int32 index, String& name) -> static Void
+class Autodesk.Navisworks.Api.Interop.LcClReportField : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClReportField::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClReportField::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClReportField::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClReportField
+  Autodesk.Navisworks.Api.Interop.LcClReportField::GetUserNameW(String& buff) -> Void
+  Autodesk.Navisworks.Api.Interop.LcClReportField::GetEnabled() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcClReportField::SetEnabled(Boolean enabled) -> Void
+class Autodesk.Navisworks.Api.Interop.LcClStatusFlag : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClStatusFlag::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClStatusFlag::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClStatusFlag::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClStatusFlag
+  Autodesk.Navisworks.Api.Interop.LcClStatusFlag::GetUserNameW(String& buff) -> Void
+  Autodesk.Navisworks.Api.Interop.LcClStatusFlag::GetEnabled() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcClStatusFlag::SetEnabled(Boolean enabled) -> Void
+class Autodesk.Navisworks.Api.Interop.LcClTestDefaultsStore : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClTestDefaultsStore::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcClTestDefaultsStore::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcClTestDefaultsStore::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcClTestDefaultsStore
+  Autodesk.Navisworks.Api.Interop.LcClTestDefaultsStore::Initialise() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClTestDefaultsStore::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClTestDefaultsStore::IsInitialised() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcClTestDefaultsStore::RecordDefaults(ClashTest test, LcOpState state) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClTestDefaultsStore::ApplyDefaults(ClashTest test, LcOpState state) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClTestDefaultsStore::GetDefaultRules(LcOpState state, RuleCollection rules) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcClTestDefaultsStore::UpdateDefaultRules(RuleCollection rules) -> static Void
+class Autodesk.Navisworks.Api.Interop.LcOclClashResultStatus : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcOclClashResultStatus::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcOclClashResultStatus::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcOclClashResultStatus::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcOclClashResultStatus
+class Autodesk.Navisworks.Api.Interop.LcOclClashUtils : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcOclClashUtils::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcOclClashUtils::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcOclClashUtils::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcOclClashUtils
+  Autodesk.Navisworks.Api.Interop.LcOclClashUtils::CountByStatus(GroupItem group, ClashResultStatus status) -> static Int32
+  Autodesk.Navisworks.Api.Interop.LcOclClashUtils::CountByStatus(GroupItem group, ClashResultStatus status, Boolean recurse) -> static Int32
+  Autodesk.Navisworks.Api.Interop.LcOclClashUtils::CalculateMinimumClearance(LcOpState state, ModelItemCollection sel1, ModelItemCollection sel2, Boolean use_center_lines, Point3D pt1, Point3D pt2, Boolean& pt1_on_CL, Boolean& pt2_on_CL) -> static Boolean
+class Autodesk.Navisworks.Api.Interop.LcOclDirectionSortEnum : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcOclDirectionSortEnum::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcOclDirectionSortEnum::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcOclDirectionSortEnum::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcOclDirectionSortEnum
+class Autodesk.Navisworks.Api.Interop.LcOclResultSortEnum : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcOclResultSortEnum::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcOclResultSortEnum::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcOclResultSortEnum::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcOclResultSortEnum
+class Autodesk.Navisworks.Api.Interop.LcOclTestIssue : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcOclTestIssue::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcOclTestIssue::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcOclTestIssue::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcOclTestIssue
+class Autodesk.Navisworks.Api.Interop.LcOclTestSortEnum : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcOclTestSortEnum::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcOclTestSortEnum::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcOclTestSortEnum::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcOclTestSortEnum
+class Autodesk.Navisworks.Api.Interop.LcOpClashElement : Autodesk.Navisworks.Api.Interop.LcOpSavedItemsElement
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::CustomHighlightColorObject2 : static Color {get}
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::CustomHighlightColorObject1 : static Color {get}
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcOpClashElement
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::Create() -> static LcOpElement
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::GetClass() -> static LcOpElementClass
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::Edit(LcOpState state, LcOpLock lock) -> static LcOpClashElement
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::Get(LcOpState state) -> static LcOpClashElement
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::GetElementClassName() -> static String
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::GetClassUserName() -> static String
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::Delete(LcOpState state, LcOpLock lock) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::GetNumTests() -> Int32
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::GetTestFolder() -> ClashTestFolder
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::EditTestFolder() -> ClashTestFolder
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::GetProxyTestFolder() -> static ClashTestFolder
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::AddTestCopy(ClashTest test) -> Void
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::ClearTests() -> Void
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::GetTest(Int32 idx) -> ClashTest
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::EditTest(LcOpState state, GroupItem parent, Int32 index, ClashTest test, SavedItemParts parts) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::EditTest(Int32 idx) -> ClashTest
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::RemoveTest(Int32 idx) -> ClashTest
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::InsertTestCopy(LcOpState state, GroupItem parent, Int32 index, SavedItem test) -> static LcOpSavedItemsElementStatus
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::ReplaceTestWithCopy(LcOpState state, GroupItem parent, Int32 index, SavedItem item) -> static LcOpSavedItemsElementStatus
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::ReplaceTest(LcOpState state, GroupItem parent, Int32 index, SavedItem copy) -> static LcOpSavedItemsElementStatus
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::MoveTest(LcOpState state, SavedItem item, GroupItem new_parent, Int32 new_index) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::DeleteTest(LcOpState state, GroupItem parent, Int32 index) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::EditTestWithCopy(LcOpState state, GroupItem parent, Int32 index, ClashTest copy_from, SavedItemParts parts) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::EditIssueWithCopy(LcOpState state, GroupItem parent, Int32 index, LcOclTestIssue copy_from, SavedItemParts parts) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::EditIssue(LcOpState state, GroupItem parent, Int32 index, LcOclTestIssue issue, SavedItemParts parts) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::EditItem(LcOpState state, GroupItem parent, Int32 index, SavedItem item, SavedItemParts parts) -> static LcOpSavedItemsElementStatus
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::EditItemWithCopy(LcOpState state, GroupItem parent, Int32 index, SavedItem copy_from, SavedItemParts parts) -> static LcOpSavedItemsElementStatus
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::ReplaceAllFoldersCopy(LcOpState state, ClashTestFolder tests) -> static LcOpSavedItemsElementStatus
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::SortTests(ClashTestSortMode sort_by, ClashSortDirection direction) -> Void
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::SortResults(LcOpState state, ClashTest test, ClashResultSortMode sort_by, ClashSortDirection direction, Point3D point) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::SetFlagAndMergeComposites(LcOpState state, ClashTest test) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcOpClashElement::GetItem(LcOpState state, Guid guid) -> static SavedItem
+enum Autodesk.Navisworks.Api.Interop.SelectionFilteringMode : System.Enum
+  Autodesk.Navisworks.Api.Interop.SelectionFilteringMode.None = enum value
+  Autodesk.Navisworks.Api.Interop.SelectionFilteringMode.And = enum value
+  Autodesk.Navisworks.Api.Interop.SelectionFilteringMode.Or = enum value
+enum Autodesk.Navisworks.Api.Interop.ValidateIssueResult : System.Enum
+  Autodesk.Navisworks.Api.Interop.ValidateIssueResult.Ok = enum value
+  Autodesk.Navisworks.Api.Interop.ValidateIssueResult.WrongType = enum value
+  Autodesk.Navisworks.Api.Interop.ValidateIssueResult.NoCurrentTest = enum value
+  Autodesk.Navisworks.Api.Interop.ValidateIssueResult.NotInElement = enum value
+  Autodesk.Navisworks.Api.Interop.ValidateIssueResult.NotInTest = enum value
+enum Autodesk.Navisworks.Api.Interop.ViewContextMode : System.Enum
+  Autodesk.Navisworks.Api.Interop.ViewContextMode.All = enum value
+  Autodesk.Navisworks.Api.Interop.ViewContextMode.File = enum value
+  Autodesk.Navisworks.Api.Interop.ViewContextMode.Home = enum value
+class Autodesk.Navisworks.Internal.ApiImplementation.ClashImpl : System.Object
+  Autodesk.Navisworks.Internal.ApiImplementation.ClashImpl::.ctor()
+  Autodesk.Navisworks.Internal.ApiImplementation.ClashImpl::InitialiseApi(Document document) -> static Void
+  Autodesk.Navisworks.Internal.ApiImplementation.ClashImpl::TerminateApi(Document document) -> static Void

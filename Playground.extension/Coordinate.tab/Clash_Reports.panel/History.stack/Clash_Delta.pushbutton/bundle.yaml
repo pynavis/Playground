@@ -1,0 +1,3 @@
+title: Clash Delta
+tooltip: Compares the chosen clash tests now with a snapshot: new, fixed and still open clashes and status changes, in the output window and an optional workbook.
+context: clash-tests

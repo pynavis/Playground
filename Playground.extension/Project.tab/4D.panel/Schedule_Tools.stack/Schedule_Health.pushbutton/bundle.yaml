@@ -1,0 +1,3 @@
+title: Schedule Health
+tooltip: Checks the TimeLiner schedule for tasks with nothing attached, missing or reversed dates, zero durations, objects in several tasks and objects in no task, scores it out of 100 and opens the report. Shift+Click for options.
+context: doc

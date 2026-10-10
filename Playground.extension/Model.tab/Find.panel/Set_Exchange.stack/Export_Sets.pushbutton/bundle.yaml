@@ -1,0 +1,3 @@
+title: Export Sets
+tooltip: Writes the sets you choose to a Playground XML file: search sets as conditions, selection sets as item references that survive into other files.
+context: selection-sets

@@ -1,0 +1,3 @@
+title: Color\nPresets
+tooltip: Saves a color scheme as a named preset the whole team can apply, then repaints the model from it in one step. Manage renames, deletes, exports and imports presets.
+context: doc

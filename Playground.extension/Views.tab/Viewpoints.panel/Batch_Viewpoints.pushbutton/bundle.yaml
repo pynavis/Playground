@@ -1,0 +1,3 @@
+title: Batch\nViewpoints
+tooltip: Saves a viewpoint for every level, grid intersection, selection or search set, or model in one go: plans cut at each level, eye-level views or zoomed sets, named and filed by template. One Ctrl+Z removes the batch.
+context: doc

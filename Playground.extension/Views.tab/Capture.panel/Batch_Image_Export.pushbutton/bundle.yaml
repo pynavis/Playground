@@ -1,0 +1,3 @@
+title: Batch\nImages
+tooltip: Saves images of saved viewpoints, clash results (by test and status) and Playground issues in one run, into Viewpoints, Clashes and Issues folders with one index.html contact sheet.
+context: doc

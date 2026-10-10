@@ -1,0 +1,3 @@
+title: Clash\nAssigner
+tooltip: Assigns clash groups and ungrouped clashes to the trade that moves, keeps the ball-in-court history in the model, and shows who holds what and for how long. Shift+Click for settings.
+context: clash-results

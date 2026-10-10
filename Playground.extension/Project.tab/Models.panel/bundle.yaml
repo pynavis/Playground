@@ -1,0 +1,7 @@
+layout:
+  - Batch_Append
+  - Source_Files
+  - Link_Navigator
+  - Transform_Fixer
+  - Folder_Watch
+  - Stale_File_Alert

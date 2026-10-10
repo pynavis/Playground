@@ -1,0 +1,3 @@
+title: Viewpoint\nSync
+tooltip: Copies viewpoint folders from one Navisworks file to another through a package: export the folders here, import them there into the folder you choose, skipping, replacing or keeping both when a name exists.
+context: doc

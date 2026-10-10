@@ -1,0 +1,3 @@
+title: Property\nExporter
+tooltip: Exports the properties you tick for the selected objects (or their geometry items) to a styled Excel workbook or a CSV file, with name, file, Element ID and GUID columns in front. Your choice is remembered and can be saved as a named template.
+context: selection

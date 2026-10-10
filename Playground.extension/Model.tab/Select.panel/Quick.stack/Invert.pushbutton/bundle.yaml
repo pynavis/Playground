@@ -1,0 +1,3 @@
+title: Invert
+tooltip: Selects everything the current selection leaves out, leaving hidden items out. With nothing selected it selects everything visible. Shift+Click for settings.
+context: doc

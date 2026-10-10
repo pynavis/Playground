@@ -1,0 +1,2 @@
+title: Play Macro
+tooltip: Runs a saved macro, one command after another. Dialogs inside its commands still ask you; click again to stop a playing macro.

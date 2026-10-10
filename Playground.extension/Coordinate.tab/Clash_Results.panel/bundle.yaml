@@ -1,0 +1,7 @@
+layout:
+  - Clash_Namer
+  - Status_Rules
+  - Clash_Assigner
+  - Clash_to_Viewpoints
+  - Clash_Heatmap
+  - Revit_Link

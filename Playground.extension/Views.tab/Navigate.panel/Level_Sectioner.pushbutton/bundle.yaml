@@ -1,0 +1,3 @@
+title: Level\nSectioner
+tooltip: Cuts the model at the level you choose: a section plane at the cut height above the floor, optionally the floors below hidden and a plan view. Levels come from the grid system or are estimated from the model. Shift+Click for settings.
+context: doc

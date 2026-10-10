@@ -1,0 +1,3 @@
+title: Model\nCompare
+tooltip: Compares two appended versions of a model, or a model with a snapshot you saved earlier, matching objects by their IDs. Added objects turn green, changed amber and removed red, with Compare selection sets and an Excel list.
+context: doc

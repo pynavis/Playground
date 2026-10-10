@@ -1,0 +1,3 @@
+title: Clash\nTemplates
+tooltip: Saves clash test definitions as named templates shared with your team, and builds them again in another model, naming any selection sets it cannot find.
+context: doc

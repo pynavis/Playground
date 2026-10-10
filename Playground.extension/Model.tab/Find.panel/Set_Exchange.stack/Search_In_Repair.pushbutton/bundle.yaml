@@ -1,0 +1,3 @@
+title: Repair Search In
+tooltip: Finds search sets whose Search In scope is empty or points at models that are gone, and re-scopes them to matching models or the whole model.
+context: selection-sets

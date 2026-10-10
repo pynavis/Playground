@@ -1,0 +1,3 @@
+title: Zone\nTakeoff
+tooltip: Measures objects by zone, from grid levels, rooms or areas, grid bays or square tiles, and by group. Exports an Excel pivot with a sheet per zone.
+context: doc

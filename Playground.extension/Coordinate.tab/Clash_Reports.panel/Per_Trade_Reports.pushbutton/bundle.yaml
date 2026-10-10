@@ -1,0 +1,3 @@
+title: Per-Trade\nReports
+tooltip: Writes one clash workbook (and an optional dashboard) per responsible trade into a folder, with an index, using Clash Assigner's who-moves list for unassigned clashes.
+context: clash-tests

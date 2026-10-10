@@ -1,0 +1,3 @@
+title: Coordinate Spotter
+tooltip: Click points in the view to drop numbered markers with their coordinates, then get the table, a clipboard copy and an Excel or CSV file. The clicks use the Measure tool, so the pointer snaps to vertices and edges exactly as a measurement does; Esc or right-click ends. Shift+Click sets a local origin.
+context: doc

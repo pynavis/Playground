@@ -1,0 +1,3 @@
+title: Copy IDs
+tooltip: Copies one row per selected element (name, Element ID, UniqueId, IFC GlobalId, InstanceGuid, source file, tree path) as tab-separated text with a header, ready to paste into Excel. Shift+Click for settings.
+context: selection

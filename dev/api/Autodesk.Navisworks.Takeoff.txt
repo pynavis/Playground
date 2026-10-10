@@ -1,0 +1,1017 @@
+class Autodesk.Navisworks.Api.Interop.ColumnVisiblityTable : Autodesk.Navisworks.Api.Takeoff.TakeoffTable
+  Autodesk.Navisworks.Api.Interop.ColumnVisiblityTable::Width : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Interop.ColumnVisiblityTable::Visibility : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Interop.ColumnVisiblityTable::Column : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Interop.ColumnVisiblityTable::Panel : TakeoffColumnDefinition {get}
+class Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions : System.Object
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::GetTakeoffTable(DocumentTakeoff doc, String DBTableName) -> static TakeoffTable
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::GetTakeoffTable(DocumentTakeoff doc, LcTkTableEnum tableEnum) -> static TakeoffTable
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::ConvertTableEnumToDBTableName(DocumentTakeoff doc, LcTkTableEnum tableEnum) -> static String
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::ConvertDBTableNameToTableEnum(DocumentTakeoff doc, String DBTableName) -> static LcTkTableEnum
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::GetColumnVisibilityTable(DocumentTakeoff doc) -> static ColumnVisiblityTable
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::GetSettingsTable(DocumentTakeoff doc) -> static SettingsTable
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::GetSheetIdTable(DocumentTakeoff doc) -> static SheetIdTable
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::InitializeDatabase(DocumentTakeoff doc) -> static Void
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::DestructorInternalTables(DocumentTakeoff doc) -> static Void
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::AddDatabaseUnloadingEvent(DocumentTakeoff doc, EventHandler<EventArgs> handler) -> static Void
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::RemoveDatabaseUnloadingEvent(DocumentTakeoff doc, EventHandler<EventArgs> handler) -> static Void
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::AddDatabaseloadedEvent(DocumentTakeoff doc, EventHandler<EventArgs> handler) -> static Void
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::RemoveDatabaseloadedEvent(DocumentTakeoff doc, EventHandler<EventArgs> handler) -> static Void
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::GetHasSetUp(DocumentTakeoff doc) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::SetHasSetUp(DocumentTakeoff doc, Boolean value) -> static Void
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::AddHasSetUpChangedEvent(DocumentTakeoff doc, EventHandler<EventArgs> handler) -> static Void
+  Autodesk.Navisworks.Api.Interop.DocumentTakeoffExtensions::RemoveHasSetUpChangedEvent(DocumentTakeoff doc, EventHandler<EventArgs> handler) -> static Void
+class Autodesk.Navisworks.Api.Interop.LcTk2DMarkupType : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTk2DMarkupType::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTk2DMarkupType::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTk2DMarkupType::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTk2DMarkupType
+class Autodesk.Navisworks.Api.Interop.LcTkConfigFileEnumeration : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkConfigFileEnumeration::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkConfigFileEnumeration::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkConfigFileEnumeration::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkConfigFileEnumeration
+class Autodesk.Navisworks.Api.Interop.LcTkConfigManager : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::ConfigFileType : ConfigurationFileType {get;set}
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::UnitsSystem : TakeoffUnitSystem {get;set}
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::DatabaseConnection : LcUSQLiteConnection {get}
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::ConfigTableNum : Int32 {get}
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::Instance : static LcTkConfigManager {get}
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkConfigManager
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::IsValid() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::InitialiseState(LcOpState state) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::TerminateState() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::Release() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::OnDatabaseLoaded(LcUSQLiteConnection connection, Boolean& hassetup) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::OnDatabaseLoaded(LcUSQLiteConnection connection, Boolean& hassetup, String config_file_path) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::DisableReferenceConstraints() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::IsDatabaseLoaded() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::IsDatabaseLoaded(LcUSQLiteConnection connection) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::IsDatabaseSetUp() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::OnDatabaseUnLoaded() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetNumFixedTables() -> Int32
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetConfigTableDef(String table_name) -> LcTkTableDef
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetConfigTableDef(LcTkConfigTableEnum table_enum) -> LcTkTableDef
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetConfigTableDef(Int32 index) -> LcTkTableDef
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetTableDef(LcTkTableEnum table_enum) -> LcTkTableDef
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetFixedTableDef(LcTkFixedTableEnum table_enum) -> LcTkTableDef
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetNumGlobalColumns() -> Int32
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetGlobalColumnDef(String column_name) -> TakeoffVariableDefinition
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetGlobalColumnDef(Int32 index) -> TakeoffVariableDefinition
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetProjectSettings() -> TakeoffProjectSettings
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::IsMarkupTableExist() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetSheetId() -> TakeoffSheetIds
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetTempConfigFile() -> String
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::LoadTemplateConfigFile() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::LoadTemplateConfigFile(String& error_message) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::LoadConfigFile(String config_file_path) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::LoadConfigFile(String config_file_path, String& error_message) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::CreateSchema() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::CreateSchema(String& error_message) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::RemoveSchema() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::AddTakeoffProperty(String prop_name, Boolean unit_variable, TakeoffUnitGroup unit_group, TakeoffUnits unit) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::AddTakeoffPropertyRelatedCalculationColumn(String prop_name, Boolean unit_variable, TakeoffUnitGroup unit_group, TakeoffUnits unit, Int32 property_index) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::ValidateConfigFile(String config_file_path, String& error_message) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::ValidateConfigFileCompatible(String temp_config_file_path, String& error_message) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetCurrencySymbol() -> String
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::SetCurrency(String name, String code, String symbol) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::FastUpdateObjectModelRefreshStatusColumn(Int64 rowId, ModelRefreshStatus status) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::FastCleanObjectModelRefreshStatus() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::RefreshCurrentCommentEntity() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::ChangeCurrentCommentEntity(LcTkConfigTableEnum table, Int64 id) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::ChangeCurrentCommentEntity(LcTkConfigTableEnum table, Int64 id, Int32 index) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetCurrentCommentEntity(Int64& entityId, LcTkConfigTableEnum& entityType) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetCommentList(LcTkConfigTableEnum table, Int64 id, CommentCollection list) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::UpdateCommentList(LcTkConfigTableEnum table, Int64 id, CommentCollection list) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::RaiseSelectionEvent(LcTkConfigTableEnum table, Int64 id, Int32 index) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetSelectRowEvent() -> LcTkSelectRowEvent
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::ItemMapRuleExist(Int64 item_id, String variable_name) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::InsertItemMapRules(Int64 item_id, LcTkMapRuleDic map_rules) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::UpdateItemMapRules(Int64 item_id, LcTkMapRuleDic map_rules) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetItemMapRules(Int64 item_id, LcTkMapRuleDic map_rules) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::DeleteItemMapRules(Int64 item_id) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GlobalMapRuleExist(Int64 map_id) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::InsertGlobalMapRules(LcTkMapRuleDic map_rules) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::UpdateGlobalMapRules(LcTkMapRuleDic map_rules) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::GetGlobalMapRules(LcTkMapRuleDic map_rules) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkConfigManager::DeleteGlobalMapRules() -> Void
+enum Autodesk.Navisworks.Api.Interop.LcTkConfigTableEnum : System.Enum
+  Autodesk.Navisworks.Api.Interop.LcTkConfigTableEnum.CTNone = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkConfigTableEnum.ObjectResource = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkConfigTableEnum.StepResource = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkConfigTableEnum.ObjectStep = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkConfigTableEnum.Step = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkConfigTableEnum.Object = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkConfigTableEnum.Item = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkConfigTableEnum.ItemGroup = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkConfigTableEnum.Resource = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkConfigTableEnum.ResourceGroup = enum value
+enum Autodesk.Navisworks.Api.Interop.LcTkFixedTableEnum : System.Enum
+  Autodesk.Navisworks.Api.Interop.LcTkFixedTableEnum.FTNone = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFixedTableEnum.ColumnVisibility = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFixedTableEnum.Settings = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFixedTableEnum.ConfigFile = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFixedTableEnum.SheetId = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFixedTableEnum.Markup = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFixedTableEnum.LockItemVisibility = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFixedTableEnum.ItemMapRule = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFixedTableEnum.GlobalMapRule = enum value
+class Autodesk.Navisworks.Api.Interop.LcTkFormula : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::.ctor()
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkFormula
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::IsValid() -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::ParseDisplayString(String formula_text, LcUConstWCharPtrVector cell_vec) -> LcTkFormulaErrorCode
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::ParseDisplayString(String formula_text, LcUConstWCharPtrVector cell_vec, String& error_msg) -> LcTkFormulaErrorCode
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::ParseStorageString(String formula_text, LcUConstWCharPtrVector cell_vec) -> LcTkFormulaErrorCode
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::ParseStorageString(String formula_text, LcUConstWCharPtrVector cell_vec, String& error_msg) -> LcTkFormulaErrorCode
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::FormatDisplayString(String& buffer) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::FormatStorageString(String& buffer) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::GetAllFunctions(LcUConstWCharPtrVector func_vec) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::GetAllFunctions(LcUConstWCharPtrVector func_vec, Boolean display) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::GetAllOperators(LcUConstWCharPtrVector oper_vec) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::Evaluate(VariantData result) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::Evaluate(VariantData result, LcUConstWCharPtrVector cell_name_vec) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::Evaluate(VariantData result, LcUConstWCharPtrVector cell_name_vec, LcUConstWCharPtrVector cell_value_vec) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::GetErrorMessageFromErrorCode(LcTkFormulaErrorCode error_code, String& error_message) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::GetParseStorageStringErrorMessage() -> String
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::GetParseStorageStringErrorCode() -> LcTkFormulaErrorCode
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::GetParseDisplayStringErrorMessage() -> String
+  Autodesk.Navisworks.Api.Interop.LcTkFormula::GetParseDisplayStringErrorCode() -> LcTkFormulaErrorCode
+class Autodesk.Navisworks.Api.Interop.LcTkFormulaCache : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaCache::.ctor(Int32 capacity)
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaCache::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaCache::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaCache::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkFormulaCache
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaCache::GetFormula(String formula_text, Boolean& exist) -> LcTkFormula
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaCache::RemoveFormula(String formula_text) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaCache::Size() -> Int32
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaCache::Clear() -> Void
+enum Autodesk.Navisworks.Api.Interop.LcTkFormulaErrorCode : System.Enum
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaErrorCode.eERROR_NONE = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaErrorCode.eERROR_INTERNAL = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaErrorCode.eERROR_FORMULA = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaErrorCode.eERROR_PARAMETER = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaErrorCode.eERROR_FORMULA_DEPENDENCY = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaErrorCode.eERROR_ROLLUP = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaErrorCode.eERROR_TYPE_CONVERT = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaErrorCode.eERROR_VARIABLE = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaErrorCode.eERROR_FUNCTION = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaErrorCode.eERROR_NUMBER = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaErrorCode.eERROR_DIVIDE_BY_ZERO = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaErrorCode.eERROR_INFINITE_VALUE = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkFormulaErrorCode.eERROR_NA = enum value
+class Autodesk.Navisworks.Api.Interop.LcTkMappedPropertyDic : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkMappedPropertyDic::.ctor()
+  Autodesk.Navisworks.Api.Interop.LcTkMappedPropertyDic::NumItem : Int32 {get}
+  Autodesk.Navisworks.Api.Interop.LcTkMappedPropertyDic::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkMappedPropertyDic::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkMappedPropertyDic::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkMappedPropertyDic
+  Autodesk.Navisworks.Api.Interop.LcTkMappedPropertyDic::GetItem(Int32 index, String& takeoff_property_name) -> DataProperty
+  Autodesk.Navisworks.Api.Interop.LcTkMappedPropertyDic::AddItem(String takeoff_property_name, DataProperty prop) -> Boolean
+class Autodesk.Navisworks.Api.Interop.LcTkMapRuleDic : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkMapRuleDic::.ctor()
+  Autodesk.Navisworks.Api.Interop.LcTkMapRuleDic::NumItem : Int32 {get}
+  Autodesk.Navisworks.Api.Interop.LcTkMapRuleDic::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkMapRuleDic::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkMapRuleDic::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkMapRuleDic
+  Autodesk.Navisworks.Api.Interop.LcTkMapRuleDic::GetItem(Int32 index) -> SearchCondition
+  Autodesk.Navisworks.Api.Interop.LcTkMapRuleDic::GetId(Int32 index) -> Int64
+  Autodesk.Navisworks.Api.Interop.LcTkMapRuleDic::GetVariableName(Int32 index) -> String
+  Autodesk.Navisworks.Api.Interop.LcTkMapRuleDic::AddItem(String variable_name, SearchCondition condition) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkMapRuleDic::AddItem(String variable_name, SearchCondition condition, Int64 row_id) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkMapRuleDic::FindFirst(String variable_name) -> Int32
+class Autodesk.Navisworks.Api.Interop.LcTkModelRefreshStatus : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkModelRefreshStatus::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkModelRefreshStatus::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkModelRefreshStatus::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkModelRefreshStatus
+class Autodesk.Navisworks.Api.Interop.LcTkModelRefreshStatusUtility : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkModelRefreshStatusUtility::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkModelRefreshStatusUtility::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkModelRefreshStatusUtility::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkModelRefreshStatusUtility
+  Autodesk.Navisworks.Api.Interop.LcTkModelRefreshStatusUtility::CombineOverridden(ModelRefreshStatus current, Boolean overridden) -> static ModelRefreshStatus
+  Autodesk.Navisworks.Api.Interop.LcTkModelRefreshStatusUtility::CombineError(ModelRefreshStatus current, Boolean error) -> static ModelRefreshStatus
+  Autodesk.Navisworks.Api.Interop.LcTkModelRefreshStatusUtility::CombineChangedOrDeleted(ModelRefreshStatus current, ModelRefreshStatus changedOrDeleted) -> static ModelRefreshStatus
+  Autodesk.Navisworks.Api.Interop.LcTkModelRefreshStatusUtility::SumModelRefreshStatus(ModelRefreshStatus first, ModelRefreshStatus second) -> static ModelRefreshStatus
+class Autodesk.Navisworks.Api.Interop.LcTkPolygonWalkUtility : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkPolygonWalkUtility::ToleranceOptionString : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkPolygonWalkUtility::MaxPointNumOfPolygonOptionString : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkPolygonWalkUtility::DefaultMaxPointNumOfPolygon : static Int32 {get}
+  Autodesk.Navisworks.Api.Interop.LcTkPolygonWalkUtility::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkPolygonWalkUtility::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkPolygonWalkUtility::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkPolygonWalkUtility
+class Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile::.ctor()
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile::PropertyGroupNum : Int32 {get}
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile::FileName : String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkPropertiesFile
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile::IsValid() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile::InitialiseState(LcOpState state) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile::TerminateState() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile::Initialise() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile::IsInitialised() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile::Load(String file_name, String& error_message) -> LcTkPropertiesFileLoadResult
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile::Load(String& error_message) -> LcTkPropertiesFileLoadResult
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFile::GetPropertyGroup(Int32 index) -> LcTkPropertyGroup
+enum Autodesk.Navisworks.Api.Interop.LcTkPropertiesFileLoadResult : System.Enum
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFileLoadResult.eLOAD_OK = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFileLoadResult.eLOAD_FAILED_INVALID_FILE_PATH = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFileLoadResult.eLOAD_FAILED_VALIDATE = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFileLoadResult.eLOAD_FAILED_IMPORT_FILE = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFileLoadResult.eLOAD_FAILED_PARSE_INVALID_NODE = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkPropertiesFileLoadResult.eLOAD_FAILED_PARSE_ERROR = enum value
+class Autodesk.Navisworks.Api.Interop.LcTkProperty : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkProperty::.ctor(LcTkProperty prop)
+  Autodesk.Navisworks.Api.Interop.LcTkProperty::.ctor(String name)
+  Autodesk.Navisworks.Api.Interop.LcTkProperty::.ctor()
+  Autodesk.Navisworks.Api.Interop.LcTkProperty::Selected : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkProperty::UnitsGroup : TakeoffUnitGroup {get}
+  Autodesk.Navisworks.Api.Interop.LcTkProperty::MetricUnits : TakeoffUnits {get}
+  Autodesk.Navisworks.Api.Interop.LcTkProperty::ImperialUnits : TakeoffUnits {get}
+  Autodesk.Navisworks.Api.Interop.LcTkProperty::Name : String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkProperty::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkProperty::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkProperty::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkProperty
+  Autodesk.Navisworks.Api.Interop.LcTkProperty::Initialise() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkProperty::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkProperty::IsInitialised() -> static Boolean
+class Autodesk.Navisworks.Api.Interop.LcTkPropertyGroup : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyGroup::.ctor(LcTkPropertyGroup prop_group)
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyGroup::.ctor(String name)
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyGroup::.ctor()
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyGroup::PropertyNum : Int32 {get}
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyGroup::Name : String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyGroup::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyGroup::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyGroup::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkPropertyGroup
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyGroup::Initialise() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyGroup::Terminate() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyGroup::IsInitialised() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyGroup::GetProperty(Int32 index) -> LcTkProperty
+class Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::Instance : static LcTkPropertyMapManager {get}
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkPropertyMapManager
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::IsValid() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::InitialiseState(LcOpState state) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::TerminateState() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::Release() -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::MapModelItemProperties(ModelItem model_item, Int64 itemId, LcTkMappedPropertyDic mapped_properties, TakeoffUnits& file_units) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::MapModelItemProperties(ModelItem model_item, LcTkMappedPropertyDic mapped_properties, TakeoffUnits& file_units) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::GetInputVariables(ModelItem model_item, LcTkMappedPropertyDic mapped_properties, TakeoffUnits file_units, TakeoffVariableCollection input_variables) -> Int32
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::IsTakeoffableGroup(ModelItem model_item) -> Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::GetPropertyNameList(NamedConstant property_category_name, LcUConstWCharPtrVector property_display_names, LcUConstWCharPtrVector property_internal_names, Boolean& full_validity) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::GetPropertyNameList(NamedConstant property_category_name, LcUConstWCharPtrVector property_display_names, LcUConstWCharPtrVector property_internal_names, Boolean& full_validity, Boolean add_more_items) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::GetPropertyCategoryList(LcUConstWCharPtrVector category_display_names, LcUConstWCharPtrVector category_internal_names, Boolean& full_validity) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::GetPropertyCategoryList(LcUConstWCharPtrVector category_display_names, LcUConstWCharPtrVector category_internal_names, Boolean& full_validity, Boolean add_more_items) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::GetCategoryInternalName(String category_display_name) -> String
+  Autodesk.Navisworks.Api.Interop.LcTkPropertyMapManager::GetCategoryInternalName(String category_display_name, Int32 start_index) -> String
+class Autodesk.Navisworks.Api.Interop.LcTkSelectRowEvent : Autodesk.Navisworks.Api.Interop.LcOpStateEvent
+  Autodesk.Navisworks.Api.Interop.LcTkSelectRowEvent::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkSelectRowEvent::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkSelectRowEvent::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkSelectRowEvent
+  Autodesk.Navisworks.Api.Interop.LcTkSelectRowEvent::GetRowId() -> Int64
+  Autodesk.Navisworks.Api.Interop.LcTkSelectRowEvent::GetRowType() -> LcTkConfigTableEnum
+  Autodesk.Navisworks.Api.Interop.LcTkSelectRowEvent::GetIndex() -> Int32
+class Autodesk.Navisworks.Api.Interop.LcTkTableDef : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::.ctor(LcTkTableDef table_def)
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::.ctor(String name)
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::TableEnum : LcTkTableEnum {get}
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::FixedColumnRefNum : Int32 {get}
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::DatabaseTableName : String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::ColumnRefNum : Int32 {get}
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::TableName : String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkTableDef
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::GetColumnRefName(Int32 index) -> String
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::GetColumnRef(String column_name) -> TakeoffVariableDefinition
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::GetColumnRef(Int32 index) -> TakeoffVariableDefinition
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::GetFixedColumnName(Int32 index) -> String
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::GetFixedColumn(String column_name) -> TakeoffColumnDefinition
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::GetFixedColumn(Int32 index) -> TakeoffColumnDefinition
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::Clear() -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::BuildVariableVector(Int64 RowId, TakeoffVariableCollection cell_vec) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::BuildInputVariableVector(Int64 RowId, TakeoffVariableCollection cell_vec) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::UpdateVariableVector(TakeoffVariableCollection cell_vec) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::CreateDefaultInputVariables(TakeoffVariableCollection cell_vec) -> Void
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::InsertTakeoff(Int64 itemRowId, Guid modelItemGuid, Int64 sheetId, TakeoffVariableCollection inputVariables) -> Int64
+  Autodesk.Navisworks.Api.Interop.LcTkTableDef::GetTableFormulaCache() -> LcTkFormulaCache
+enum Autodesk.Navisworks.Api.Interop.LcTkTableEnum : System.Enum
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.CTNone = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.ObjectResource = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.StepResource = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.ObjectStep = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.Step = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.Object = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.Item = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.ItemGroup = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.Resource = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.ResourceGroup = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.FTNone = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.ColumnVisibility = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.Settings = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.ConfigFile = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.Markup = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.LockItemVisibility = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.SheetId = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.ItemMapRule = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnum.GlobalMapRule = enum value
+class Autodesk.Navisworks.Api.Interop.LcTkTableEnumeration : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnumeration::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnumeration::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkTableEnumeration::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkTableEnumeration
+class Autodesk.Navisworks.Api.Interop.LcTkTableUtility : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkTableUtility::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkTableUtility::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkTableUtility::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkTableUtility
+  Autodesk.Navisworks.Api.Interop.LcTkTableUtility::ConvertDBTableNameToTableEnum(String db_table_name) -> static LcTkTableEnum
+  Autodesk.Navisworks.Api.Interop.LcTkTableUtility::GetReferenceColumnName(LcTkTableEnum parent_table, LcTkTableEnum child_table) -> static String
+  Autodesk.Navisworks.Api.Interop.LcTkTableUtility::GetFormulaInheritanceParentTableNameEnum(LcTkTableEnum table_enum) -> static LcTkTableEnum
+  Autodesk.Navisworks.Api.Interop.LcTkTableUtility::ExistGuidInObjectTable(Guid guid) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkTableUtility::Copy(LcUSQLiteConnection connection, LcTkTableEnum src_table, Int64 src_rowid, LcTkTableEnum dest_table, Int64 dest_rowid) -> static Int64
+  Autodesk.Navisworks.Api.Interop.LcTkTableUtility::Copy(LcUSQLiteConnection connection, LcTkTableEnum src_table, Int64 src_rowid, LcTkTableEnum dest_table, Int64 dest_rowid, Boolean is_dest_rowid_null) -> static Int64
+  Autodesk.Navisworks.Api.Interop.LcTkTableUtility::Copy(LcUSQLiteConnection connection, LcTkTableEnum src_table, Int64 src_rowid, LcTkTableEnum dest_table, Int64 dest_rowid, Boolean is_dest_rowid_null, Boolean copy_with_object) -> static Int64
+  Autodesk.Navisworks.Api.Interop.LcTkTableUtility::Move(LcUSQLiteConnection connection, LcTkTableEnum src_table, Int64 src_rowid, LcTkTableEnum dest_table, Int64 dest_rowid) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkTableUtility::Move(LcUSQLiteConnection connection, LcTkTableEnum src_table, Int64 src_rowid, LcTkTableEnum dest_table, Int64 dest_rowid, Boolean is_dest_rowid_null) -> static Void
+class Autodesk.Navisworks.Api.Interop.LcTkUnit : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkUnit
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::SetTimeSettings(Double day_to_hour, Double week_to_day, Double month_to_week, Double year_to_month) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::SetDisplayFormat(LcOaUnitLinearDisplayFormat linear_format, LcOaUnitAngularDisplayFormat angular_format) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::GetAbbrevUnitStrings(LcUConstWCharPtrVector unit_vec) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::GetAbbrevUnitStrings(LcUConstWCharPtrVector unit_vec, TakeoffUnitSystem unit_system) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::GetAbbrevUnitStrings(LcUConstWCharPtrVector unit_vec, TakeoffUnitSystem unit_system, TakeoffUnitGroup unit_group) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::GetAbbrevUnitStrings(LcUConstWCharPtrVector unit_vec, TakeoffUnitSystem unit_system, TakeoffUnitGroup unit_group, Boolean only_show_metric_or_imperial_units) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::GetFullNameUnitStrings(LcUConstWCharPtrVector unit_vec) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::GetFullNameUnitStrings(LcUConstWCharPtrVector unit_vec, TakeoffUnitSystem unit_system) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::GetFullNameUnitStrings(LcUConstWCharPtrVector unit_vec, TakeoffUnitSystem unit_system, TakeoffUnitGroup unit_group) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::GetFullNameUnitStrings(LcUConstWCharPtrVector unit_vec, TakeoffUnitSystem unit_system, TakeoffUnitGroup unit_group, Boolean only_show_metric_or_imperial_units) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::GetUnitByDisplayString(String display_unit, TakeoffUnits& unit) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::GetAbbrevByUnit(TakeoffUnits unit, String& display_unit) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::GetFullNameByUnit(TakeoffUnits unit, String& display_unit) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::Convert(Double val, TakeoffUnits from_unit, TakeoffUnits to_unit, Double& new_val) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::GetUnitsGroup(TakeoffUnits unit) -> static TakeoffUnitGroup
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::GetUnitSystem(TakeoffUnits unit) -> static TakeoffUnitSystem
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::SetCurrencySymbol(String symbol) -> static Void
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::GetCurrencySymbol() -> static String
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::IsBelongToUnitsGroup(TakeoffUnitGroup units_group, TakeoffUnits units) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.LcTkUnit::ConvertNWUnitsToTakeoffUnits(Units linear_units, TakeoffUnitGroup unit_group) -> static TakeoffUnits
+class Autodesk.Navisworks.Api.Interop.LcTkUnitGroup : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkUnitGroup::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUnitGroup::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkUnitGroup::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkUnitGroup
+class Autodesk.Navisworks.Api.Interop.LcTkUnitSystem : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkUnitSystem::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUnitSystem::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkUnitSystem::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkUnitSystem
+class Autodesk.Navisworks.Api.Interop.LcTkUtility : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::GetStepResourceItemId : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::RemoveChangedAndDeletedStatusFunc : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::TakeoffPropertyNamePrefix : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::PropertyGroupDisplayNamePrefix : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ConfigColumnDisplayNameForFormulaPrefix : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ConfigColumnDisplayNamePrefix : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::FixedColumnDisplayNamePrefix : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceGroupTableCommentColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceGroupTableCatalogIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceGroupTableParentColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceGroupTableDescriptionColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceGroupTableNameColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceGroupTableRBSColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceGroupTableIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceTableCommentColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceTableCatalogIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceTableParentColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceTableDescriptionColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceTableNameColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceTableRBSColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceTableIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemGroupTableCommentColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemGroupTableStatusColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemGroupTableCatalogIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemGroupTableParentColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemGroupTableDescriptionColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemGroupTableNameColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemGroupTableWBSColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemGroupTableIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemTableCommentColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemTableStatusColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemTableCatalogIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemTableCountSizeColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemTableCountSymbolColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemTableLineThicknessColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemTableColorColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemTableTransparencyColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemTableParentColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemTableDescriptionColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemTableNameColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemTableWBSColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemTableIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectTableCommentColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectTableStatusColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectTableSheetIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectTableSavedViewpointIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectTableModelItemIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectTableParentColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectTableWBSColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectTableIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::StepTableCommentColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::StepTableCatalogIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::StepTableItemIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::StepTableDescriptionColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::StepTableNameColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::StepTableIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectStepTableStepIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectStepTableObjectIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectStepTableIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::StepResourceTableCommentColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::StepResourceTableCatalogIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::StepResourceTableResourceIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::StepResourceTableStepIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::StepResourceTableDescriptionColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::StepResourceTableIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectResourceTableStepResourceIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectResourceTableObjectStepIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectResourceTableIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ProjectSettingMarkupFilter : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::LockItemVisibilityTableCatalogIdColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::LockItemVisibilityTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::MarkupTableStyleColumnColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::MarkupTableVisibleColumnColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::MarkupTablePointsColumnColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::MarkupTableTransparencyColumnColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::MarkupTableColorColumnColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::MarkupTableObjectIdColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::MarkupTableTypeColumnColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::MarkupTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceHelperTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::GlobalMapRuleTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemMapRuleTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::SheetIdTableNameColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::SheetIdTableSheetIdColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::SheetIdTableRowIdColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::SheetIdTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::SettingsTableValueColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::SettingsTableNameColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::SettingsTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ColumnVisibilityTableRBSColumnValue : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ColumnVisibilityTableWBSColumnValue : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ColumnVisibilityTableVisibilityColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ColumnVisibilityTableWidthColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ColumnVisibilityTableColumnColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ColumnVisibilityTablePanelColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ColumnVisibilityTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ConfigFileColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ConfigFileTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceGroupTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ResourceTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemGroupTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ItemTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::StepTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectStepTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::StepResourceTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ObjectResourceTableName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ConfigTableCommentColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ConfigTableCatalogIdColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ConfigTableDescriptionColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ConfigTableParentColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ConfigTableRBSColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ConfigTableWBSColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ConfigTableNameColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::ConfigTableIDColumnName : static String {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::GetDatabaseTableName(String table_name) -> static String
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::GetConfigTableName(String database_table_name) -> static String
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::GetParentTableName(String table_name) -> static String
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::GetDatabaseViewName(LcTkConfigTableEnum table_enum) -> static String
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::BuildViewColumnName(String database_table_name, String column_name) -> static String
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::GetReferenceColumnName(LcTkConfigTableEnum parent_table, LcTkConfigTableEnum child_table) -> static String
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::GetReferenceColumnName(String parent_table_name, String child_table_name) -> static String
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::GetLocalizedString(String prefix, String key) -> static String
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Interop.LcTkUtility::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static LcTkUtility
+enum Autodesk.Navisworks.Api.Interop.LcTkUtilityViewPanel : System.Enum
+  Autodesk.Navisworks.Api.Interop.LcTkUtilityViewPanel.eDetailsView = enum value
+  Autodesk.Navisworks.Api.Interop.LcTkUtilityViewPanel.eObjectsView = enum value
+class Autodesk.Navisworks.Api.Interop.SettingsTable : Autodesk.Navisworks.Api.Takeoff.TakeoffTable
+  Autodesk.Navisworks.Api.Interop.SettingsTable::Value : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Interop.SettingsTable::Name : TakeoffColumnDefinition {get}
+class Autodesk.Navisworks.Api.Interop.SheetIdTable : Autodesk.Navisworks.Api.Takeoff.TakeoffTable
+  Autodesk.Navisworks.Api.Interop.SheetIdTable::DisplayName : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Interop.SheetIdTable::SheetId : TakeoffColumnDefinition {get}
+enum Autodesk.Navisworks.Api.Interop.SnapModelType : System.Enum
+  Autodesk.Navisworks.Api.Interop.SnapModelType.None = enum value
+  Autodesk.Navisworks.Api.Interop.SnapModelType.Point = enum value
+  Autodesk.Navisworks.Api.Interop.SnapModelType.LineEnd = enum value
+  Autodesk.Navisworks.Api.Interop.SnapModelType.Line = enum value
+  Autodesk.Navisworks.Api.Interop.SnapModelType.TriangleVertex = enum value
+  Autodesk.Navisworks.Api.Interop.SnapModelType.TriangleEdge = enum value
+  Autodesk.Navisworks.Api.Interop.SnapModelType.Triangle = enum value
+class Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility : System.Object
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::.ctor()
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::SerializePoints(IReadOnlyList<Point2D> points) -> static Byte[]
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::DeSerializePoints(Byte[] data, List<Point2D> result) -> static Void
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::CaculateArea(IReadOnlyList<Point2D> points) -> static Double
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GenerateOutline(IReadOnlyList<Point2D> input, List<Point2D> outline) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::BeginGL(LcOaViewer viewer) -> static Void
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::EndGL() -> static Void
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::Vertex(Graphics graphics, Point2D point) -> static Void
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::RectangleVertex(Graphics graphics, Point2D point, Double offset) -> static Void
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::WindowToCameraSpace(LcOaViewer viewer, Point2D p) -> static Point2D
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::WindowToCameraSpace(LcNvCamera camera, Boolean is_2d, Point2D p) -> static Point2D
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::ModelToWindowSpace(LcOaViewer viewer, Point3D p) -> static Point2D
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GetSnapTolerance() -> static Double
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GetHighlightColor() -> static Color
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GetLineThickness() -> static Int32
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GetLineColor() -> static Color
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::MakeScale(Transform3D transform, Double xScale, Double yScale) -> static Void
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GetXScale(Transform3D transform) -> static Double
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::IsOptionsChanged() -> static Boolean
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::SetFocusOnViewerWindow() -> static Void
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::ZoomInCurViewOnBoundingBox(LcOaViewer viewer, Point2D min, Point2D max, Double factor, Boolean force) -> static Void
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::FocusOnBoundingBox(LcOaViewer viewer, Point2D min, Point2D max) -> static Void
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::ZoomCurrentView(LcOaViewer viewer, Double factor) -> static Void
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::RequestRedrawOverlay(LcOaViewer viewer) -> static Void
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::ResetToolBackToNavisworksSelect(Document document) -> static Void
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GetPaperSize(Document document) -> static TakeoffPaperSize
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::PickPixel(LcOaViewer viewer, Int32 x, Int32 y, Double tolerance) -> static TakeoffSnapModelResult
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GeneratePolygonByPoint(LcOaViewer viewer, Point2D point, List<Point2D> polygon, List<TakeoffPickGeometryLineSeg> allLineSegs, Boolean use_quick_intersection, Double tolerance) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GeneratePolygonByPointInDocument(Document doc, Point2D point, List<Point2D> polygon, List<TakeoffPickGeometryLineSeg> allLineSegs, Boolean use_quick_intersection, Double tolerance) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GeneratePolygonByPath(LcOaViewer viewer, List<Point2D> path, List<TakeoffGeometryPolygon> max_polygons, List<TakeoffPickGeometryLineSeg> allLineSegs, Boolean use_quick_intersection, Double tolerance) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GeneratePolygonInRect(LcOaViewer viewer, Point2D point1, Point2D point2, Boolean strict_in_rect, List<TakeoffGeometryPolygon> min_polygons, List<TakeoffGeometryPolygon> max_polygons, List<TakeoffPickGeometryLineSeg> allLineSegs, Boolean need_only_connected, Boolean use_quick_intersection, Double tolerance, Object& canceled) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GeneratePolygonInRectInDocument(Document doc, List<TakeoffGeometryPolygon> min_polygons, List<TakeoffGeometryPolygon> max_polygons, List<TakeoffPickGeometryLineSeg> allLineSegs, Boolean need_only_connected, Boolean use_quick_intersection, Double tolerance, Object& canceled) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GenerateMaxPolygons(List<TakeoffGeometryPolygon> original_polygons, List<TakeoffGeometryPolygon> max_polygons, Boolean use_quick_intersection, Double tolerance) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GetAllClosedFigures(LcOaViewer viewer, Point2D point1, Point2D point2, Boolean do_rect_check, Boolean strict_in_rect, List<TakeoffGeometryPathFigure> closed_figures) -> static Void
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::PickGeometry(LcOaViewer viewer, Int32 x, Int32 y, Double tolerance, IList<Point2D> points) -> static TakeoffPickGeometryResult
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GetGeometryInfo(LcOaFragment* frag, IList<Point2D> points) -> static TakeoffPickGeometryResult
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GetVisibleSegmentsInViewExport(LcOaViewer viewer, BoundingBox2D box, Boolean do_rect_check, Boolean strict_in_rect, List<TakeoffPickGeometryLineSeg> allLineSegs) -> static Void
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GetTwoOffsetForSnappingTriangle(LcOaViewer viewer, TakeoffSnapModelResult pick_result, TakeoffVectorPair vector_pair) -> static Void
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GetViewports(Model model) -> static ICollection<Takeoff2DViewport>
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::GetMatrix(Transform3D transform) -> static Matrix3
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::IsSegmentIntersectRect(Point2D start, Point2D end, Double rect_min_x, Double rect_max_x, Double rect_min_y, Double rect_max_y) -> static Boolean
+  Autodesk.Navisworks.Api.Interop.Takeoff2DMarkupUtility::WorldToWindowWidth(LcOaViewer viewer, Double world_width) -> static Double
+class Autodesk.Navisworks.Api.Interop.Takeoff2DViewport : System.Object
+  Autodesk.Navisworks.Api.Interop.Takeoff2DViewport::.ctor(BoundingBox2D box, Matrix3 trans)
+  Autodesk.Navisworks.Api.Interop.Takeoff2DViewport::Box : BoundingBox2D {get;set}
+  Autodesk.Navisworks.Api.Interop.Takeoff2DViewport::Transform : Matrix3 {get;set}
+  Autodesk.Navisworks.Api.Interop.Takeoff2DViewport::MaxPoint : Point2D {get}
+  Autodesk.Navisworks.Api.Interop.Takeoff2DViewport::MinPoint : Point2D {get}
+  Autodesk.Navisworks.Api.Interop.Takeoff2DViewport::ToString() -> String
+  Autodesk.Navisworks.Api.Interop.Takeoff2DViewport::GetHashCode() -> Int32
+  Autodesk.Navisworks.Api.Interop.Takeoff2DViewport::Equals(Object obj) -> Boolean
+class Autodesk.Navisworks.Api.Interop.TakeoffCommentUtility : System.Object
+  Autodesk.Navisworks.Api.Interop.TakeoffCommentUtility::.ctor()
+  Autodesk.Navisworks.Api.Interop.TakeoffCommentUtility::DeserializeComment(Byte[] data, CommentCollection result) -> static Void
+  Autodesk.Navisworks.Api.Interop.TakeoffCommentUtility::SerializeComment(CommentCollection comment) -> static Byte[]
+  Autodesk.Navisworks.Api.Interop.TakeoffCommentUtility::RefreshCommentEntity() -> static Void
+  Autodesk.Navisworks.Api.Interop.TakeoffCommentUtility::ClearCommentEntity() -> static Void
+  Autodesk.Navisworks.Api.Interop.TakeoffCommentUtility::ChangeCommentEntity(LcTkTableEnum type, Int64 id, Int32 index) -> static Void
+  Autodesk.Navisworks.Api.Interop.TakeoffCommentUtility::ChangeCommentEntity(LcTkTableEnum type, Int64 id) -> static Void
+class Autodesk.Navisworks.Api.Interop.TakeoffGeometryPathFigure : System.Object
+  Autodesk.Navisworks.Api.Interop.TakeoffGeometryPathFigure::.ctor()
+  Autodesk.Navisworks.Api.Interop.TakeoffGeometryPathFigure::IsClosed : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.TakeoffGeometryPathFigure::IsLineStrip : Boolean {get;set}
+  Autodesk.Navisworks.Api.Interop.TakeoffGeometryPathFigure::Segments : IList<TakeoffGeometrySegment> {get;set}
+class Autodesk.Navisworks.Api.Interop.TakeoffGeometryPolygon : System.Object
+  Autodesk.Navisworks.Api.Interop.TakeoffGeometryPolygon::.ctor()
+  Autodesk.Navisworks.Api.Interop.TakeoffGeometryPolygon::Points : List<Point2D> {get;set}
+class Autodesk.Navisworks.Api.Interop.TakeoffGeometrySegment : System.Object
+  Autodesk.Navisworks.Api.Interop.TakeoffGeometrySegment::.ctor()
+  Autodesk.Navisworks.Api.Interop.TakeoffGeometrySegment::Points : IList<Point2D> {get;set}
+class Autodesk.Navisworks.Api.Interop.TakeoffPaperSize : System.Object
+  Autodesk.Navisworks.Api.Interop.TakeoffPaperSize::.ctor()
+  Autodesk.Navisworks.Api.Interop.TakeoffPaperSize::Height : Double {get;set}
+  Autodesk.Navisworks.Api.Interop.TakeoffPaperSize::Width : Double {get;set}
+class Autodesk.Navisworks.Api.Interop.TakeoffPickGeometryLineSeg : System.Object
+  Autodesk.Navisworks.Api.Interop.TakeoffPickGeometryLineSeg::.ctor(Point2D start, Point2D end)
+  Autodesk.Navisworks.Api.Interop.TakeoffPickGeometryLineSeg::.ctor()
+  Autodesk.Navisworks.Api.Interop.TakeoffPickGeometryLineSeg::End : Point2D {get;set}
+  Autodesk.Navisworks.Api.Interop.TakeoffPickGeometryLineSeg::Start : Point2D {get;set}
+class Autodesk.Navisworks.Api.Interop.TakeoffPickGeometryResult : System.Object
+  Autodesk.Navisworks.Api.Interop.TakeoffPickGeometryResult::.ctor()
+  Autodesk.Navisworks.Api.Interop.TakeoffPickGeometryResult::SnapModelType : SnapModelType {get;set}
+  Autodesk.Navisworks.Api.Interop.TakeoffPickGeometryResult::Normal : UnitVector3D {get;set}
+  Autodesk.Navisworks.Api.Interop.TakeoffPickGeometryResult::Point : Point3D {get;set}
+  Autodesk.Navisworks.Api.Interop.TakeoffPickGeometryResult::PathFigures : IList<TakeoffGeometryPathFigure> {get;set}
+class Autodesk.Navisworks.Api.Interop.TakeoffSnapModelResult : System.Object
+  Autodesk.Navisworks.Api.Interop.TakeoffSnapModelResult::.ctor()
+  Autodesk.Navisworks.Api.Interop.TakeoffSnapModelResult::SnapModelType : SnapModelType {get;set}
+  Autodesk.Navisworks.Api.Interop.TakeoffSnapModelResult::Normal : UnitVector3D {get;set}
+  Autodesk.Navisworks.Api.Interop.TakeoffSnapModelResult::Point : Point3D {get;set}
+class Autodesk.Navisworks.Api.Interop.TakeoffTableExtensions : System.Object
+  Autodesk.Navisworks.Api.Interop.TakeoffTableExtensions::GetFormulaCache(TakeoffTable table) -> static LcTkFormulaCache
+  Autodesk.Navisworks.Api.Interop.TakeoffTableExtensions::GetTableEnum(TakeoffTable table) -> static LcTkTableEnum
+  Autodesk.Navisworks.Api.Interop.TakeoffTableExtensions::GetVariableDefinition(TakeoffTable table, String columnName) -> static TakeoffVariableDefinition
+class Autodesk.Navisworks.Api.Interop.TakeoffVectorPair : System.Object
+  Autodesk.Navisworks.Api.Interop.TakeoffVectorPair::.ctor()
+  Autodesk.Navisworks.Api.Interop.TakeoffVectorPair::Offset2 : Vector3D {get;set}
+  Autodesk.Navisworks.Api.Interop.TakeoffVectorPair::Offset1 : Vector3D {get;set}
+enum Autodesk.Navisworks.Api.Takeoff.ConfigurationFileType : System.Enum
+  Autodesk.Navisworks.Api.Takeoff.ConfigurationFileType.None = enum value
+  Autodesk.Navisworks.Api.Takeoff.ConfigurationFileType.Full = enum value
+  Autodesk.Navisworks.Api.Takeoff.ConfigurationFileType.ItemResources = enum value
+  Autodesk.Navisworks.Api.Takeoff.ConfigurationFileType.Items = enum value
+  Autodesk.Navisworks.Api.Takeoff.ConfigurationFileType.ItemSteps = enum value
+enum Autodesk.Navisworks.Api.Takeoff.DatabaseOperationErrorCode : System.Enum
+  Autodesk.Navisworks.Api.Takeoff.DatabaseOperationErrorCode.None = enum value
+  Autodesk.Navisworks.Api.Takeoff.DatabaseOperationErrorCode.UserError = enum value
+  Autodesk.Navisworks.Api.Takeoff.DatabaseOperationErrorCode.ModifyValueNotAllowed = enum value
+  Autodesk.Navisworks.Api.Takeoff.DatabaseOperationErrorCode.InsertNotAllowed = enum value
+  Autodesk.Navisworks.Api.Takeoff.DatabaseOperationErrorCode.ModifyParentIdNotAllowed = enum value
+  Autodesk.Navisworks.Api.Takeoff.DatabaseOperationErrorCode.CopyPasteNotAllowed = enum value
+  Autodesk.Navisworks.Api.Takeoff.DatabaseOperationErrorCode.CutPasteNotAllowed = enum value
+  Autodesk.Navisworks.Api.Takeoff.DatabaseOperationErrorCode.ConstraintsFailed = enum value
+  Autodesk.Navisworks.Api.Takeoff.DatabaseOperationErrorCode.CalculationBeingCanceled = enum value
+  Autodesk.Navisworks.Api.Takeoff.DatabaseOperationErrorCode.ModifyIdNotAllowed = enum value
+  Autodesk.Navisworks.Api.Takeoff.DatabaseOperationErrorCode.Unknown = enum value
+class Autodesk.Navisworks.Api.Takeoff.DocumentExtensions : System.Object
+  Autodesk.Navisworks.Api.Takeoff.DocumentExtensions::GetTakeoff(Document doc) -> static DocumentTakeoff
+class Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff : System.Object
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::HasDatabaseInitialized : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::SheetIds : TakeoffSheetIds {get}
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::ProjectSetting : TakeoffProjectSettings {get}
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::ObjectResources : ObjectResourceTable {get}
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::ObjectSteps : ObjectStepTable {get}
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::Objects : ObjectTable {get}
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::StepResources : StepResourceTable {get}
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::Steps : StepTable {get}
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::Items : ItemTable {get}
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::ItemGroups : ItemGroupTable {get}
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::Resources : ResourceTable {get}
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::ResourceGroups : ResourceGroupTable {get}
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::CurrentSelection : TakeoffSelection {get}
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::Database : DocumentDatabase {get}
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::TakeoffInstance(Document doc) -> static DocumentTakeoff
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::CreateInstance(Document doc) -> static DocumentTakeoff
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::Loaded : event EventHandler<EventArgs>
+  Autodesk.Navisworks.Api.Takeoff.DocumentTakeoff::Unloading : event EventHandler<EventArgs>
+class Autodesk.Navisworks.Api.Takeoff.ItemGroupTable : Autodesk.Navisworks.Api.Takeoff.TakeoffTable
+  Autodesk.Navisworks.Api.Takeoff.ItemGroupTable::Comment : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ItemGroupTable::Status : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ItemGroupTable::CatalogId : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ItemGroupTable::Parent : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ItemGroupTable::Description : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ItemGroupTable::Name : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ItemGroupTable::WBS : TakeoffColumnDefinition {get}
+class Autodesk.Navisworks.Api.Takeoff.ItemTable : Autodesk.Navisworks.Api.Takeoff.TakeoffTable
+  Autodesk.Navisworks.Api.Takeoff.ItemTable::Comment : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ItemTable::Status : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ItemTable::CatalogId : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ItemTable::LineThickness : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ItemTable::Color : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ItemTable::Transparency : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ItemTable::Parent : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ItemTable::Description : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ItemTable::Name : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ItemTable::WBS : TakeoffColumnDefinition {get}
+enum Autodesk.Navisworks.Api.Takeoff.MarkupType : System.Enum
+  Autodesk.Navisworks.Api.Takeoff.MarkupType.None = enum value
+  Autodesk.Navisworks.Api.Takeoff.MarkupType.PolyLine = enum value
+  Autodesk.Navisworks.Api.Takeoff.MarkupType.ClosedPolyLine = enum value
+  Autodesk.Navisworks.Api.Takeoff.MarkupType.Polygon = enum value
+  Autodesk.Navisworks.Api.Takeoff.MarkupType.PolygonBackOut = enum value
+  Autodesk.Navisworks.Api.Takeoff.MarkupType.Count = enum value
+enum Autodesk.Navisworks.Api.Takeoff.ModelRefreshPropertyStatus : System.Enum
+  Autodesk.Navisworks.Api.Takeoff.ModelRefreshPropertyStatus.None = enum value
+  Autodesk.Navisworks.Api.Takeoff.ModelRefreshPropertyStatus.ValueChanged = enum value
+  Autodesk.Navisworks.Api.Takeoff.ModelRefreshPropertyStatus.UnitChanged = enum value
+enum Autodesk.Navisworks.Api.Takeoff.ModelRefreshStatus : System.Enum
+  Autodesk.Navisworks.Api.Takeoff.ModelRefreshStatus.None = enum value
+  Autodesk.Navisworks.Api.Takeoff.ModelRefreshStatus.Changed = enum value
+  Autodesk.Navisworks.Api.Takeoff.ModelRefreshStatus.Deleted = enum value
+  Autodesk.Navisworks.Api.Takeoff.ModelRefreshStatus.Overridden = enum value
+  Autodesk.Navisworks.Api.Takeoff.ModelRefreshStatus.Error = enum value
+class Autodesk.Navisworks.Api.Takeoff.ObjectResourceTable : Autodesk.Navisworks.Api.Takeoff.TakeoffTable
+  Autodesk.Navisworks.Api.Takeoff.ObjectResourceTable::StepResourceId : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ObjectResourceTable::ObjectStepId : TakeoffColumnDefinition {get}
+class Autodesk.Navisworks.Api.Takeoff.ObjectStepTable : Autodesk.Navisworks.Api.Takeoff.TakeoffTable
+  Autodesk.Navisworks.Api.Takeoff.ObjectStepTable::StepId : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ObjectStepTable::ObjectId : TakeoffColumnDefinition {get}
+class Autodesk.Navisworks.Api.Takeoff.ObjectTable : Autodesk.Navisworks.Api.Takeoff.TakeoffTable
+  Autodesk.Navisworks.Api.Takeoff.ObjectTable::Comment : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ObjectTable::Status : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ObjectTable::SheetId : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ObjectTable::SavedViewpointId : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ObjectTable::ModelItemId : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ObjectTable::Parent : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ObjectTable::WBS : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ObjectTable::SelectInputVariables(Int64 rowId) -> TakeoffVariableCollection
+  Autodesk.Navisworks.Api.Takeoff.ObjectTable::UpdateInputVariables(Int64 rowId, TakeoffVariableCollection collection) -> Void
+  Autodesk.Navisworks.Api.Takeoff.ObjectTable::CreateDefaultInputVariables() -> TakeoffVariableCollection
+  Autodesk.Navisworks.Api.Takeoff.ObjectTable::MapModelItemPropertiesToInputVariables(Int64 itemId, ModelItem item, TakeoffVariableCollection inputVariables) -> Int32
+  Autodesk.Navisworks.Api.Takeoff.ObjectTable::MapModelItemPropertiesToInputVariables(ModelItem item, TakeoffVariableCollection inputVariables) -> Int32
+  Autodesk.Navisworks.Api.Takeoff.ObjectTable::InsertModelItemTakeoff(Int64 itemRowId, ModelItem item) -> Int64
+  Autodesk.Navisworks.Api.Takeoff.ObjectTable::InsertModelItemTakeoff(Int64 itemRowId, Guid modelItemGuid, TakeoffVariableCollection inputVariables, Boolean treatDuplicateGuidAsEmpty) -> Int64
+  Autodesk.Navisworks.Api.Takeoff.ObjectTable::InsertVirtualTakeoff(Int64 itemRowId, TakeoffVariableCollection inputVariables) -> Int64
+enum Autodesk.Navisworks.Api.Takeoff.Purpose : System.Enum
+  Autodesk.Navisworks.Api.Takeoff.Purpose.None = enum value
+  Autodesk.Navisworks.Api.Takeoff.Purpose.Calculation = enum value
+  Autodesk.Navisworks.Api.Takeoff.Purpose.Rollup = enum value
+  Autodesk.Navisworks.Api.Takeoff.Purpose.Input = enum value
+class Autodesk.Navisworks.Api.Takeoff.ResourceGroupTable : Autodesk.Navisworks.Api.Takeoff.TakeoffTable
+  Autodesk.Navisworks.Api.Takeoff.ResourceGroupTable::Comment : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ResourceGroupTable::CatalogId : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ResourceGroupTable::Parent : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ResourceGroupTable::Description : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ResourceGroupTable::Name : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ResourceGroupTable::RBS : TakeoffColumnDefinition {get}
+class Autodesk.Navisworks.Api.Takeoff.ResourceTable : Autodesk.Navisworks.Api.Takeoff.TakeoffTable
+  Autodesk.Navisworks.Api.Takeoff.ResourceTable::Comment : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ResourceTable::CatalogId : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ResourceTable::Parent : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ResourceTable::Description : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ResourceTable::Name : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.ResourceTable::RBS : TakeoffColumnDefinition {get}
+class Autodesk.Navisworks.Api.Takeoff.StepResourceTable : Autodesk.Navisworks.Api.Takeoff.TakeoffTable
+  Autodesk.Navisworks.Api.Takeoff.StepResourceTable::Comment : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.StepResourceTable::CatalogId : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.StepResourceTable::ResourceId : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.StepResourceTable::StepId : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.StepResourceTable::Description : TakeoffColumnDefinition {get}
+class Autodesk.Navisworks.Api.Takeoff.StepTable : Autodesk.Navisworks.Api.Takeoff.TakeoffTable
+  Autodesk.Navisworks.Api.Takeoff.StepTable::Comment : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.StepTable::CatalogId : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.StepTable::ItemId : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.StepTable::Description : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.StepTable::Name : TakeoffColumnDefinition {get}
+class Autodesk.Navisworks.Api.Takeoff.TakeoffColumnDefinition : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TakeoffColumnDefinition::DisplayName : String {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffColumnDefinition::Name : String {get;set}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffColumnDefinition::IsNullable : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffColumnDefinition::IsPrimaryKey : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffColumnDefinition::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffColumnDefinition::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TakeoffColumnDefinition::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static TakeoffColumnDefinition
+class Autodesk.Navisworks.Api.Takeoff.TakeoffProjectSettings : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TakeoffProjectSettings::CurrencySymbol : String {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffProjectSettings::ConfigurationFileType : ConfigurationFileType {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffProjectSettings::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffProjectSettings::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TakeoffProjectSettings::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static TakeoffProjectSettings
+  Autodesk.Navisworks.Api.Takeoff.TakeoffProjectSettings::TestExistSettings(String name) -> Boolean
+  Autodesk.Navisworks.Api.Takeoff.TakeoffProjectSettings::InsertSetting(String name, String value) -> Boolean
+  Autodesk.Navisworks.Api.Takeoff.TakeoffProjectSettings::UpdateSetting(String name, String value) -> Boolean
+  Autodesk.Navisworks.Api.Takeoff.TakeoffProjectSettings::GetSetting(String name, String& value) -> Void
+class Autodesk.Navisworks.Api.Takeoff.TakeoffSelection : System.Object
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSelection::.ctor()
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSelection::ObjectResources : TakeoffTableSelection {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSelection::ObjectSteps : TakeoffTableSelection {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSelection::Objects : TakeoffTableSelection {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSelection::StepResources : TakeoffTableSelection {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSelection::Steps : TakeoffTableSelection {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSelection::Items : TakeoffTableSelection {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSelection::ItemGroups : TakeoffTableSelection {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSelection::Resources : TakeoffTableSelection {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSelection::ResourceGroups : TakeoffTableSelection {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSelection::BeginEdit() -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSelection::EndEdit() -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSelection::Changed : event EventHandler<TakeoffSelectionChangeEventArgs>
+class Autodesk.Navisworks.Api.Takeoff.TakeoffSelectionChangeEventArgs : System.EventArgs
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSelectionChangeEventArgs::.ctor()
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSelectionChangeEventArgs::SelectionChanged : TakeoffTableType {get;set}
+class Autodesk.Navisworks.Api.Takeoff.TakeoffSheetIds : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSheetIds::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSheetIds::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSheetIds::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static TakeoffSheetIds
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSheetIds::Contains(Guid sheetId) -> Boolean
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSheetIds::GetRowId(Guid sheetId) -> Int64
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSheetIds::GetSheetId(Int64 rowId) -> Guid
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSheetIds::AddSheetId(Guid sheetId, String sheetName) -> Int64
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSheetIds::UpdateSheetName(Guid sheetId, String sheetName) -> Boolean
+  Autodesk.Navisworks.Api.Takeoff.TakeoffSheetIds::GetSheetName(Guid sheetId, String& sheet_name) -> Void
+class Autodesk.Navisworks.Api.Takeoff.TakeoffTable : System.Object
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTable::Variables : TakeoffVariableDefinitionCollection {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTable::RowId : TakeoffColumnDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTable::DbTableName : String {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTable::IsChanged(DatabaseChange change) -> Boolean
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTable::SelectVariables(Int64 rowId) -> TakeoffVariableCollection
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTable::UpdateVariables(Int64 rowId, TakeoffVariableCollection collection) -> Void
+class Autodesk.Navisworks.Api.Takeoff.TakeoffTableSelection : System.Object
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableSelection::TableType : TakeoffTableType {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableSelection::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableSelection::Count : Int32 {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableSelection::Add(Int64 item) -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableSelection::AddRange(IEnumerable<Int64> range) -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableSelection::Clear() -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableSelection::Contains(Int64 item) -> Boolean
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableSelection::CopyTo(Int64[] targetArray, Int32 arrayIndex) -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableSelection::Remove(Int64 item) -> Boolean
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableSelection::GetEnumerator() -> IEnumerator<Int64>
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableSelection::InternalGetEnumerator() -> IEnumerator
+enum Autodesk.Navisworks.Api.Takeoff.TakeoffTableType : System.Enum
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableType.None = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableType.ResourceGroups = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableType.Resources = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableType.ItemGroups = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableType.Items = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableType.Steps = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableType.StepResources = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableType.Objects = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableType.ObjectSteps = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffTableType.ObjectResources = enum value
+enum Autodesk.Navisworks.Api.Takeoff.TakeoffUnitGroup : System.Enum
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnitGroup.None = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnitGroup.Dimensionless = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnitGroup.Length = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnitGroup.Area = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnitGroup.Volume = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnitGroup.Angle = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnitGroup.Time = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnitGroup.Currency = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnitGroup.Any = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnitGroup.Weight = enum value
+enum Autodesk.Navisworks.Api.Takeoff.TakeoffUnits : System.Enum
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Unspecified = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.UnitLess = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Count = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Currency = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Second = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Minute = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Hour = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Day = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Week = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Month = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Year = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Meter = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Centimeter = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Millimeter = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Feet = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Inch = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Yard = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Mile = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Kilometer = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Micrometer = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Mil = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.MicroInch = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.SquareMeter = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.SquareCentimeter = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.SquareMillimeter = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.SquareFeet = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.SquareInch = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.SquareYard = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.SquareMile = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.SquareKilometer = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.SquareMicrometer = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.SquareMil = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.SquareMicroInch = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.CubicMeter = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.CubicCentimeter = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.CubicMillimeter = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.CubicFeet = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.CubicInch = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.CubicYard = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.CubicMile = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.CubicMil = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.CubicKilometer = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.CubicMicroInch = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.CubicMicrometer = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Gallon = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Radian = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Degree = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Kilogram = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Gram = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Pound = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Ounce = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.MetricTon = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnits.Ton = enum value
+enum Autodesk.Navisworks.Api.Takeoff.TakeoffUnitSystem : System.Enum
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnitSystem.None = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnitSystem.Imperial = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnitSystem.Metric = enum value
+  Autodesk.Navisworks.Api.Takeoff.TakeoffUnitSystem.All = enum value
+class Autodesk.Navisworks.Api.Takeoff.TakeoffVariable : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::IsInheritedFormulaNull : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::IsFormulaNull : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::IsOriginalUnitsNull : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::IsUnitsNull : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::IsAbleToSetOriginalUnits : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::IsAbleToSetOriginalValue : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::IsAbleToSetUnits : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::IsAbleToSetPropertyStatus : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::IsAbleToGetPropertyStatus : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::IsAbleToGetFormula : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::IsAbleToSetFormula : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::IsAbleToSetValue : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::UnitsGroup : TakeoffUnitGroup {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::ActiveUnits : TakeoffUnits {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::PropertyStatus : ModelRefreshPropertyStatus {get;set}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::OriginalUnits : TakeoffUnits {get;set}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::Units : TakeoffUnits {get;set}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::ActiveFormula : String {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::InheritedFormula : String {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::Formula : String {get;set}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::ActiveValue : VariantData {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::Value : VariantData {get;set}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::IsOverridden : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::Definition : TakeoffVariableDefinition {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::ValueToDouble() -> Double
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::ValueToBool() -> Boolean
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::ValueToDisplayString() -> String
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static TakeoffVariable
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::CalculateOriginalValue() -> VariantData
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::SetOriginalValue(VariantData value) -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariable::SetUnitsToNull() -> Void
+class Autodesk.Navisworks.Api.Takeoff.TakeoffVariableCollection : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableCollection::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableCollection::InternalIsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableCollection::Count : Int32 {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableCollection::Add(TakeoffVariable item) -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableCollection::Clear() -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableCollection::Contains(TakeoffVariable item) -> Boolean
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableCollection::CopyTo(TakeoffVariable[] targetArray, Int32 arrayIndex) -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableCollection::Remove(TakeoffVariable item) -> Boolean
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableCollection::GetEnumerator() -> IEnumerator<TakeoffVariable>
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableCollection::InternalGetEnumerator() -> IEnumerator
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableCollection::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableCollection::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static TakeoffVariableCollection
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableCollection::GetItem(Int32 cellIndex) -> TakeoffVariable
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableCollection::Find(String cellName) -> Int32
+class Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::DisplayName : String {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::Name : String {get;set}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::DisplayNameForFormulaUsage : String {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::PropertyStatusDbColumnName : String {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::ErrorDbColumnName : String {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::OriginalUnitsDbColumnName : String {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::OriginalValueDbColumnName : String {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::FormulaDbColumnName : String {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::HasFixedFormula : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::FixedFormula : String {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::ValueDbColumnName : String {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::HasFixedValue : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::FixedValue : VariantData {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::UnitsDbColumnName : String {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::HasFixedUnits : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::UnitsGroup : TakeoffUnitGroup {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::FixedUnits : TakeoffUnits {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::Purpose : Purpose {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::VariableType : VariableType {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::ErrorDbType : Enum {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::FormulaDbValueType : Enum {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::ValueDbType : Enum {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::UnitsDbValueType : Enum {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinition::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static TakeoffVariableDefinition
+class Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::.ctor(TakeoffVariableDefinitionCollection from)
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::.ctor()
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::Count : Int32 {get}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::Item[Int32] : TakeoffVariableDefinition {get;set}
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::Add(TakeoffVariableDefinition item) -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::Clear() -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::Remove(TakeoffVariableDefinition item) -> Boolean
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::Insert(Int32 index, TakeoffVariableDefinition item) -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::RemoveAt(Int32 index) -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::AddRange(IEnumerable<TakeoffVariableDefinition> from) -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::CopyFrom(IEnumerable<TakeoffVariableDefinition> from) -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::Contains(TakeoffVariableDefinition item) -> Boolean
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::CopyTo(ICollection<TakeoffVariableDefinition> to) -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::CopyTo(TakeoffVariableDefinition[] array, Int32 arrayIndex) -> Void
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::GetEnumerator() -> IEnumerator<TakeoffVariableDefinition>
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::IndexOf(TakeoffVariableDefinition item) -> Int32
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static TakeoffVariableDefinitionCollection
+  Autodesk.Navisworks.Api.Takeoff.TakeoffVariableDefinitionCollection::FindVariableDefByName(String name) -> TakeoffVariableDefinition
+class Autodesk.Navisworks.Api.Takeoff.Tessellation : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.Tessellation::.ctor()
+  Autodesk.Navisworks.Api.Takeoff.Tessellation::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.Tessellation::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.Tessellation::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static Tessellation
+  Autodesk.Navisworks.Api.Takeoff.Tessellation::BeginPolygon(TessellationWindingRule windingRule, Boolean forEdgeOnly) -> Void
+  Autodesk.Navisworks.Api.Takeoff.Tessellation::EndPolygon() -> Void
+  Autodesk.Navisworks.Api.Takeoff.Tessellation::BeginContour(Point3DList pointList) -> Void
+  Autodesk.Navisworks.Api.Takeoff.Tessellation::EndContour() -> Void
+  Autodesk.Navisworks.Api.Takeoff.Tessellation::GetResult() -> TessellationResult
+class Autodesk.Navisworks.Api.Takeoff.TessellationResult : Autodesk.Navisworks.Api.NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TessellationResult::EdgeLoopNum : Int32 {get}
+  Autodesk.Navisworks.Api.Takeoff.TessellationResult::EdgePointList : Point3DList {get}
+  Autodesk.Navisworks.Api.Takeoff.TessellationResult::TriangleNum : Int32 {get}
+  Autodesk.Navisworks.Api.Takeoff.TessellationResult::TrianglePointList : Point3DList {get}
+  Autodesk.Navisworks.Api.Takeoff.TessellationResult::IsReadOnly : Boolean {get}
+  Autodesk.Navisworks.Api.Takeoff.TessellationResult::InternalFactory(NativeHandleInit& reserved) -> static NativeHandle
+  Autodesk.Navisworks.Api.Takeoff.TessellationResult::InternalCreator(IntPtr handleIn, NativeHandleOwnership ownership, NativeHandle parent) -> static TessellationResult
+  Autodesk.Navisworks.Api.Takeoff.TessellationResult::GetTriangleAtIndex(Int32 index) -> LcUInt32Vector
+  Autodesk.Navisworks.Api.Takeoff.TessellationResult::GetEdgeLoopAtIndex(Int32 index) -> LcUInt32Vector
+enum Autodesk.Navisworks.Api.Takeoff.VariableType : System.Enum
+  Autodesk.Navisworks.Api.Takeoff.VariableType.Undefined = enum value
+  Autodesk.Navisworks.Api.Takeoff.VariableType.String = enum value
+  Autodesk.Navisworks.Api.Takeoff.VariableType.Number = enum value
+  Autodesk.Navisworks.Api.Takeoff.VariableType.Bool = enum value
+class Autodesk.Navisworks.Internal.ApiImplementation.TakeoffImpl : System.Object
+  Autodesk.Navisworks.Internal.ApiImplementation.TakeoffImpl::.ctor()
+  Autodesk.Navisworks.Internal.ApiImplementation.TakeoffImpl::InitialiseAPI(Document document) -> static Void
+  Autodesk.Navisworks.Internal.ApiImplementation.TakeoffImpl::TerminateAPI(Document document) -> static Void
+  Autodesk.Navisworks.Internal.ApiImplementation.TakeoffImpl::IsApiInitialised() -> static Boolean
+  Autodesk.Navisworks.Internal.ApiImplementation.TakeoffImpl::RollbackDocument(Document document) -> static Void

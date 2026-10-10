@@ -1,0 +1,8 @@
+class Autodesk.Navisworks.Api.ComApi.ComApiBridge : System.Object
+  Autodesk.Navisworks.Api.ComApi.ComApiBridge::State : static InwOpState10 {get}
+  Autodesk.Navisworks.Api.ComApi.ComApiBridge::ToInwOaPath(ModelItem modelItem) -> static InwOaPath
+  Autodesk.Navisworks.Api.ComApi.ComApiBridge::ToModelItem(InwOaPath path) -> static ModelItem
+  Autodesk.Navisworks.Api.ComApi.ComApiBridge::ToInwOpSelection(ModelItemCollection modelItemCollection) -> static InwOpSelection
+  Autodesk.Navisworks.Api.ComApi.ComApiBridge::ToModelItemCollection(InwOpSelection selection) -> static ModelItemCollection
+  Autodesk.Navisworks.Api.ComApi.ComApiBridge::ToInwOpAnonView(Viewpoint viewpoint) -> static InwOpAnonView
+  Autodesk.Navisworks.Api.ComApi.ComApiBridge::ToViewpoint(InwOpAnonView anonView) -> static Viewpoint

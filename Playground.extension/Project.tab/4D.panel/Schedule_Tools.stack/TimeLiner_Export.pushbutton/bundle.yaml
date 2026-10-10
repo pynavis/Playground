@@ -1,0 +1,3 @@
+title: TimeLiner Export
+tooltip: Exports every TimeLiner task to a styled Excel workbook: outline numbers and indented names, planned and actual dates, durations, type, progress, status, attachments and user columns.
+context: doc

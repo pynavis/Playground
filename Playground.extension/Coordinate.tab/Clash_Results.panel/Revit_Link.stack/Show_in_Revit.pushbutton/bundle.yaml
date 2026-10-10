@@ -1,0 +1,3 @@
+title: Show in Revit
+tooltip: Sends the selected elements to Revit, where the Playground Link button for pyRevit selects and zooms to them.
+context: selection

@@ -1,0 +1,3 @@
+title: Property\nExplorer
+tooltip: Scans the selection, the visible items or the whole model once, then lists every category, property and value with counts in three linked, searchable lists. Select the items with a value, save it as a search set, copy the list or export the whole index to Excel.
+context: doc

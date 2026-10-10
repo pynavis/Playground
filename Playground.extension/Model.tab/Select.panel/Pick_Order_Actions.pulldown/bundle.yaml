@@ -1,0 +1,8 @@
+title: Picked
+tooltip: Select, number, export, color or clear the items recorded by Pick Order, in the order they were picked.
+layout:
+  - Select_Picked
+  - Number_Picked
+  - Export_Picked
+  - Color_Picked
+  - Clear_Picked

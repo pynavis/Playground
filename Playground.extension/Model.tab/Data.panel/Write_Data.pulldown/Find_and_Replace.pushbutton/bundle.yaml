@@ -1,0 +1,3 @@
+title: Find and Replace
+tooltip: Finds text or a regular expression in property values (all properties or one) and replaces it after a preview. Native values are read-only, so corrections go to a Playground Corrected tab; values in custom tabs are edited in place.
+context: doc

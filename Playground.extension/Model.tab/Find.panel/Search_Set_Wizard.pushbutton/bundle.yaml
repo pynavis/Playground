@@ -1,0 +1,3 @@
+title: Search Set\nWizard
+tooltip: Builds a search set step by step: where to search, conditions picked from the model's own properties and values, a live count, then name and folder.
+context: doc

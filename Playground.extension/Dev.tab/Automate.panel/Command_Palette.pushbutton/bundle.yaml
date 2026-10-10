@@ -1,0 +1,3 @@
+title: Command\nPalette
+tooltip: Type a few letters to run any pyNavis or Navisworks command, go to a saved view or select a set. Recently used ones come first.
+shortcut: Ctrl+Shift+P

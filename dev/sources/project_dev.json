@@ -1,0 +1,196 @@
+{
+ "agent": "project_dev",
+ "date": "2026-10-09",
+ "tools": {
+  "Project.tab/4D.panel/Progress_Painter.pushbutton": {
+   "found": true,
+   "via": "page",
+   "quote": "What do i do if i want to visualise 50% (part completion) of a task o be shown in the model.",
+   "url": "https://www.cadtutor.net/forum/topic/28140-simulation-in-navis-works/",
+   "site": "CADTutor",
+   "date": "2011-01",
+   "relevance": "Asker wants partial task completion shown in the 4D model, which Progress Painter does by painting percent-complete bands."
+  },
+  "Project.tab/Exchange.panel/Geometry_Exporter.pushbutton": {
+   "found": true,
+   "via": "page",
+   "quote": "I am trying to export the vertices, faces and colors of a selected object in the Navis.",
+   "url": "https://stackoverflow.com/questions/31343518/navisworks-com-api-for-exporting-geometry-and-calculating-faces-and-vertices",
+   "site": "Stack Overflow",
+   "date": "2015-07",
+   "relevance": "Asker wants a selected object's triangles and colours exported, as Geometry Exporter does (read through the public Stack Exchange API)."
+  },
+  "Project.tab/4D.panel/TimeLiner_from_Excel.pushbutton": {
+   "found": false,
+   "note": "Searched; the matching asks I found are on Autodesk Community, which blocks automated reading (403), so no quote taken. See leads."
+  },
+  "Project.tab/4D.panel/Auto_Attach.pushbutton": {
+   "found": false,
+   "note": "Searched; the matching asks I found are on Autodesk Community, which blocks automated reading (403), so no quote taken. See leads."
+  },
+  "Project.tab/4D.panel/Movie_Maker.pushbutton": {
+   "found": false,
+   "note": "Searched; the matching asks I found are on Autodesk Community, which blocks automated reading (403), so no quote taken. See leads."
+  },
+  "Project.tab/4D.panel/Schedule_Tools.stack/TimeLiner_Export.pushbutton": {
+   "found": false,
+   "note": "Searched; the matching asks I found are on Autodesk Community, which blocks automated reading (403), so no quote taken. See leads."
+  },
+  "Project.tab/4D.panel/Schedule_Tools.stack/Schedule_Health.pushbutton": {
+   "found": false,
+   "note": "3 searches; no real ask found for a TimeLiner schedule health check."
+  },
+  "Project.tab/Exchange.panel/IFC_Exporter.pushbutton": {
+   "found": false,
+   "note": "Searched; the matching asks I found are on Autodesk Community, which blocks automated reading (403), so no quote taken. See leads."
+  },
+  "Project.tab/Field.panel/Field_Checklists.pushbutton": {
+   "found": false,
+   "note": "Searched; no real ask found."
+  },
+  "Project.tab/Field.panel/Photo_Browser.pushbutton": {
+   "found": false,
+   "note": "Searched; no real ask found."
+  },
+  "Project.tab/Field.panel/Photo_Pins.pushbutton": {
+   "found": false,
+   "note": "Searched; the matching asks I found are on Autodesk Community, which blocks automated reading (403), so no quote taken. See leads."
+  },
+  "Project.tab/Field.panel/QR_Tagger.pushbutton": {
+   "found": false,
+   "note": "Searched; the matching asks I found are on Autodesk Community, which blocks automated reading (403), so no quote taken. See leads. (BIM 360 Field forum; the ask is about QR to a view)."
+  },
+  "Project.tab/Publish.panel/Model_Wipe.pushbutton": {
+   "found": false,
+   "note": "Searched; the matching asks I found are on Autodesk Community, which blocks automated reading (403), so no quote taken. See leads."
+  },
+  "Project.tab/Publish.panel/NWD_Publisher.pushbutton": {
+   "found": false,
+   "note": "Searched; the matching asks I found are on Autodesk Community, which blocks automated reading (403), so no quote taken. See leads."
+  },
+  "Project.tab/Quantities.panel/COG_Calculator.pushbutton": {
+   "found": false,
+   "note": "Searched; the matching asks I found are on Autodesk Community, which blocks automated reading (403), so no quote taken. See leads. Weak lead only."
+  },
+  "Project.tab/Quantities.panel/Quick_Takeoff.pushbutton": {
+   "found": false,
+   "note": "Searched; the matching asks I found are on Autodesk Community, which blocks automated reading (403), so no quote taken. See leads."
+  },
+  "Project.tab/Quantities.panel/Takeoff_Templates.pushbutton": {
+   "found": false,
+   "note": "No real ask found; looks like a pure companion to Quick/Zone Takeoff."
+  },
+  "Project.tab/Quantities.panel/Zone_Takeoff.pushbutton": {
+   "found": false,
+   "note": "Searched; the matching asks I found are on Autodesk Community, which blocks automated reading (403), so no quote taken. See leads. Weak lead."
+  },
+  "Dev.tab/Automate.panel/Command_Palette.pushbutton": {
+   "found": false,
+   "note": "Searched on open sites (GitHub, LinkedIn, CADTutor); no real Navisworks user ask found. Developer-workflow tool."
+  },
+  "Dev.tab/Automate.panel/Macros.pulldown/Macro_to_Button.pushbutton": {
+   "found": false,
+   "note": "Searched on open sites (GitHub, LinkedIn, CADTutor); no real Navisworks user ask found. Developer-workflow tool."
+  },
+  "Dev.tab/Automate.panel/Macros.pulldown/Manage_Macros.pushbutton": {
+   "found": false,
+   "note": "Searched on open sites (GitHub, LinkedIn, CADTutor); no real Navisworks user ask found. Developer-workflow tool."
+  },
+  "Dev.tab/Automate.panel/Macros.pulldown/Play_Macro.pushbutton": {
+   "found": false,
+   "note": "Searched on open sites (GitHub, LinkedIn, CADTutor); no real Navisworks user ask found. Developer-workflow tool."
+  },
+  "Dev.tab/Automate.panel/Macro_Record.toggle": {
+   "found": false,
+   "note": "Searched on open sites (GitHub, LinkedIn, CADTutor); no real Navisworks user ask found. Developer-workflow tool."
+  },
+  "Dev.tab/Build.panel/Button_Maker.pushbutton": {
+   "found": false,
+   "note": "Searched on open sites (GitHub, LinkedIn, CADTutor); no real Navisworks user ask found. Developer-workflow tool."
+  },
+  "Dev.tab/Build.panel/Hotkey_Manager.pushbutton": {
+   "found": false,
+   "note": "Searched; only blog/AUGI-archive posts about editing the roamer commands file for shortcuts (AUGI blocks automated reading), no quote taken."
+  },
+  "Dev.tab/Build.panel/Script_Editor.pushbutton": {
+   "found": false,
+   "note": "Searched on open sites (GitHub, LinkedIn, CADTutor); no real Navisworks user ask found. Developer-workflow tool."
+  },
+  "Dev.tab/Reports.panel/Report_Templates.pushbutton": {
+   "found": false,
+   "note": "Searched on open sites (GitHub, LinkedIn, CADTutor); no real Navisworks user ask found. Developer-workflow tool."
+  },
+  "Dev.tab/Reports.panel/Scheduled_Reports.pushbutton": {
+   "found": false,
+   "note": "Searched on open sites (GitHub, LinkedIn, CADTutor); no real Navisworks user ask found. Developer-workflow tool."
+  },
+  "Dev.tab/Team.panel/Extension_Manager.pushbutton": {
+   "found": false,
+   "note": "Searched on open sites (GitHub, LinkedIn, CADTutor); no real Navisworks user ask found. Developer-workflow tool."
+  },
+  "Dev.tab/Team.panel/Team_Sync.pushbutton": {
+   "found": false,
+   "note": "Searched on open sites (GitHub, LinkedIn, CADTutor); no real Navisworks user ask found. Developer-workflow tool."
+  },
+  "Dev.tab/Team.panel/Team_Tools.stack/Environment_Doctor.pushbutton": {
+   "found": false,
+   "note": "Searched on open sites (GitHub, LinkedIn, CADTutor); no real Navisworks user ask found. Developer-workflow tool."
+  },
+  "Dev.tab/Team.panel/Team_Tools.stack/Playground_Settings.pushbutton": {
+   "found": false,
+   "note": "Searched on open sites (GitHub, LinkedIn, CADTutor); no real Navisworks user ask found. Developer-workflow tool."
+  },
+  "Dev.tab/Team.panel/Usage_Analytics.pushbutton": {
+   "found": false,
+   "note": "Searched on open sites (GitHub, LinkedIn, CADTutor); no real Navisworks user ask found. Developer-workflow tool."
+  },
+  "Dev.tab/Tools.panel/Unit_Converter.pushbutton": {
+   "found": false,
+   "note": "Searched on open sites (GitHub, LinkedIn, CADTutor); no real Navisworks user ask found. Developer-workflow tool."
+  }
+ },
+ "leads": {
+  "Project.tab/4D.panel/TimeLiner_from_Excel.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/csv-import-with-set-attachements-included-timeliner/td-p/5783157",
+   "https://forums.autodesk.com/t5/navisworks-forum/update-new-project-tasks-to-timeline-in-navisworks/td-p/8675114"
+  ],
+  "Project.tab/4D.panel/Auto_Attach.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/attaching-selection-sets-to-timeliner-activites-in-navisworks/td-p/10445847",
+   "https://forums.autodesk.com/t5/navisworks-forum/assigning-sets-to-timeliner-activities-quickly/td-p/6031535"
+  ],
+  "Project.tab/4D.panel/Movie_Maker.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/exporting-timeliner-simulation-causes-duplicate-last-frame-image/td-p/5599446"
+  ],
+  "Project.tab/4D.panel/Schedule_Tools.stack/TimeLiner_Export.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/timeliner-task-hierarchy-nesting-doesn-t-follow-the-imported-csv/td-p/8587160"
+  ],
+  "Project.tab/Exchange.panel/IFC_Exporter.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/export-nwc-to-ifc/td-p/8598702"
+  ],
+  "Project.tab/Field.panel/Photo_Pins.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/link-image-to-comment-viewpoint-or-tag/td-p/4938722"
+  ],
+  "Project.tab/Field.panel/QR_Tagger.pushbutton": [
+   "https://forums.autodesk.com/t5/bim-360-field-forum/how-to-link-qr-codes-to-3d-model/td-p/7783197"
+  ],
+  "Project.tab/Publish.panel/Model_Wipe.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/delete-all-the-search-and-selection-sets-from-an-nwf/td-p/6063581"
+  ],
+  "Project.tab/Publish.panel/NWD_Publisher.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/save-as-oldversion-nwd-with-expiry-date/td-p/7694195"
+  ],
+  "Project.tab/Quantities.panel/COG_Calculator.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/qto-workbook-weights/td-p/7642051"
+  ],
+  "Project.tab/Quantities.panel/Quick_Takeoff.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/counting-number-of-objects-in-navisworks/td-p/9329972"
+  ],
+  "Project.tab/Quantities.panel/Zone_Takeoff.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/automation-of-quantity-takeoff-by-search-sets/td-p/12145874"
+  ],
+  "Dev.tab/Build.panel/Hotkey_Manager.pushbutton": [
+   "https://forums.augi.com/showthread.php?139435-Shortcut-keys",
+   "https://forums.augi.com/archive/index.php/t-128900.html"
+  ]
+ }
+}

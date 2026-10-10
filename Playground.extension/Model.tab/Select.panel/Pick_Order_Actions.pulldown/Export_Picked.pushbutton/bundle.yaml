@@ -1,0 +1,3 @@
+title: Export Picked
+tooltip: Writes the pick list to Excel or CSV: order, name, category, Element ID, GUID, source file and centre point in model units.
+context: doc

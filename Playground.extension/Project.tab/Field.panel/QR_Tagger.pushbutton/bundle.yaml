@@ -1,0 +1,3 @@
+title: QR\nTagger
+tooltip: Makes a QR code for each selected object from a payload template (project, file, Element ID, IFC GUID or a URL), saved as PNG files with a printable A4 label sheet, and writes the payload into the object as Playground > QR.
+context: selection

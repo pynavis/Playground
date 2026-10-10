@@ -1,0 +1,3 @@
+title: Progress\nPainter
+tooltip: Sets the percent complete of the selected objects (a Playground > Progress property) and updates the TimeLiner progress of the tasks that hold them, or paints the model in four progress bands with a legend.
+context: doc

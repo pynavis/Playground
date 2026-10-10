@@ -1,0 +1,2 @@
+title: Batch\nAppend
+tooltip: Appends many model files at once from a folder (optionally with its subfolders) or from a manifest list (txt, csv or xlsx with optional order and trade columns), after a preview that ticks only the files not appended yet.

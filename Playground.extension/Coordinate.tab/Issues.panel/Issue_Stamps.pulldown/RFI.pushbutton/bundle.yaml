@@ -1,0 +1,3 @@
+title: RFI
+tooltip: Click a point to raise a request for information there, from the RFI template, with the clicked object, the view and a snapshot. The click snaps like a measurement; Esc or right-click cancels.
+context: doc

@@ -1,0 +1,3 @@
+title: Session\nStats
+tooltip: Measures every appended model (file sizes, items, geometry items, primitives, fragments, extent, units, when it arrived and how long it took to load) in a table and a chart, and saves the table as an Excel workbook beside the document.
+context: doc

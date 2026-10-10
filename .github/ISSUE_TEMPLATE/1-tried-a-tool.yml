@@ -1,0 +1,65 @@
+name: Tried a tool
+description: You ran a Playground tool inside Navisworks. Tell us whether it worked; both answers move its status.
+title: "[Tried] "
+labels: ["tried-it", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying a tool. A report that it worked is as useful as one that it did not:
+        it is the evidence that moves a tool up the status ladder (see CONTRIBUTING.md).
+        Remove file paths, project names and anything else you do not want public before you submit.
+  - type: input
+    id: tool
+    attributes:
+      label: Tool
+      description: The tool id from the catalog, or the tab, panel and button title.
+      placeholder: e.g. Model.tab/Select.panel/Select_Similar.pushbutton, or Model > Select > Select Similar
+    validations:
+      required: true
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: Did it work?
+      options:
+        - It did what its tooltip says, on a real model
+        - It ran without an error, but I did not check the result
+        - It ran, but the result was wrong
+        - It showed an error or did nothing
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What you did and what you saw
+      description: The model (kind and size, not its name), what you clicked, what you expected, what you got.
+      placeholder: |
+        1. Opened a federated NWF with 12 models
+        2. Selected one duct and clicked Select Similar
+        3. Ticked System Name; it selected 214 ducts, which matched what I expected
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: pyNavis log excerpt
+      description: |
+        The lines from `%APPDATA%\pyNavis\logs\pyNavis.log` around the time you clicked the tool
+        (Playground lines start with "Playground:"). Paste them even when it worked: the absence
+        of an error is part of the evidence. Log lines can hold file paths, model and user
+        names: replace them with placeholders before you submit.
+      render: text
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Navisworks year and edition, pyNavis version, Playground version.
+      placeholder: e.g. Navisworks Manage 2026, pyNavis 1.3.0, Playground 0.1.0
+    validations:
+      required: true
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Credit
+      options:
+        - label: You may name me (my GitHub handle) as the person who checked this tool in status.yaml.

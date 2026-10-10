@@ -1,0 +1,3 @@
+title: KPI\nExport
+tooltip: Exports issues, comments, clash results, clash tests and clash history as CSV and JSON tables for Power BI, with a README describing every column. Shift+Click to set a fixed folder for scheduled refreshes.
+context: doc

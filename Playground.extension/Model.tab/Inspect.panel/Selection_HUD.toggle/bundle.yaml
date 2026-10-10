@@ -1,0 +1,3 @@
+title: Selection\nHUD
+tooltip: Shows a small readout in the bottom-left corner of the Navisworks window: how many items and objects are selected, from which models, the top categories, and a summed property when you set one. Shift+Click for settings.
+tooltip_on: Hides the Selection HUD. Shift+Click for settings.

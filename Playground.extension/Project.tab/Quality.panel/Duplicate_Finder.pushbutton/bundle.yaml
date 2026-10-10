@@ -1,0 +1,3 @@
+title: Duplicate\nFinder
+tooltip: Finds objects that are the same thing in the same place, within one model or across appended models, then selects the extra copies and saves them as a selection set.
+context: doc

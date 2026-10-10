@@ -1,0 +1,3 @@
+title: Status\nPainter
+tooltip: Paints items by construction status (Installed, In progress, Planned, On hold, Issue), sets the status of the selection, and shows the legend. Shift+Click for settings.
+context: doc

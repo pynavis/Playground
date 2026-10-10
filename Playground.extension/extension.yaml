@@ -1,0 +1,8 @@
+name: Playground
+engine: ironpython
+layout:
+  - Model
+  - Views
+  - Coordinate
+  - Project
+  - Dev

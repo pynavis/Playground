@@ -1,0 +1,6 @@
+layout:
+  - Batch_Viewpoints
+  - Viewpoints_from_Excel
+  - Export_Viewpoints
+  - Viewpoint_Sync
+  - Where_Am_I

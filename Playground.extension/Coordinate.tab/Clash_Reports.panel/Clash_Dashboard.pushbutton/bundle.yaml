@@ -1,0 +1,3 @@
+title: Clash\nDashboard
+tooltip: Builds a one-page HTML dashboard of the chosen clash tests (status, where the open clashes are, who holds them and for how long, groups and every clash) and opens it in your browser.
+context: clash-tests

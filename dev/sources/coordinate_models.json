@@ -1,0 +1,229 @@
+{
+ "agent": "coordinate_models",
+ "date": "2026-10-09",
+ "tools": {
+  "Coordinate.tab/BCF.panel/BCF_Export.pushbutton": {
+   "found": true,
+   "quote": "Any suggestions for NW 2023? would be nice!!",
+   "url": "https://wrw.is/exporting-navisworks-saved-viewpoints-to-bcf-for-use-in-revizto/",
+   "site": "What Revit Wants (blog comment)",
+   "date": "",
+   "relevance": "Reader of a Navisworks-to-BCF exporter post wants a working BCF export for current Navisworks; weak, a plugin-version request rather than a feature description. Date shown on page only as '4 years ago'.",
+   "via": "page"
+  },
+  "Coordinate.tab/BCF.panel/BCF_Import.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Reports.panel/Clash_Count_Matrix.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Reports.panel/Clash_Dashboard.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Reports.panel/Clash_Excel_Report.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Reports.panel/History.stack/Clash_Delta.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Reports.panel/History.stack/Clash_Trends.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Reports.panel/History.stack/Snapshot_Clashes.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Reports.panel/Per_Trade_Reports.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Results.panel/Clash_Assigner.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Results.panel/Clash_Heatmap.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Results.panel/Clash_Namer.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Results.panel/Clash_to_Viewpoints.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Results.panel/Revit_Link.stack/Show_from_Revit.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Results.panel/Revit_Link.stack/Show_in_Revit.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Results.panel/Status_Rules.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Setup.panel/Clash_Matrix.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Clash_Setup.panel/Clash_Templates.pushbutton": {
+   "found": true,
+   "quote": "will copy the Clash Test it will not keep the Results",
+   "url": "https://forums.autodesk.com/t5/navisworks-forum/duplicate-clash-test/td-p/3947374",
+   "site": "Autodesk Community",
+   "date": "",
+   "via": "search snippet",
+   "relevance": "Original poster wants an existing clash test duplicated, and says export/import copies the test but not results; partial fit, the tool copies definitions only. Snippet from search summary, page not opened."
+  },
+  "Coordinate.tab/Clash_Setup.panel/Scan_vs_Model.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Issues.panel/Coordination_Report.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Issues.panel/Issues.dockpane": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Issues.panel/Issue_Pins.toggle": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Issues.panel/Issue_Stamps.pulldown/Hold.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Issues.panel/Issue_Stamps.pulldown/RFI.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Issues.panel/Issue_Stamps.pulldown/Safety.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Issues.panel/Issue_Stamps.pulldown/Stamp_from_Template.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Issues.panel/Issue_Stamps.pulldown/Verify.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Issues.panel/Issue_Tools.stack/Clash_to_Issues.pushbutton": {
+   "found": true,
+   "quote": "When an issue is created, grouped clashes should be locked to ensure Clash–Issue stability.",
+   "url": "https://forums.autodesk.com/t5/navisworks-forum/clash-detective-redesign-ideas/td-p/13660891",
+   "site": "Autodesk Community",
+   "date": "",
+   "via": "search snippet",
+   "relevance": "Poster of a Clash Detective redesign wishlist ties clashes to issues; partial fit. Snippet from search summary, page not opened."
+  },
+  "Coordinate.tab/Issues.panel/Issue_Tools.stack/Issue_Templates.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Issues.panel/KPI_Export.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Coordinate.tab/Issues.panel/Meeting_Mode.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Project.tab/Models.panel/Batch_Append.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Project.tab/Models.panel/Folder_Watch.toggle": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Project.tab/Models.panel/Link_Navigator.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Project.tab/Models.panel/Source_Files.dockpane": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Project.tab/Models.panel/Stale_File_Alert.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Project.tab/Models.panel/Transform_Fixer.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Project.tab/Quality.panel/Duplicate_Finder.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Project.tab/Quality.panel/Model_Compare.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Project.tab/Quality.panel/Model_Health_Check.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Project.tab/Quality.panel/Preflight.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  },
+  "Project.tab/Quality.panel/Session_Stats.pushbutton": {
+   "found": false,
+   "note": "No asker's words could be confirmed from a page I opened or a clear search snippet; see leads."
+  }
+ },
+ "leads": {
+  "Coordinate.tab/Clash_Reports.panel/Clash_Excel_Report.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/tabular-html-report-and-excel/m-p/9754018",
+   "https://forums.autodesk.com/t5/navisworks-forum/clash-report-to-excel-images-disappear/td-p/10734621",
+   "https://forums.autodesk.com/t5/navisworks-forum/how-to-export-a-clash-detective-report-in-excel/td-p/12253825"
+  ],
+  "Coordinate.tab/Clash_Results.panel/Clash_Namer.pushbutton": [
+   "https://www.revitforum.org/forum/revit-all-flavors/coordination-tools/23325-navisworks-retain-clash-names-in-exported-jpg-files",
+   "https://forums.autodesk.com/t5/navisworks-forum/design-request-for-clash-detective/td-p/13166238"
+  ],
+  "Coordinate.tab/Clash_Setup.panel/Clash_Matrix.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/how-do-you-organize-clash-tests-in-navisworks-for-large-mep/td-p/14197577",
+   "https://forums.autodesk.com/t5/navisworks-forum/clash-detection-setup/td-p/13683983"
+  ],
+  "Coordinate.tab/Clash_Reports.panel/History.stack/Clash_Delta.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/navisworks-clash-detective-status-reports/td-p/5563947",
+   "https://forums.autodesk.com/t5/navisworks-forum/clash-reports-how-are-you-handling-them/td-p/2974394"
+  ],
+  "Coordinate.tab/Clash_Reports.panel/History.stack/Clash_Trends.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/navisworks-clash-detective-status-reports/td-p/5563947",
+   "https://forums.autodesk.com/t5/navisworks-forum/navisworks-clash-test-result-recording-and-monitoring/td-p/13158705"
+  ],
+  "Coordinate.tab/Clash_Results.panel/Clash_Assigner.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/design-request-for-clash-detective/td-p/13166238",
+   "https://forums.autodesk.com/t5/navisworks-forum/clash-detective-redesign-ideas/td-p/13660891"
+  ],
+  "Project.tab/Quality.panel/Duplicate_Finder.pushbutton": [
+   "https://forums.autodesk.com/t5/revit-architecture-forum/revit-duplicates-in-navisworks-model/td-p/5913201"
+  ],
+  "Project.tab/Models.panel/Stale_File_Alert.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/navisworks-does-not-refresh-models/td-p/9714474",
+   "https://forums.autodesk.com/t5/navisworks-forum/navis-simulate-2024-is-reloading-all-appended-files-when/td-p/11909051"
+  ],
+  "Project.tab/Models.panel/Source_Files.dockpane": [
+   "https://forums.autodesk.com/t5/navisworks-forum/navisworks-does-not-refresh-models/td-p/9714474"
+  ],
+  "Coordinate.tab/Clash_Reports.panel/Clash_Dashboard.pushbutton": [
+   "https://forums.autodesk.com/t5/navisworks-forum/navisworks-clash-detective-status-reports/td-p/5563947"
+  ]
+ }
+}

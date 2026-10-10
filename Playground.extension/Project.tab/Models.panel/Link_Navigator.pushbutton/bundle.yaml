@@ -1,0 +1,3 @@
+title: Link\nNavigator
+tooltip: From the selected element to the model it comes from: its files, units, transform, freshness and size in the output window, then select, isolate, hide, open the folder, refresh, remove it or show it in Source Files.
+context: selection

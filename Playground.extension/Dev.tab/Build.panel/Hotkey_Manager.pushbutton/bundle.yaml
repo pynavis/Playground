@@ -1,0 +1,2 @@
+title: Hotkey\nManager
+tooltip: Gives any pyNavis button or Navisworks ribbon command a keyboard shortcut, or takes one away, and warns when two commands want the same keys. Click a command, click the shortcut field, then press the keys.

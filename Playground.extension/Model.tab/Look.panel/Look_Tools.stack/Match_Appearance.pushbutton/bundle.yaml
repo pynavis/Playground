@@ -1,0 +1,3 @@
+title: Match Appearance
+tooltip: Copies the color and transparency of the first selected item to the rest of the selection. With one item selected, or none, click the objects to paint one by one and press Esc to finish.
+context: doc

@@ -1,0 +1,7 @@
+title: Write\nData
+tooltip: Write custom properties: values typed for the selection or matched from Excel, find and replace in property values, standard fields mapped from other properties, and live links to spreadsheets.
+layout:
+  - Bulk_Property_Writer
+  - Find_and_Replace
+  - Property_Mapper
+  - External_Data_Link

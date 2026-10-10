@@ -1,0 +1,3 @@
+title: Stale\nFiles
+tooltip: Compares every model's loaded file (the NWC) with its source file and lists the models whose source was saved later, whose file is missing, or whose source is not on this computer. Shift+Click to check automatically whenever a model opens.
+context: doc

@@ -1,0 +1,3 @@
+title: Scan vs\nModel
+tooltip: Runs a clearance test between laser scans (points) and the design, then colours each design element by how close the scan comes and lists the closest ones.
+context: multi-model

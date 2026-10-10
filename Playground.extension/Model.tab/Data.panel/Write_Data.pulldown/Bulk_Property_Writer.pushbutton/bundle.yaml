@@ -1,0 +1,3 @@
+title: Bulk Property Writer
+tooltip: Writes up to 10 custom properties to the selected items in one step, merged into an existing tab, or writes a spreadsheet's columns to the objects its Element ID, GUID or property column matches, with a preview of matched, unmatched and ambiguous rows first.
+context: doc

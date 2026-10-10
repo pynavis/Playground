@@ -1,0 +1,3 @@
+title: Clash\nMatrix
+tooltip: Builds a battery of clash tests from a workbook of trades and an H, C or D test matrix, referencing selection sets so the tests follow model updates. Can also write a template to fill in.
+context: doc

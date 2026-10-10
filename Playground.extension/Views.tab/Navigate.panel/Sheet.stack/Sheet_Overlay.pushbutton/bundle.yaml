@@ -1,0 +1,3 @@
+title: Sheet Overlay
+tooltip: Draws a DXF plan over the model at a level, placed by offset and rotation or by two reference points, with its texts as labels. Once placed, one click shows it again; Shift+Click places another.
+context: doc

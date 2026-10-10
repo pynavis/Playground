@@ -1,0 +1,3 @@
+title: Count by\nProperty
+tooltip: Counts objects by the values of one property, or by pairs of values of two (a two-level pivot), over the selection, the visible items or the whole model. Shows a sorted table with shares and a top 20 chart, then lets you select any group. Optional Excel export.
+context: doc

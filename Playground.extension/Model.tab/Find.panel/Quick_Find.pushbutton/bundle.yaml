@@ -1,0 +1,4 @@
+title: Quick\nFind
+tooltip: Finds any element by name, Element ID, category, type, mark or level as you type. Enter selects and zooms, Shift+Enter selects every match. Shift+Click for settings.
+shortcut: Ctrl+Alt+F
+context: doc

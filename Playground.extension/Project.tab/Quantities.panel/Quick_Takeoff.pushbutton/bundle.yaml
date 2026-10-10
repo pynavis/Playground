@@ -1,0 +1,3 @@
+title: Quick\nTakeoff
+tooltip: Counts and measures objects (length, area, volume, weight from Revit and IFC properties, or from geometry) grouped by one or two properties, with subtotals and totals. Export to Excel, select any group, or save the setup as a template.
+context: doc

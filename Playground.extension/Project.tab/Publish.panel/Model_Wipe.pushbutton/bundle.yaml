@@ -1,0 +1,3 @@
+title: Model\nWipe
+tooltip: Removes the kinds of data you choose from the document, such as saved viewpoints, selection sets, clash tests, overrides and Playground data, after showing exactly how much will go.
+context: doc

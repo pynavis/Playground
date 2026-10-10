@@ -1,0 +1,3 @@
+title: Coordination\nReport
+tooltip: Writes the issue register as an HTML page and an Excel workbook: open, overdue and due-this-week counts, open issues by trade, priority and age, the overdue list, a section per trade with snapshots, and what closed recently. Shift+Click for formats and folder.
+context: doc

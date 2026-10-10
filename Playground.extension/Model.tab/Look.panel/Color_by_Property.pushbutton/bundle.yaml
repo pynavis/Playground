@@ -1,0 +1,3 @@
+title: Color by\nProperty
+tooltip: Colors every item by the value of a property you pick, most common values first, and lists the legend with counts. The same value keeps its color from one run to the next.
+context: doc

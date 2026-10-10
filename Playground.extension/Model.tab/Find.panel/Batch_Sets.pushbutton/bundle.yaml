@@ -1,0 +1,3 @@
+title: Batch\nSets
+tooltip: Creates one search set per value of a property, such as one set per level, named and foldered from templates. One undo step.
+context: doc

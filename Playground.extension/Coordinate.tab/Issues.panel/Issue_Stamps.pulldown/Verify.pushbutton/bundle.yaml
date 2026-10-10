@@ -1,0 +1,3 @@
+title: Verify
+tooltip: Click a point to ask for a check on site or in the authoring model, from the Verify template, with the clicked object, the view and a snapshot. The click snaps like a measurement; Esc or right-click cancels.
+context: doc

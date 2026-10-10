@@ -1,0 +1,3 @@
+title: Status\nRules
+tooltip: Applies ordered rules (depth, trades, age, element properties) that set clash statuses, assignees and comments, with a count of what each rule would change before anything is written.
+context: clash-results

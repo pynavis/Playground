@@ -1,0 +1,3 @@
+title: Safety
+tooltip: Click a point to raise a safety concern there, from the Safety template (critical, due tomorrow by default), with the clicked object, the view and a snapshot. The click snaps like a measurement; Esc or right-click cancels.
+context: doc

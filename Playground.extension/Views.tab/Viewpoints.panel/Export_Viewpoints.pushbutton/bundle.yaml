@@ -1,0 +1,3 @@
+title: Export\nViewpoints
+tooltip: Exports only the saved viewpoints you tick, as a Navisworks viewpoints XML file for Import Viewpoints, or as a Playground package that keeps cameras, sections and comments for Viewpoint Sync.
+context: viewpoints

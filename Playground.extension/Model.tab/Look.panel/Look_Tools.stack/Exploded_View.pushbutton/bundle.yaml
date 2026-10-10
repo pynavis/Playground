@@ -1,0 +1,3 @@
+title: Exploded View
+tooltip: Spreads the selected objects or their models away from their common center as one undoable move, without touching the source files. Click again to collapse them back or spread them further.
+context: doc

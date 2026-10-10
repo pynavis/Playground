@@ -1,0 +1,3 @@
+title: Clash\nExcel
+tooltip: Writes a styled Excel report of the chosen clash tests: a summary in Clash Detective's colours, then one sheet per test with a thumbnail of each clash, filters and frozen headers.
+context: clash-tests

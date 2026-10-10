@@ -1,0 +1,3 @@
+title: External Data Link
+tooltip: Links a spreadsheet to this document by a key column (Element ID, GUID or a property) and writes its columns to a custom tab on the matched objects. Refresh re-reads the file and reports matched, unmatched and changed; links are saved with the document's Playground data.
+context: doc

@@ -1,0 +1,4 @@
+title: Presentation\nMode
+title_on: Exit\nPresentation
+tooltip: Clears the screen for a meeting by minimizing the ribbon to its tabs, closing add-in panels and maximizing the window. Click again or press Ctrl+Alt+F11 to put everything back. Shift+Click for settings.
+tooltip_on: Puts the ribbon, panels, window size and background back the way they were before presenting.

@@ -1,0 +1,3 @@
+title: Health\nCheck
+tooltip: Scores every appended model from 0 to 100 on units, distance from the origin, far-away objects, element IDs, duplicate appends, transforms and file age, with an HTML and Excel report. Shift+Click to set the thresholds and report formats.
+context: doc

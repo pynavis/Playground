@@ -1,0 +1,3 @@
+title: IFC\nExporter
+tooltip: Writes the selected objects to an IFC4 file with storeys from their levels, IFC classes from their categories, colours, GlobalIds and property sets. Shift+Click to change which IFC class a category becomes.
+context: selection

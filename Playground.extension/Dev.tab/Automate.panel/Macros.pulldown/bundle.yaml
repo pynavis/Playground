@@ -1,0 +1,6 @@
+title: Macros
+tooltip: Play, edit and share recorded macros, or turn one into a ribbon button.
+layout:
+  - Play_Macro
+  - Manage_Macros
+  - Macro_to_Button

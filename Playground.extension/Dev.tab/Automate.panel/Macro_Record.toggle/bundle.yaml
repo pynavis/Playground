@@ -1,0 +1,4 @@
+title: Record\nMacro
+title_on: Stop\nRecording
+tooltip: Records the pyNavis commands you run next, so Play Macro can repeat them in order.
+tooltip_on: Stops recording and asks for a name for the macro.

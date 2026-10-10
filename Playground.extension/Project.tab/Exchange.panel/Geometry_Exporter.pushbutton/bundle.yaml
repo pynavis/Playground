@@ -1,0 +1,3 @@
+title: Geometry\nExporter
+tooltip: Exports the selected objects' own triangles with their colours to glTF (.glb), OBJ, STL or DXF 3D faces, adding IDs and chosen properties in glTF. Big selections are budgeted and anything skipped is listed.
+context: selection

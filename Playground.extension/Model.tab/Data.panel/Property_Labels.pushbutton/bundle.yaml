@@ -1,0 +1,3 @@
+title: Property\nLabels
+tooltip: Draws a chosen property's value above each selected object in the view, on a short leader from the top of its box (up to 500 objects). Labels follow orbit and zoom; Clear Labels removes them.
+context: selection

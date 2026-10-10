@@ -1,0 +1,188 @@
+# pyNavis Playground status ledger. One entry per bundle key (the tool id).
+# status: untested | launched | verified | known-issue. A tool absent here is untested.
+# by: log (a pyNavis log line), runner (a pynavis run transcript) or person (a named check).
+# Statuses only go up through evidence. Never set verified without a person.
+
+Coordinate.tab/Clash_Setup.panel/Clash_Matrix.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Coordinate.tab/Issues.panel/Issue_Pins.toggle:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end: 'Issue pins are on'; result not checked by a person."
+  date: 2026-10-05
+  by: log
+Coordinate.tab/Issues.panel/Issue_Stamps.pulldown/RFI.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Coordinate.tab/Issues.panel/Issue_Stamps.pulldown/Safety.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Coordinate.tab/Issues.panel/Issue_Tools.stack/Issue_Templates.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Coordinate.tab/Issues.panel/Meeting_Mode.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Dev.tab/Automate.panel/Macro_Record.toggle:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end: 'Recording a macro'; result not checked by a person."
+  date: 2026-10-09
+  by: runner
+Dev.tab/Team.panel/Team_Tools.stack/Environment_Doctor.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end (wrote output); result not checked by a person."
+  date: 2026-10-09
+  by: runner
+Model.tab/Data.panel/Count_by_Property.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end: 'Counted 1 value over 1 object'; result not checked by a person."
+  date: 2026-10-09
+  by: runner
+Model.tab/Data.panel/Data_Tools.stack/Model_Tree_Export.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end: 'Exported 25 tree nodes from 1 model'; result not checked by a person."
+  date: 2026-10-09
+  by: runner
+Model.tab/Data.panel/Property_Exporter.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; 17 parts selected: ran to the end: 'Exported 1 row'; result not checked by a person."
+  date: 2026-10-09
+  by: runner
+Model.tab/Inspect.panel/Inspect_Tools.stack/Copy_IDs.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; 17 parts selected: ran to the end: 'Copied 1 row'; result not checked by a person (stubbed: namo.ui.copy)."
+  date: 2026-10-09
+  by: runner
+Model.tab/Inspect.panel/Inspect_Tools.stack/Open_in_Explorer.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end: 'Opened in Explorer'; result not checked by a person (stubbed: namo.ui.show_in_explorer; stubbed: namo.ui.show_in_explorer)."
+  date: 2026-10-09
+  by: runner
+Model.tab/Inspect.panel/What_Is_It.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; 17 parts selected: ran to the end (wrote output); result not checked by a person (stubbed: namo.ui.copy)."
+  date: 2026-10-05
+  by: log
+Model.tab/Look.panel/Look_Tools.stack/Match_Appearance.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; 17 parts selected: ran to the end: 'Painted 16 items like Wire Color Material'; result not checked by a person."
+  date: 2026-10-09
+  by: runner
+Model.tab/Look.panel/View_Tools.stack/Background.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end: 'Background'; result not checked by a person."
+  date: 2026-10-09
+  by: runner
+Model.tab/Select.panel/Pick_Order.toggle:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end (wrote output); result not checked by a person."
+  date: 2026-10-09
+  by: runner
+Model.tab/Select.panel/Quick.stack/Invert.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end: 'Selected everything visible'; result not checked by a person."
+  date: 2026-10-09
+  by: runner
+Model.tab/Select.panel/Quick.stack/Save_as_Set.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; 17 parts selected: ran to the end: 'Saved set 'Object Material - 17 items - 2026-10-09''; result not checked by a person."
+  date: 2026-10-09
+  by: runner
+Project.tab/Field.panel/Photo_Browser.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Project.tab/Field.panel/Photo_Pins.pushbutton:
+  status: launched
+  note: "First field click found the pin landing away from the marker; refit to the host Measure pick on 2026-10-05 and not run since."
+  date: 2026-10-05
+  by: log
+Project.tab/Models.panel/Batch_Append.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Project.tab/Models.panel/Folder_Watch.toggle:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end: 'Folder Watch is on'; result not checked by a person."
+  date: 2026-10-09
+  by: runner
+Project.tab/Models.panel/Stale_File_Alert.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end (wrote output); result not checked by a person."
+  date: 2026-10-09
+  by: runner
+Project.tab/Models.panel/Transform_Fixer.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Project.tab/Publish.panel/Model_Wipe.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Project.tab/Publish.panel/NWD_Publisher.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Project.tab/Quality.panel/Model_Health_Check.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end (wrote output); result not checked by a person."
+  date: 2026-10-09
+  by: runner
+Project.tab/Quality.panel/Preflight.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end (wrote output); result not checked by a person."
+  date: 2026-10-05
+  by: log
+Project.tab/Quality.panel/Session_Stats.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end (wrote output); result not checked by a person."
+  date: 2026-10-09
+  by: runner
+Project.tab/Quantities.panel/COG_Calculator.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Project.tab/Quantities.panel/Quick_Takeoff.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end: 'Takeoff of 1 object'; result not checked by a person."
+  date: 2026-10-09
+  by: runner
+Views.tab/Capture.panel/Viewpoints_to_Images.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Views.tab/Navigate.panel/Camera_Sync.toggle:
+  status: launched
+  date: 2026-10-05
+  by: log
+Views.tab/Navigate.panel/Level_Sectioner.pushbutton:
+  status: launched
+  note: "NameError fixed 2026-10-09; reran headless. The sample model has no levels, so the rerun took the 'No levels found' exit; the fixed chooser path is pinned by a smoke test, not yet clicked in Navisworks."
+  date: 2026-10-09
+  by: runner
+Views.tab/Navigate.panel/Sheet.stack/Sheet_Overlay.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Views.tab/Navigate.panel/Spotter.stack/Clear_Spots.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Views.tab/Navigate.panel/Spotter.stack/Coordinate_Spotter.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Views.tab/Viewpoints.panel/Viewpoint_Sync.pushbutton:
+  status: launched
+  date: 2026-10-05
+  by: log
+Views.tab/Viewpoints.panel/Where_Am_I.pushbutton:
+  status: launched
+  note: "Ran headless under pynavis run against a sample model; no selection: ran to the end (wrote output); result not checked by a person."
+  date: 2026-10-05
+  by: log

@@ -1,0 +1,5 @@
+title: Issue\nPins
+title_on: Hide\nPins
+tooltip: Shows every open issue that has a location as a pin in the view, labelled with its number, type and title. Each pin stands about a person tall, whatever the size of the model. The pins follow edits and come back when another model opens.
+tooltip_on: Takes the issue pins out of the view.
+context: doc

@@ -1,0 +1,3 @@
+title: Open in Explorer
+tooltip: Shows the selected item's model file in Windows Explorer: the source file it was appended from, or its Navisworks cache file (asks when both exist). With nothing selected, shows this document's own file.
+context: doc

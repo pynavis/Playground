@@ -1,0 +1,3 @@
+title: Property Mapper
+tooltip: Fills one standard tab (System, Level, Mark...) from whichever source property each model uses, in order of preference, with optional regex clean-up and per-model overrides. Shows coverage per field and model before writing. Profiles are team-shareable and export to JSON.
+context: doc

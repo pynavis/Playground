@@ -1,0 +1,4 @@
+title: Folder\nWatch
+title_on: Watching
+tooltip: Watches the files of the appended models and, when one changes on disk, offers to refresh it with a small notice that never takes focus. Shift+Click to choose the folders, how often to check and whether to start with Navisworks.
+tooltip_on: Watching the model files for changes. Click to stop; Shift+Click for the folders and how often to check.

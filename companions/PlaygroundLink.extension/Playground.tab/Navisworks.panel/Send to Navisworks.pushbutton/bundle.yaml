@@ -1,0 +1,4 @@
+title: "Send to\nNavisworks"
+tooltip: Sends the selected elements to Navisworks, where Playground Show from Revit selects them.
+author: Playground
+context: selection

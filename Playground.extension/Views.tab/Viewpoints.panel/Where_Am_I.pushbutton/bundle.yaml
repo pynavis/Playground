@@ -1,0 +1,3 @@
+title: Where\nAm I
+tooltip: One popup with where the camera is: the saved viewpoint it is on, eye coordinates, compass heading and pitch, nearest level and grid intersection, lens, section, models and selection. Copy puts it on the clipboard.
+context: doc

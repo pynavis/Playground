@@ -1,0 +1,3 @@
+title: Transform\nFixer
+tooltip: Moves, turns about Z, re-units or resets whole models by typed values or two picked points, as one undo step, and saves or applies a transform preset per model file (optionally applied whenever that file is appended).
+context: doc

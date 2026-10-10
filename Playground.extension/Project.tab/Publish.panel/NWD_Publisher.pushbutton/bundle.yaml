@@ -1,0 +1,3 @@
+title: NWD\nPublisher
+tooltip: Publishes the document as a numbered NWD with title, author and expiry, after a Preflight, and moves older versions into an Archive folder.
+context: doc

@@ -1,0 +1,8 @@
+title: Issue\nStamps
+tooltip: Click a point in the view to raise an RFI, Hold, Verify or Safety issue right there, filled from its template, with the clicked object, the current view and a snapshot. The click snaps like a measurement; Esc or right-click cancels.
+layout:
+  - RFI
+  - Hold
+  - Verify
+  - Safety
+  - Stamp_from_Template

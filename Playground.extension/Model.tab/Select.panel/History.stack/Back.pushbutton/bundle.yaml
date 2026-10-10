@@ -1,0 +1,4 @@
+title: Back
+tooltip: Restores the selection you had before this one, like Back in a browser. After clearing the selection it brings the last one back.
+shortcut: Alt+Left
+context: doc

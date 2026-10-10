@@ -1,0 +1,3 @@
+title: Properties\nPlus
+tooltip: A window that follows the selection: pinned properties compared across every selected item (one value, or how many differ), and all of the first item's properties. Copy a value or select every item in the model that shares it.
+context: doc

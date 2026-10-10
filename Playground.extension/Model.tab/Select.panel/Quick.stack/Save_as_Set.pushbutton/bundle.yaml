@@ -1,0 +1,3 @@
+title: Save as Set
+tooltip: Saves the current selection as a selection set named from a template such as Ducts - 412 items - 2026-10-05, in the Playground folder. Shift+Click for settings.
+context: selection

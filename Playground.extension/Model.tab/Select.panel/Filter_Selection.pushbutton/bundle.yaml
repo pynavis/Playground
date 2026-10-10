@@ -1,0 +1,3 @@
+title: Filter\nSelection
+tooltip: Keeps or removes the selected items whose property passes a test (equals, contains, greater than, is missing...) without running a new search.
+context: selection

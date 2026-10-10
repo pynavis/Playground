@@ -1,0 +1,3 @@
+title: Field\nChecklists
+tooltip: Inspection checklists attached to saved viewpoints: Pass, Fail or N/A with notes per item, inspector, date and sign-off, stepping from viewpoint to viewpoint, with an HTML and Excel report. Shift+Click edits the team's templates.
+context: viewpoints

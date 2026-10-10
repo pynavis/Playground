@@ -1,0 +1,3 @@
+title: Clash to Issues
+tooltip: Turns each clash group and ungrouped clash of the chosen tests into an issue, once, with its clash view, snapshot and elements, and a trade, priority and due date from rules. Shift+Click for settings.
+context: clash-results

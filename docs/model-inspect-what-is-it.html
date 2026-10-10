@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Is It - pyNavis Playground</title>
+<meta name="description" content="Everything Navisworks knows about one item in one card: identity, Revit IDs, source file and tree path, size and position, geometry, colour and state, and every property tab. Select the item first, or click it in the view when nothing is selected. A plain-text summary goes to the clipboard.">
+<link rel="stylesheet" href="_assets/site.css">
+</head>
+<body data-base="">
+<div class="layout">
+<div class="sidebar">
+  <div class="brand"><a href="index.html"><svg class="brand-mark" width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1.5" y="1.5" width="23" height="23" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="6" y="6" width="6" height="6" rx="1" fill="currentColor"/><rect x="14" y="6" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="6" y="14" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="14" y="14" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span class="brand-name">pyNavis Playground
+    <span class="brand-sub">Tool catalog</span></span></a></div>
+  <div class="search-wrap">
+    <svg class="search-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <circle cx="6" cy="6" r="4.2" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M9.2 9.2 12.5 12.5" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round"/></svg>
+    <input id="search" type="search" placeholder="Search the tools" autocomplete="off"
+           spellcheck="false" aria-label="Search the Playground tools">
+    <span class="search-kbd">/</span>
+    <div id="search-results" class="search-results"></div>
+  </div>
+  <nav class="pages">
+<a href="index.html">All tools</a>
+<div class="grp">Model</div>
+<div class="sub">Select</div>
+<a href="model-select-select-similar.html"><img class="nav-icon ic-light" src="_assets/icons/model-select-select-similar.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-select-select-similar.dark.png" alt="">Select Similar</a>
+<a href="model-select-filter-selection.html"><img class="nav-icon ic-light" src="_assets/icons/model-select-filter-selection.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-select-filter-selection.dark.png" alt="">Filter Selection</a>
+<a href="model-select-quick-invert.html"><img class="nav-icon ic-light" src="_assets/icons/model-select-quick-invert.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-select-quick-invert.dark.png" alt="">Invert</a>
+<a href="model-select-quick-select-by-file.html"><img class="nav-icon ic-light" src="_assets/icons/model-select-quick-select-by-file.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-select-quick-select-by-file.dark.png" alt="">Select by File</a>
+<a href="model-select-quick-save-as-set.html"><img class="nav-icon ic-light" src="_assets/icons/model-select-quick-save-as-set.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-select-quick-save-as-set.dark.png" alt="">Save as Set</a>
+<a href="model-select-history-back.html"><img class="nav-icon ic-light" src="_assets/icons/model-select-history-back.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-select-history-back.dark.png" alt="">Back</a>
+<a href="model-select-history-forward.html"><img class="nav-icon ic-light" src="_assets/icons/model-select-history-forward.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-select-history-forward.dark.png" alt="">Forward</a>
+<a href="model-select-history-history-list.html"><img class="nav-icon ic-light" src="_assets/icons/model-select-history-history-list.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-select-history-history-list.dark.png" alt="">History</a>
+<a href="model-select-pick-order.html"><img class="nav-icon ic-light" src="_assets/icons/model-select-pick-order.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-select-pick-order.dark.png" alt="">Pick Order</a>
+<a href="model-select-pick-order-actions-select-picked.html"><img class="nav-icon ic-light" src="_assets/icons/model-select-pick-order-actions-select-picked.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-select-pick-order-actions-select-picked.dark.png" alt="">Select Picked</a>
+<a href="model-select-pick-order-actions-number-picked.html"><img class="nav-icon ic-light" src="_assets/icons/model-select-pick-order-actions-number-picked.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-select-pick-order-actions-number-picked.dark.png" alt="">Number Picked</a>
+<a href="model-select-pick-order-actions-export-picked.html"><img class="nav-icon ic-light" src="_assets/icons/model-select-pick-order-actions-export-picked.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-select-pick-order-actions-export-picked.dark.png" alt="">Export Picked</a>
+<a href="model-select-pick-order-actions-color-picked.html"><img class="nav-icon ic-light" src="_assets/icons/model-select-pick-order-actions-color-picked.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-select-pick-order-actions-color-picked.dark.png" alt="">Color Picked</a>
+<a href="model-select-pick-order-actions-clear-picked.html"><img class="nav-icon ic-light" src="_assets/icons/model-select-pick-order-actions-clear-picked.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-select-pick-order-actions-clear-picked.dark.png" alt="">Clear Picked</a>
+<div class="sub">Find</div>
+<a href="model-find-quick-find.html"><img class="nav-icon ic-light" src="_assets/icons/model-find-quick-find.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-find-quick-find.dark.png" alt="">Quick Find</a>
+<a href="model-find-search-set-wizard.html"><img class="nav-icon ic-light" src="_assets/icons/model-find-search-set-wizard.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-find-search-set-wizard.dark.png" alt="">Search Set Wizard</a>
+<a href="model-find-batch-sets.html"><img class="nav-icon ic-light" src="_assets/icons/model-find-batch-sets.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-find-batch-sets.dark.png" alt="">Batch Sets</a>
+<a href="model-find-sets-library.html"><img class="nav-icon ic-light" src="_assets/icons/model-find-sets-library.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-find-sets-library.dark.png" alt="">Sets Library</a>
+<a href="model-find-set-exchange-export-sets.html"><img class="nav-icon ic-light" src="_assets/icons/model-find-set-exchange-export-sets.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-find-set-exchange-export-sets.dark.png" alt="">Export Sets</a>
+<a href="model-find-set-exchange-import-sets.html"><img class="nav-icon ic-light" src="_assets/icons/model-find-set-exchange-import-sets.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-find-set-exchange-import-sets.dark.png" alt="">Import Sets</a>
+<a href="model-find-set-exchange-search-in-repair.html"><img class="nav-icon ic-light" src="_assets/icons/model-find-set-exchange-search-in-repair.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-find-set-exchange-search-in-repair.dark.png" alt="">Repair Search In</a>
+<div class="sub">Inspect</div>
+<a href="model-inspect-what-is-it.html" class="active"><img class="nav-icon ic-light" src="_assets/icons/model-inspect-what-is-it.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-inspect-what-is-it.dark.png" alt="">What Is It</a>
+<a href="model-inspect-properties-plus.html"><img class="nav-icon ic-light" src="_assets/icons/model-inspect-properties-plus.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-inspect-properties-plus.dark.png" alt="">Properties Plus</a>
+<a href="model-inspect-selection-hud.html"><img class="nav-icon ic-light" src="_assets/icons/model-inspect-selection-hud.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-inspect-selection-hud.dark.png" alt="">Selection HUD</a>
+<a href="model-inspect-inspect-tools-copy-ids.html"><img class="nav-icon ic-light" src="_assets/icons/model-inspect-inspect-tools-copy-ids.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-inspect-inspect-tools-copy-ids.dark.png" alt="">Copy IDs</a>
+<a href="model-inspect-inspect-tools-open-in-explorer.html"><img class="nav-icon ic-light" src="_assets/icons/model-inspect-inspect-tools-open-in-explorer.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-inspect-inspect-tools-open-in-explorer.dark.png" alt="">Open in Explorer</a>
+<div class="sub">Data</div>
+<a href="model-data-property-explorer.html"><img class="nav-icon ic-light" src="_assets/icons/model-data-property-explorer.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-data-property-explorer.dark.png" alt="">Property Explorer</a>
+<a href="model-data-count-by-property.html"><img class="nav-icon ic-light" src="_assets/icons/model-data-count-by-property.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-data-count-by-property.dark.png" alt="">Count by Property</a>
+<a href="model-data-property-exporter.html"><img class="nav-icon ic-light" src="_assets/icons/model-data-property-exporter.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-data-property-exporter.dark.png" alt="">Property Exporter</a>
+<a href="model-data-data-validator.html"><img class="nav-icon ic-light" src="_assets/icons/model-data-data-validator.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-data-data-validator.dark.png" alt="">Data Validator</a>
+<a href="model-data-write-data-bulk-property-writer.html"><img class="nav-icon ic-light" src="_assets/icons/model-data-write-data-bulk-property-writer.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-data-write-data-bulk-property-writer.dark.png" alt="">Bulk Property Writer</a>
+<a href="model-data-write-data-find-and-replace.html"><img class="nav-icon ic-light" src="_assets/icons/model-data-write-data-find-and-replace.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-data-write-data-find-and-replace.dark.png" alt="">Find and Replace</a>
+<a href="model-data-write-data-property-mapper.html"><img class="nav-icon ic-light" src="_assets/icons/model-data-write-data-property-mapper.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-data-write-data-property-mapper.dark.png" alt="">Property Mapper</a>
+<a href="model-data-write-data-external-data-link.html"><img class="nav-icon ic-light" src="_assets/icons/model-data-write-data-external-data-link.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-data-write-data-external-data-link.dark.png" alt="">External Data Link</a>
+<a href="model-data-data-tools-model-tree-export.html"><img class="nav-icon ic-light" src="_assets/icons/model-data-data-tools-model-tree-export.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-data-data-tools-model-tree-export.dark.png" alt="">Model Tree Export</a>
+<a href="model-data-data-tools-clear-labels.html"><img class="nav-icon ic-light" src="_assets/icons/model-data-data-tools-clear-labels.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-data-data-tools-clear-labels.dark.png" alt="">Clear Labels</a>
+<a href="model-data-property-labels.html"><img class="nav-icon ic-light" src="_assets/icons/model-data-property-labels.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-data-property-labels.dark.png" alt="">Property Labels</a>
+<div class="sub">Look</div>
+<a href="model-look-color-by-property.html"><img class="nav-icon ic-light" src="_assets/icons/model-look-color-by-property.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-look-color-by-property.dark.png" alt="">Color by Property</a>
+<a href="model-look-color-presets.html"><img class="nav-icon ic-light" src="_assets/icons/model-look-color-presets.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-look-color-presets.dark.png" alt="">Color Presets</a>
+<a href="model-look-trade-ghost.html"><img class="nav-icon ic-light" src="_assets/icons/model-look-trade-ghost.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-look-trade-ghost.dark.png" alt="">Trade Ghost</a>
+<a href="model-look-status-painter.html"><img class="nav-icon ic-light" src="_assets/icons/model-look-status-painter.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-look-status-painter.dark.png" alt="">Status Painter</a>
+<a href="model-look-look-tools-legend-maker.html"><img class="nav-icon ic-light" src="_assets/icons/model-look-look-tools-legend-maker.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-look-look-tools-legend-maker.dark.png" alt="">Legend Maker</a>
+<a href="model-look-look-tools-match-appearance.html"><img class="nav-icon ic-light" src="_assets/icons/model-look-look-tools-match-appearance.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-look-look-tools-match-appearance.dark.png" alt="">Match Appearance</a>
+<a href="model-look-look-tools-exploded-view.html"><img class="nav-icon ic-light" src="_assets/icons/model-look-look-tools-exploded-view.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-look-look-tools-exploded-view.dark.png" alt="">Exploded View</a>
+<a href="model-look-view-tools-reset-all-overrides.html"><img class="nav-icon ic-light" src="_assets/icons/model-look-view-tools-reset-all-overrides.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-look-view-tools-reset-all-overrides.dark.png" alt="">Reset Overrides</a>
+<a href="model-look-view-tools-background.html"><img class="nav-icon ic-light" src="_assets/icons/model-look-view-tools-background.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-look-view-tools-background.dark.png" alt="">Background</a>
+<a href="model-look-presentation-mode.html"><img class="nav-icon ic-light" src="_assets/icons/model-look-presentation-mode.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-look-presentation-mode.dark.png" alt="">Presentation Mode</a>
+<a href="model-look-exit-presentation.html"><img class="nav-icon ic-light" src="_assets/icons/model-look-exit-presentation.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/model-look-exit-presentation.dark.png" alt="">Exit Presentation</a>
+<div class="grp">Views</div>
+<div class="sub">Viewpoints</div>
+<a href="views-viewpoints-batch-viewpoints.html"><img class="nav-icon ic-light" src="_assets/icons/views-viewpoints-batch-viewpoints.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-viewpoints-batch-viewpoints.dark.png" alt="">Batch Viewpoints</a>
+<a href="views-viewpoints-viewpoints-from-excel.html"><img class="nav-icon ic-light" src="_assets/icons/views-viewpoints-viewpoints-from-excel.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-viewpoints-viewpoints-from-excel.dark.png" alt="">Viewpoints from Excel</a>
+<a href="views-viewpoints-export-viewpoints.html"><img class="nav-icon ic-light" src="_assets/icons/views-viewpoints-export-viewpoints.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-viewpoints-export-viewpoints.dark.png" alt="">Export Viewpoints</a>
+<a href="views-viewpoints-viewpoint-sync.html"><img class="nav-icon ic-light" src="_assets/icons/views-viewpoints-viewpoint-sync.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-viewpoints-viewpoint-sync.dark.png" alt="">Viewpoint Sync</a>
+<a href="views-viewpoints-where-am-i.html"><img class="nav-icon ic-light" src="_assets/icons/views-viewpoints-where-am-i.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-viewpoints-where-am-i.dark.png" alt="">Where Am I</a>
+<div class="sub">Capture</div>
+<a href="views-capture-viewpoints-to-images.html"><img class="nav-icon ic-light" src="_assets/icons/views-capture-viewpoints-to-images.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-capture-viewpoints-to-images.dark.png" alt="">Viewpoints to Images</a>
+<a href="views-capture-batch-image-export.html"><img class="nav-icon ic-light" src="_assets/icons/views-capture-batch-image-export.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-capture-batch-image-export.dark.png" alt="">Batch Images</a>
+<a href="views-capture-batch-pdf.html"><img class="nav-icon ic-light" src="_assets/icons/views-capture-batch-pdf.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-capture-batch-pdf.dark.png" alt="">Batch PDF</a>
+<div class="sub">Navigate</div>
+<a href="views-navigate-level-sectioner.html"><img class="nav-icon ic-light" src="_assets/icons/views-navigate-level-sectioner.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-navigate-level-sectioner.dark.png" alt="">Level Sectioner</a>
+<a href="views-navigate-level-up.html"><img class="nav-icon ic-light" src="_assets/icons/views-navigate-level-up.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-navigate-level-up.dark.png" alt="">Level Up</a>
+<a href="views-navigate-level-down.html"><img class="nav-icon ic-light" src="_assets/icons/views-navigate-level-down.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-navigate-level-down.dark.png" alt="">Level Down</a>
+<a href="views-navigate-camera-sync.html"><img class="nav-icon ic-light" src="_assets/icons/views-navigate-camera-sync.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-navigate-camera-sync.dark.png" alt="">Camera Sync</a>
+<a href="views-navigate-spotter-coordinate-spotter.html"><img class="nav-icon ic-light" src="_assets/icons/views-navigate-spotter-coordinate-spotter.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-navigate-spotter-coordinate-spotter.dark.png" alt="">Coordinate Spotter</a>
+<a href="views-navigate-spotter-clear-spots.html"><img class="nav-icon ic-light" src="_assets/icons/views-navigate-spotter-clear-spots.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-navigate-spotter-clear-spots.dark.png" alt="">Clear Spots</a>
+<a href="views-navigate-sheet-sheet-overlay.html"><img class="nav-icon ic-light" src="_assets/icons/views-navigate-sheet-sheet-overlay.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-navigate-sheet-sheet-overlay.dark.png" alt="">Sheet Overlay</a>
+<a href="views-navigate-sheet-clear-sheet.html"><img class="nav-icon ic-light" src="_assets/icons/views-navigate-sheet-clear-sheet.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/views-navigate-sheet-clear-sheet.dark.png" alt="">Clear Sheet</a>
+<div class="grp">Coordinate</div>
+<div class="sub">Clash Setup</div>
+<a href="coordinate-clash-setup-clash-matrix.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-setup-clash-matrix.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-setup-clash-matrix.dark.png" alt="">Clash Matrix</a>
+<a href="coordinate-clash-setup-clash-templates.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-setup-clash-templates.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-setup-clash-templates.dark.png" alt="">Clash Templates</a>
+<a href="coordinate-clash-setup-scan-vs-model.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-setup-scan-vs-model.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-setup-scan-vs-model.dark.png" alt="">Scan vs Model</a>
+<div class="sub">Clash Results</div>
+<a href="coordinate-clash-results-clash-namer.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-results-clash-namer.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-results-clash-namer.dark.png" alt="">Clash Namer</a>
+<a href="coordinate-clash-results-status-rules.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-results-status-rules.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-results-status-rules.dark.png" alt="">Status Rules</a>
+<a href="coordinate-clash-results-clash-assigner.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-results-clash-assigner.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-results-clash-assigner.dark.png" alt="">Clash Assigner</a>
+<a href="coordinate-clash-results-clash-to-viewpoints.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-results-clash-to-viewpoints.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-results-clash-to-viewpoints.dark.png" alt="">Clash to Viewpoints</a>
+<a href="coordinate-clash-results-clash-heatmap.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-results-clash-heatmap.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-results-clash-heatmap.dark.png" alt="">Clash Heatmap</a>
+<a href="coordinate-clash-results-revit-link-show-in-revit.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-results-revit-link-show-in-revit.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-results-revit-link-show-in-revit.dark.png" alt="">Show in Revit</a>
+<a href="coordinate-clash-results-revit-link-show-from-revit.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-results-revit-link-show-from-revit.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-results-revit-link-show-from-revit.dark.png" alt="">Show from Revit</a>
+<div class="sub">Clash Reports</div>
+<a href="coordinate-clash-reports-clash-excel-report.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-reports-clash-excel-report.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-reports-clash-excel-report.dark.png" alt="">Clash Excel</a>
+<a href="coordinate-clash-reports-clash-dashboard.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-reports-clash-dashboard.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-reports-clash-dashboard.dark.png" alt="">Clash Dashboard</a>
+<a href="coordinate-clash-reports-clash-count-matrix.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-reports-clash-count-matrix.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-reports-clash-count-matrix.dark.png" alt="">Count Matrix</a>
+<a href="coordinate-clash-reports-history-snapshot-clashes.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-reports-history-snapshot-clashes.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-reports-history-snapshot-clashes.dark.png" alt="">Snapshot</a>
+<a href="coordinate-clash-reports-history-clash-delta.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-reports-history-clash-delta.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-reports-history-clash-delta.dark.png" alt="">Clash Delta</a>
+<a href="coordinate-clash-reports-history-clash-trends.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-reports-history-clash-trends.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-reports-history-clash-trends.dark.png" alt="">Clash Trends</a>
+<a href="coordinate-clash-reports-per-trade-reports.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-clash-reports-per-trade-reports.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-clash-reports-per-trade-reports.dark.png" alt="">Per-Trade Reports</a>
+<div class="sub">Issues</div>
+<a href="coordinate-issues-issues.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-issues-issues.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-issues-issues.dark.png" alt="">Issues</a>
+<a href="coordinate-issues-issue-stamps-rfi.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-issues-issue-stamps-rfi.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-issues-issue-stamps-rfi.dark.png" alt="">RFI</a>
+<a href="coordinate-issues-issue-stamps-hold.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-issues-issue-stamps-hold.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-issues-issue-stamps-hold.dark.png" alt="">Hold</a>
+<a href="coordinate-issues-issue-stamps-verify.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-issues-issue-stamps-verify.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-issues-issue-stamps-verify.dark.png" alt="">Verify</a>
+<a href="coordinate-issues-issue-stamps-safety.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-issues-issue-stamps-safety.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-issues-issue-stamps-safety.dark.png" alt="">Safety</a>
+<a href="coordinate-issues-issue-stamps-stamp-from-template.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-issues-issue-stamps-stamp-from-template.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-issues-issue-stamps-stamp-from-template.dark.png" alt="">Stamp from Template</a>
+<a href="coordinate-issues-issue-pins.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-issues-issue-pins.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-issues-issue-pins.dark.png" alt="">Issue Pins</a>
+<a href="coordinate-issues-meeting-mode.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-issues-meeting-mode.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-issues-meeting-mode.dark.png" alt="">Meeting Mode</a>
+<a href="coordinate-issues-issue-tools-issue-templates.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-issues-issue-tools-issue-templates.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-issues-issue-tools-issue-templates.dark.png" alt="">Issue Templates</a>
+<a href="coordinate-issues-issue-tools-clash-to-issues.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-issues-issue-tools-clash-to-issues.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-issues-issue-tools-clash-to-issues.dark.png" alt="">Clash to Issues</a>
+<a href="coordinate-issues-coordination-report.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-issues-coordination-report.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-issues-coordination-report.dark.png" alt="">Coordination Report</a>
+<a href="coordinate-issues-kpi-export.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-issues-kpi-export.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-issues-kpi-export.dark.png" alt="">KPI Export</a>
+<div class="sub">BCF</div>
+<a href="coordinate-bcf-bcf-export.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-bcf-bcf-export.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-bcf-bcf-export.dark.png" alt="">BCF Export</a>
+<a href="coordinate-bcf-bcf-import.html"><img class="nav-icon ic-light" src="_assets/icons/coordinate-bcf-bcf-import.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/coordinate-bcf-bcf-import.dark.png" alt="">BCF Import</a>
+<div class="grp">Project</div>
+<div class="sub">Models</div>
+<a href="project-models-batch-append.html"><img class="nav-icon ic-light" src="_assets/icons/project-models-batch-append.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-models-batch-append.dark.png" alt="">Batch Append</a>
+<a href="project-models-source-files.html"><img class="nav-icon ic-light" src="_assets/icons/project-models-source-files.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-models-source-files.dark.png" alt="">Source Files</a>
+<a href="project-models-link-navigator.html"><img class="nav-icon ic-light" src="_assets/icons/project-models-link-navigator.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-models-link-navigator.dark.png" alt="">Link Navigator</a>
+<a href="project-models-transform-fixer.html"><img class="nav-icon ic-light" src="_assets/icons/project-models-transform-fixer.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-models-transform-fixer.dark.png" alt="">Transform Fixer</a>
+<a href="project-models-folder-watch.html"><img class="nav-icon ic-light" src="_assets/icons/project-models-folder-watch.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-models-folder-watch.dark.png" alt="">Folder Watch</a>
+<a href="project-models-stale-file-alert.html"><img class="nav-icon ic-light" src="_assets/icons/project-models-stale-file-alert.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-models-stale-file-alert.dark.png" alt="">Stale Files</a>
+<div class="sub">Quality</div>
+<a href="project-quality-model-health-check.html"><img class="nav-icon ic-light" src="_assets/icons/project-quality-model-health-check.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-quality-model-health-check.dark.png" alt="">Health Check</a>
+<a href="project-quality-duplicate-finder.html"><img class="nav-icon ic-light" src="_assets/icons/project-quality-duplicate-finder.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-quality-duplicate-finder.dark.png" alt="">Duplicate Finder</a>
+<a href="project-quality-model-compare.html"><img class="nav-icon ic-light" src="_assets/icons/project-quality-model-compare.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-quality-model-compare.dark.png" alt="">Model Compare</a>
+<a href="project-quality-preflight.html"><img class="nav-icon ic-light" src="_assets/icons/project-quality-preflight.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-quality-preflight.dark.png" alt="">Preflight</a>
+<a href="project-quality-session-stats.html"><img class="nav-icon ic-light" src="_assets/icons/project-quality-session-stats.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-quality-session-stats.dark.png" alt="">Session Stats</a>
+<div class="sub">Publish</div>
+<a href="project-publish-nwd-publisher.html"><img class="nav-icon ic-light" src="_assets/icons/project-publish-nwd-publisher.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-publish-nwd-publisher.dark.png" alt="">NWD Publisher</a>
+<a href="project-publish-model-wipe.html"><img class="nav-icon ic-light" src="_assets/icons/project-publish-model-wipe.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-publish-model-wipe.dark.png" alt="">Model Wipe</a>
+<div class="sub">4D</div>
+<a href="project-4d-timeliner-from-excel.html"><img class="nav-icon ic-light" src="_assets/icons/project-4d-timeliner-from-excel.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-4d-timeliner-from-excel.dark.png" alt="">TimeLiner from Excel</a>
+<a href="project-4d-auto-attach.html"><img class="nav-icon ic-light" src="_assets/icons/project-4d-auto-attach.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-4d-auto-attach.dark.png" alt="">Auto Attach</a>
+<a href="project-4d-progress-painter.html"><img class="nav-icon ic-light" src="_assets/icons/project-4d-progress-painter.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-4d-progress-painter.dark.png" alt="">Progress Painter</a>
+<a href="project-4d-movie-maker.html"><img class="nav-icon ic-light" src="_assets/icons/project-4d-movie-maker.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-4d-movie-maker.dark.png" alt="">4D Movie Maker</a>
+<a href="project-4d-schedule-tools-timeliner-export.html"><img class="nav-icon ic-light" src="_assets/icons/project-4d-schedule-tools-timeliner-export.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-4d-schedule-tools-timeliner-export.dark.png" alt="">TimeLiner Export</a>
+<a href="project-4d-schedule-tools-schedule-health.html"><img class="nav-icon ic-light" src="_assets/icons/project-4d-schedule-tools-schedule-health.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-4d-schedule-tools-schedule-health.dark.png" alt="">Schedule Health</a>
+<div class="sub">Quantities</div>
+<a href="project-quantities-quick-takeoff.html"><img class="nav-icon ic-light" src="_assets/icons/project-quantities-quick-takeoff.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-quantities-quick-takeoff.dark.png" alt="">Quick Takeoff</a>
+<a href="project-quantities-zone-takeoff.html"><img class="nav-icon ic-light" src="_assets/icons/project-quantities-zone-takeoff.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-quantities-zone-takeoff.dark.png" alt="">Zone Takeoff</a>
+<a href="project-quantities-takeoff-templates.html"><img class="nav-icon ic-light" src="_assets/icons/project-quantities-takeoff-templates.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-quantities-takeoff-templates.dark.png" alt="">Takeoff Templates</a>
+<a href="project-quantities-cog-calculator.html"><img class="nav-icon ic-light" src="_assets/icons/project-quantities-cog-calculator.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-quantities-cog-calculator.dark.png" alt="">COG Calculator</a>
+<div class="sub">Field</div>
+<a href="project-field-qr-tagger.html"><img class="nav-icon ic-light" src="_assets/icons/project-field-qr-tagger.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-field-qr-tagger.dark.png" alt="">QR Tagger</a>
+<a href="project-field-photo-pins.html"><img class="nav-icon ic-light" src="_assets/icons/project-field-photo-pins.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-field-photo-pins.dark.png" alt="">Photo Pins</a>
+<a href="project-field-photo-browser.html"><img class="nav-icon ic-light" src="_assets/icons/project-field-photo-browser.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-field-photo-browser.dark.png" alt="">Photo Browser</a>
+<a href="project-field-field-checklists.html"><img class="nav-icon ic-light" src="_assets/icons/project-field-field-checklists.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-field-field-checklists.dark.png" alt="">Field Checklists</a>
+<div class="sub">Exchange</div>
+<a href="project-exchange-geometry-exporter.html"><img class="nav-icon ic-light" src="_assets/icons/project-exchange-geometry-exporter.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-exchange-geometry-exporter.dark.png" alt="">Geometry Exporter</a>
+<a href="project-exchange-ifc-exporter.html"><img class="nav-icon ic-light" src="_assets/icons/project-exchange-ifc-exporter.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/project-exchange-ifc-exporter.dark.png" alt="">IFC Exporter</a>
+<div class="grp">Dev</div>
+<div class="sub">Automate</div>
+<a href="dev-automate-command-palette.html"><img class="nav-icon ic-light" src="_assets/icons/dev-automate-command-palette.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-automate-command-palette.dark.png" alt="">Command Palette</a>
+<a href="dev-automate-macro-record.html"><img class="nav-icon ic-light" src="_assets/icons/dev-automate-macro-record.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-automate-macro-record.dark.png" alt="">Record Macro</a>
+<a href="dev-automate-macros-play-macro.html"><img class="nav-icon ic-light" src="_assets/icons/dev-automate-macros-play-macro.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-automate-macros-play-macro.dark.png" alt="">Play Macro</a>
+<a href="dev-automate-macros-manage-macros.html"><img class="nav-icon ic-light" src="_assets/icons/dev-automate-macros-manage-macros.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-automate-macros-manage-macros.dark.png" alt="">Manage Macros</a>
+<a href="dev-automate-macros-macro-to-button.html"><img class="nav-icon ic-light" src="_assets/icons/dev-automate-macros-macro-to-button.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-automate-macros-macro-to-button.dark.png" alt="">Macro to Button</a>
+<div class="sub">Reports</div>
+<a href="dev-reports-report-templates.html"><img class="nav-icon ic-light" src="_assets/icons/dev-reports-report-templates.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-reports-report-templates.dark.png" alt="">Report Templates</a>
+<a href="dev-reports-scheduled-reports.html"><img class="nav-icon ic-light" src="_assets/icons/dev-reports-scheduled-reports.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-reports-scheduled-reports.dark.png" alt="">Scheduled Reports</a>
+<div class="sub">Build</div>
+<a href="dev-build-button-maker.html"><img class="nav-icon ic-light" src="_assets/icons/dev-build-button-maker.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-build-button-maker.dark.png" alt="">Button Maker</a>
+<a href="dev-build-script-editor.html"><img class="nav-icon ic-light" src="_assets/icons/dev-build-script-editor.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-build-script-editor.dark.png" alt="">Script Editor</a>
+<a href="dev-build-hotkey-manager.html"><img class="nav-icon ic-light" src="_assets/icons/dev-build-hotkey-manager.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-build-hotkey-manager.dark.png" alt="">Hotkey Manager</a>
+<div class="sub">Team</div>
+<a href="dev-team-extension-manager.html"><img class="nav-icon ic-light" src="_assets/icons/dev-team-extension-manager.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-team-extension-manager.dark.png" alt="">Extension Manager</a>
+<a href="dev-team-team-sync.html"><img class="nav-icon ic-light" src="_assets/icons/dev-team-team-sync.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-team-team-sync.dark.png" alt="">Team Sync</a>
+<a href="dev-team-usage-analytics.html"><img class="nav-icon ic-light" src="_assets/icons/dev-team-usage-analytics.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-team-usage-analytics.dark.png" alt="">Usage Analytics</a>
+<a href="dev-team-team-tools-environment-doctor.html"><img class="nav-icon ic-light" src="_assets/icons/dev-team-team-tools-environment-doctor.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-team-team-tools-environment-doctor.dark.png" alt="">Environment Doctor</a>
+<a href="dev-team-team-tools-playground-settings.html"><img class="nav-icon ic-light" src="_assets/icons/dev-team-team-tools-playground-settings.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-team-team-tools-playground-settings.dark.png" alt="">Playground Settings</a>
+<div class="sub">Tools</div>
+<a href="dev-tools-unit-converter.html"><img class="nav-icon ic-light" src="_assets/icons/dev-tools-unit-converter.png" alt=""><img class="nav-icon ic-dark" src="_assets/icons/dev-tools-unit-converter.dark.png" alt="">Unit Converter</a>
+</nav>
+  <div class="side-foot">
+    <span>Playground 0.1.0</span>
+    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
+      <span>Dark</span></button>
+  </div>
+</div>
+<main class="main">
+<article>
+<div class="hero"><img class="hero-icon ic-light" src="_assets/icons/model-inspect-what-is-it.png" alt=""><img class="hero-icon ic-dark" src="_assets/icons/model-inspect-what-is-it.dark.png" alt=""><div><p class="eyebrow">Model &gt; Inspect</p><h1>What Is It</h1><p class="lead">Everything Navisworks knows about one item in one card: identity, Revit IDs, source file and tree path, size and position, geometry, colour and state, and every property tab. Select the item first, or click it in the view when nothing is selected. A plain-text summary goes to the clipboard.</p></div></div>
+<div class="facts"><div class="fact"><span class="fact-k">Tab and panel</span><span class="fact-v">Model &gt; Inspect</span></div><div class="fact"><span class="fact-k">Kind</span><span class="fact-v">Button</span></div><div class="fact"><span class="fact-k">Shortcut</span><span class="fact-v"><kbd>Ctrl+Alt+I</kbd></span></div><div class="fact"><span class="fact-k">Live when</span><span class="fact-v">A model is open</span></div></div>
+<h2 id="status">Status</h2><div class="status-block">
+<p><span class="chip st-launched">Launched</span> Ran inside Navisworks at least once with no error logged; nobody checked the result yet.</p>
+<p>Ran headless under pynavis run against a sample model; 17 parts selected: ran to the end (wrote output); result not checked by a person (stubbed: namo.ui.copy).</p>
+<p class="status-meta">Recorded on 2026-10-05. The evidence is a line in a pyNavis log.</p>
+</div>
+<h2 id="ask">The public ask</h2><p>No public source is on record for this tool.</p>
+<h2 id="hooks">Events it listens to</h2>
+<p>None. It runs only when you click it.</p>
+<h2 id="files">Files</h2><p>Paths are relative to the <code>Playground.extension</code> folder.</p><ul class="files"><li><code>Model.tab/Inspect.panel/What_Is_It.pushbutton/bundle.yaml</code></li><li><code>Model.tab/Inspect.panel/What_Is_It.pushbutton/icon.dark.png</code></li><li><code>Model.tab/Inspect.panel/What_Is_It.pushbutton/icon.png</code></li><li><code>Model.tab/Inspect.panel/What_Is_It.pushbutton/icon.small.dark.png</code></li><li><code>Model.tab/Inspect.panel/What_Is_It.pushbutton/icon.small.png</code></li><li><code>Model.tab/Inspect.panel/What_Is_It.pushbutton/script.py</code></li></ul>
+<h2 id="install">Install</h2><ol class="steps">
+<li><strong>Only this tool.</strong> In Navisworks, click pyNavis &gt; Playground, search for What Is It, tick it and click Install.</li>
+<li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. What Is It is on the Model tab, Inspect panel.</li>
+</ol><p>You need pyNavis 1.3.0 or later.</p>
+<div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20What%20Is%20It&amp;tool=Model.tab%2FInspect.panel%2FWhat_Is_It.pushbutton" rel="noopener">Report</a></div>
+<div class="pagenav">
+<a href="model-find-set-exchange-search-in-repair.html"><span class="dir">Previous</span><span class="ttl">Repair Search In</span></a>
+<a class="next" href="model-inspect-properties-plus.html"><span class="dir">Next</span><span class="ttl">Properties Plus</span></a>
+</div>
+</article>
+<aside class="toc"></aside>
+</main>
+</div>
+<script src="_assets/search-index.js"></script>
+<script src="_assets/site.js"></script>
+</body>
+</html>

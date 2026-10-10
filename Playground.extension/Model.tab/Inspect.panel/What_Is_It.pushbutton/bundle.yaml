@@ -1,0 +1,4 @@
+title: What\nIs It
+tooltip: Everything Navisworks knows about one item in one card: identity, Revit IDs, source file and tree path, size and position, geometry, colour and state, and every property tab. Select the item first, or click it in the view when nothing is selected. A plain-text summary goes to the clipboard.
+shortcut: Ctrl+Alt+I
+context: doc

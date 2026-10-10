@@ -1,0 +1,3 @@
+title: Preflight
+tooltip: Checks the document is ready to share against a profile: saved, models current, clash tests run after the newest models, no stray hidden items, overrides or section. Shift+Click to edit the profiles.
+context: doc

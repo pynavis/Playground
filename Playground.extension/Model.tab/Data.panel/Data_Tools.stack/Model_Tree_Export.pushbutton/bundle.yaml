@@ -1,0 +1,3 @@
+title: Model Tree Export
+tooltip: Exports the selection tree to a chosen depth (4 by default) as an Excel workbook with a sheet per model: each node's depth, name, class, descendants, geometry items and hidden state, indented and one column per level so it filters in Excel.
+context: doc

@@ -1,0 +1,5 @@
+title: Pick\nOrder
+title_on: Stop\nPicking
+tooltip: Records the items you click, in the order you click them, so you can select, number, export or color them in that order. Click it, then click items one at a time (Ctrl+click works too); the bar along the bottom of the window counts them.
+tooltip_on: Stops recording picks. The pick list is kept for this model.
+context: doc

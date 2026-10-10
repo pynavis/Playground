@@ -1,0 +1,3 @@
+title: Select\nSimilar
+tooltip: Selects every item that shares the property values you tick with the first selected item, in the whole model, its own model or the selection.
+context: selection

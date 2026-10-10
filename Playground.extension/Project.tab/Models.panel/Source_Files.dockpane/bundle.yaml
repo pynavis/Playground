@@ -1,0 +1,3 @@
+title: Source Files
+tooltip: A panel listing every appended model with its type, units, file time and item count, flagging files that are out of date or missing. Tick to show or hide a model; isolate, select, zoom, open its folder, refresh changed files or remove models from here.
+keytip: SF

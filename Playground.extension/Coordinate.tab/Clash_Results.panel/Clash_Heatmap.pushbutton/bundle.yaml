@@ -1,0 +1,3 @@
+title: Clash\nHeatmap
+tooltip: Colours elements by how many open clashes they have, lists the top hotspots, and can mark the densest spots in the view. Shift+Click clears the colours and markers.
+context: clash-results

@@ -1,0 +1,3 @@
+title: 4D Movie\nMaker
+tooltip: Renders a construction sequence from TimeLiner dates and task types, one stamped frame per day or week, as PNG frames, an HTML player and an MP4 when ffmpeg is installed. Visibility and colours are put back exactly afterwards, even on cancel.
+context: doc

@@ -1,0 +1,3 @@
+title: Batch\nPDF
+tooltip: Prints the viewpoints you choose, in folder order or your own order, to one PDF handout: title page, contents, one page per view with its comments and a footer. A4, A3, Letter or Tabloid.
+context: viewpoints
