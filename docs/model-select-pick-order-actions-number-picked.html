@@ -6,6 +6,7 @@
 <title>Number Picked - pyNavis Playground</title>
 <meta name="description" content="Writes Playground &gt; Sequence = 1, 2, 3... onto the picked items in pick order, keeping their other Playground properties. One undo step.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Number Picked", "description": "Writes Playground > Sequence = 1, 2, 3... onto the picked items in pick order, keeping their other Playground properties. One undo step.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-select-pick-order-actions-number-picked.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,76 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Number Picked is on the Model tab, Select panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Number%20Picked&amp;tool=Model.tab%2FSelect.panel%2FPick_Order_Actions.pulldown%2FNumber_Picked.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Select.panel/Pick_Order_Actions.pulldown/Number_Picked.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Select.panel/Pick_Order_Actions.pulldown/Number_Picked.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Writes Playground &gt; Sequence = 1, 2, 3... onto the picked items in pick order."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> progress, sel_pickorder, ui
+
+cfg = script.get_config(sel_pickorder.NUMBER_DEFAULTS)
+picks = sel_pickorder.load()
+
+<span class="k">if</span> <span class="k">not</span> picks:
+    toast.info(<span class="s">'No picked items'</span>, <span class="s">'Turn on Pick Order and click items in order first.'</span>)
+<span class="k">else</span>:
+    found, missing = sel_pickorder.resolve()
+    <span class="k">if</span> <span class="k">not</span> found:
+        toast.warning(<span class="s">'None of the picked items are in the model'</span>,
+                      <span class="s">'They may have been removed or re-exported. Clear Picked starts a new list.'</span>)
+    <span class="k">else</span>:
+        values = ui.form(<span class="s">'Number Picked'</span>, [
+            {<span class="s">'kind'</span>: <span class="s">'label'</span>, <span class="s">'text'</span>: <span class="s">'Numbers the %d picked items in pick order on the Playground tab.'</span>
+                                      % len(found)},
+            {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'property'</span>, <span class="s">'label'</span>: <span class="s">'Property name'</span>, <span class="s">'default'</span>: cfg[<span class="s">'property'</span>],
+             <span class="s">'required'</span>: <span class="k">True</span>},
+            {<span class="s">'kind'</span>: <span class="s">'int'</span>, <span class="s">'key'</span>: <span class="s">'start'</span>, <span class="s">'label'</span>: <span class="s">'First number'</span>, <span class="s">'default'</span>: cfg[<span class="s">'start'</span>],
+             <span class="s">'required'</span>: <span class="k">True</span>},
+            {<span class="s">'kind'</span>: <span class="s">'int'</span>, <span class="s">'key'</span>: <span class="s">'step'</span>, <span class="s">'label'</span>: <span class="s">'Step'</span>, <span class="s">'default'</span>: cfg[<span class="s">'step'</span>], <span class="s">'min'</span>: 1,
+             <span class="s">'required'</span>: <span class="k">True</span>},
+            {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'prefix'</span>, <span class="s">'label'</span>: <span class="s">'Prefix'</span>, <span class="s">'default'</span>: cfg[<span class="s">'prefix'</span>],
+             <span class="s">'hint'</span>: <span class="s">'Optional, for example P- gives P-1, P-2...'</span>},
+            {<span class="s">'kind'</span>: <span class="s">'int'</span>, <span class="s">'key'</span>: <span class="s">'digits'</span>, <span class="s">'label'</span>: <span class="s">'Zero padding (digits)'</span>, <span class="s">'default'</span>: cfg[<span class="s">'digits'</span>],
+             <span class="s">'min'</span>: 0, <span class="s">'max'</span>: 8,
+             <span class="s">'hint'</span>: <span class="s">'3 gives 001, 002...; with padding or a prefix the values are text.'</span>},
+        ], ok=<span class="s">'Number'</span>, width=440)
+        <span class="k">if</span> values <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            <span class="k">for</span> key <span class="k">in</span> (<span class="s">'property'</span>, <span class="s">'start'</span>, <span class="s">'step'</span>, <span class="s">'prefix'</span>, <span class="s">'digits'</span>):
+                cfg[key] = values[key]
+            cfg[<span class="s">'property'</span>] = cfg[<span class="s">'property'</span>].strip()
+            cfg[<span class="s">'digits'</span>] = cfg[<span class="s">'digits'</span>] <span class="k">or</span> 0
+            script.save_config(cfg)
+            numbers = sel_pickorder.sequence_values(len(found), cfg[<span class="s">'start'</span>], cfg[<span class="s">'step'</span>],
+                                                    cfg[<span class="s">'prefix'</span>], cfg[<span class="s">'digits'</span>])
+            <span class="k">if</span> len(found) &gt; 100:
+                outcome = progress.run(<span class="s">'Numbering picked items'</span>, <span class="k">lambda</span> report: sel_pickorder.number(
+                    found, numbers, cfg[<span class="s">'property'</span>], report))
+            <span class="k">else</span>:
+                outcome = sel_pickorder.number(found, numbers, cfg[<span class="s">'property'</span>])
+            <span class="k">if</span> outcome <span class="k">is</span> <span class="k">not</span> progress.CANCELLED:
+                written, errors = outcome
+                detail = <span class="s">'Playground &gt; %s = %s to %s'</span> % (cfg[<span class="s">'property'</span>], numbers[0], numbers[-1])
+                <span class="k">if</span> missing:
+                    detail += <span class="s">'; %d picked items are no longer in the model'</span> % missing
+                <span class="k">if</span> errors:
+                    toast.warning(<span class="s">'Numbered %d of %d items'</span> % (written, len(found)), errors[0])
+                <span class="k">else</span>:
+                    toast.success(<span class="s">'Numbered %d %s'</span> % (written, <span class="s">'item'</span> <span class="k">if</span> written == 1 <span class="k">else</span> <span class="s">'items'</span>),
+                                  detail)
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/sel_pickorder.py" rel="noopener"><code>namo.sel_pickorder</code></a><span class="mod-doc">Pick Order: an ordered list of items the user clicks, and what to do with it.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Select.panel/Pick_Order_Actions.pulldown/Number_Picked.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Select.panel/Pick_Order_Actions.pulldown/Number_Picked.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Number Picked
+tooltip: Writes Playground &gt; Sequence = 1, 2, 3... onto the picked items in pick order, keeping their other Playground properties. One undo step.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="model-select-pick-order-actions-select-picked.html"><span class="dir">Previous</span><span class="ttl">Select Picked</span></a>
 <a class="next" href="model-select-pick-order-actions-export-picked.html"><span class="dir">Next</span><span class="ttl">Export Picked</span></a>

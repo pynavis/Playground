@@ -6,6 +6,7 @@
 <title>Trade Ghost - pyNavis Playground</title>
 <meta name="description" content="Keeps the trades you choose, or the selection, solid and fades every other model to a transparent grey. Click again to change the focus or clear the ghost. Shift+Click for settings.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Trade Ghost", "description": "Keeps the trades you choose, or the selection, solid and fades every other model to a transparent grey. Click again to change the focus or clear the ghost. Shift+Click for settings.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-look-trade-ghost.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,112 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Trade Ghost is on the Model tab, Look panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Trade%20Ghost&amp;tool=Model.tab%2FLook.panel%2FTrade_Ghost.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Look.panel/Trade_Ghost.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Look.panel/Trade_Ghost.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Keeps the chosen trades or the selection solid and ghosts every other model; click again to change or clear."""</span>
+<span class="k">from</span> namo <span class="k">import</span> items, look_ghost, paint, ui
+<span class="k">from</span> pynavis <span class="k">import</span> doc <span class="k">as</span> nwdoc
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+TITLE = <span class="s">'Trade Ghost'</span>
+
+
+<span class="k">def</span> choose_focus(document, cfg):
+    <span class="s">"""The focus values ticked in the chooser, or None on cancel."""</span>
+    groups, _models = look_ghost.model_groups(document)
+    selected = items.selected(document)
+    rows = look_ghost.chooser_rows([(t, [m[<span class="s">'name'</span>] <span class="k">for</span> m <span class="k">in</span> ms]) <span class="k">for</span> t, ms <span class="k">in</span> groups], len(selected))
+    remembered = [t <span class="k">for</span> t <span class="k">in</span> cfg[<span class="s">'trades'</span>] <span class="k">if</span> t <span class="k">in</span> [g[0] <span class="k">for</span> g <span class="k">in</span> groups]]
+    picked = ui.choose(TITLE, rows, [<span class="s">'Focus'</span>, <span class="s">'Size'</span>, <span class="s">'Models'</span>], multiselect=<span class="k">True</span>, checked=remembered,
+                       ok=<span class="s">'Ghost the rest'</span>,
+                       prompt=<span class="s">'Tick what stays solid. Everything else fades to %d%% transparent.'</span>
+                              % cfg[<span class="s">'transparency'</span>])
+    <span class="k">return</span> picked, groups
+
+
+<span class="k">def</span> ghost(document, cfg, record):
+    picked, groups = choose_focus(document, cfg)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    keep = look_ghost.focus_items(picked, groups, document)
+    <span class="k">if</span> <span class="k">not</span> keep:
+        toast.info(<span class="s">'Nothing to keep solid'</span>, <span class="s">'Tick a trade, or select something and tick Current selection.'</span>)
+        <span class="k">return</span>
+    previous = []
+    <span class="k">if</span> record <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        previous, _missing = items.resolve(record[<span class="s">'entries'</span>], document)
+    cfg[<span class="s">'trades'</span>] = [p <span class="k">for</span> p <span class="k">in</span> picked <span class="k">if</span> p != look_ghost.SELECTION]
+    script.save_config(cfg)
+    others = look_ghost.ghost(keep, cfg, previous, document)
+    label = look_ghost.focus_label(picked)
+    <span class="k">if</span> <span class="k">not</span> others:
+        look_ghost.save_record(<span class="k">None</span>, document)
+        toast.info(<span class="s">'Nothing left to ghost'</span>, <span class="s">'%s is the whole model.'</span> % label)
+        <span class="k">return</span>
+    look_ghost.save_record(look_ghost.make_record(items.entries(others, document), label, cfg), document)
+    toast.success(<span class="s">'Ghosted everything but %s'</span> % label,
+                  <span class="s">'%d%% transparent%s. Click Trade Ghost again to change or clear it.'</span>
+                  % (cfg[<span class="s">'transparency'</span>], <span class="s">' and grey'</span> <span class="k">if</span> cfg[<span class="s">'grey'</span>] <span class="k">else</span> <span class="s">''</span>))
+
+
+<span class="k">def</span> clear(document, record):
+    count, missing = look_ghost.clear(record, document)
+    look_ghost.save_record(<span class="k">None</span>, document)
+    <span class="k">if</span> missing <span class="k">and</span> <span class="k">not</span> count:
+        <span class="k">if</span> forms.confirm(<span class="s">'The ghosted items could not be found again. Reset every color and '</span>
+                         <span class="s">'transparency in the model instead?'</span>, title=TITLE):
+            paint.reset(<span class="k">None</span>, document, <span class="s">'Clear ghost'</span>)
+            toast.success(<span class="s">'Ghost cleared'</span>, <span class="s">'Every color and transparency is back to the model.'</span>)
+        <span class="k">return</span>
+    toast.success(<span class="s">'Ghost cleared'</span>, <span class="s">'Everything outside %s is back to its own colors.'</span> % record.get(<span class="s">'focus'</span>, <span class="s">'the focus'</span>))
+
+
+<span class="k">def</span> run():
+    document = nwdoc.get_doc()
+    <span class="k">if</span> document.Models.Count == 0:
+        toast.info(<span class="s">'No model open'</span>, <span class="s">'Open or append models, then run Trade Ghost again.'</span>)
+        <span class="k">return</span>
+    cfg = look_ghost.normalize_config(script.get_config(look_ghost.DEFAULTS))
+    record = look_ghost.load_record(document)
+    <span class="k">if</span> record <span class="k">is</span> <span class="k">None</span>:
+        ghost(document, cfg, <span class="k">None</span>)
+        <span class="k">return</span>
+    action = forms.ask_options(<span class="k">None</span>, [look_ghost.CHANGE, look_ghost.CLEAR], title=TITLE)
+    <span class="k">if</span> action == look_ghost.CHANGE:
+        ghost(document, cfg, record)
+    <span class="k">elif</span> action == look_ghost.CLEAR:
+        clear(document, record)
+
+
+run()
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Look.panel/Trade_Ghost.pushbutton/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Look.panel/Trade_Ghost.pushbutton/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Sets how transparent Trade Ghost makes everything outside the focus, and whether it turns grey."""</span>
+<span class="k">from</span> namo <span class="k">import</span> look_ghost, ui
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+cfg = look_ghost.normalize_config(script.get_config(look_ghost.DEFAULTS))
+values = ui.form(<span class="s">'Trade Ghost settings'</span>, look_ghost.config_fields(cfg), ok=<span class="s">'Save'</span>)
+<span class="k">if</span> values <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:                      <span class="c"># None means cancelled: say nothing</span>
+    cfg.update(values)
+    cfg = look_ghost.normalize_config(cfg)
+    script.save_config(cfg)
+    toast.success(<span class="s">'Saved'</span>, <span class="s">'Trade Ghost fades the rest to %d%% transparent%s.'</span>
+                  % (cfg[<span class="s">'transparency'</span>], <span class="s">' and grey'</span> <span class="k">if</span> cfg[<span class="s">'grey'</span>] <span class="k">else</span> <span class="s">''</span>))
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/look_ghost.py" rel="noopener"><code>namo.look_ghost</code></a><span class="mod-doc">Trade Ghost: one or more trades stay solid, every other model fades.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/paint.py" rel="noopener"><code>namo.paint</code></a><span class="mod-doc">Colouring model items: permanent colour/transparency overrides, ghosting, reset.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Look.panel/Trade_Ghost.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Look.panel/Trade_Ghost.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Trade\nGhost
+tooltip: Keeps the trades you choose, or the selection, solid and fades every other model to a transparent grey. Click again to change the focus or clear the ghost. Shift+Click for settings.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="model-look-color-presets.html"><span class="dir">Previous</span><span class="ttl">Color Presets</span></a>
 <a class="next" href="model-look-status-painter.html"><span class="dir">Next</span><span class="ttl">Status Painter</span></a>

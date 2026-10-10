@@ -6,6 +6,7 @@
 <title>QR Tagger - pyNavis Playground</title>
 <meta name="description" content="Makes a QR code for each selected object from a payload template (project, file, Element ID, IFC GUID or a URL), saved as PNG files with a printable A4 label sheet, and writes the payload into the object as Playground &gt; QR.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "QR Tagger", "description": "Makes a QR code for each selected object from a payload template (project, file, Element ID, IFC GUID or a URL), saved as PNG files with a printable A4 label sheet, and writes the payload into the object as Playground > QR.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/project-field-qr-tagger.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -221,6 +225,149 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. QR Tagger is on the Project tab, Field panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20QR%20Tagger&amp;tool=Project.tab%2FField.panel%2FQR_Tagger.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Field.panel/QR_Tagger.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Field.panel/QR_Tagger.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Makes a QR code for each selected object: PNG files, a printable label sheet and a Playground &gt; QR property."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> field_qr, fourd_common, items, naming, paths, progress, qr, ui
+
+TITLE = <span class="s">'QR Tagger'</span>
+MAX_OBJECTS = 2000
+DEFAULTS = {<span class="s">'template'</span>: field_qr.DEFAULT_TEMPLATE, <span class="s">'level'</span>: <span class="s">'M'</span>, <span class="s">'scale'</span>: 8, <span class="s">'folder'</span>: <span class="s">''</span>, <span class="s">'sheet'</span>: <span class="k">True</span>,
+            <span class="s">'property'</span>: <span class="k">True</span>}
+LEVELS = [(<span class="s">'L, 7% damage'</span>, <span class="s">'L'</span>), (<span class="s">'M, 15%'</span>, <span class="s">'M'</span>), (<span class="s">'Q, 25%'</span>, <span class="s">'Q'</span>), (<span class="s">'H, 30%'</span>, <span class="s">'H'</span>)]
+
+
+<span class="k">def</span> ask(doc, count, values):
+    folder = values.get(<span class="s">'folder'</span>) <span class="k">or</span> <span class="s">''</span>
+    <span class="k">if</span> <span class="k">not</span> folder <span class="k">or</span> <span class="k">not</span> os.path.isdir(folder):
+        folder = fourd_common.doc_folder(doc)
+    fields = [
+        {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'template'</span>, <span class="s">'label'</span>: <span class="s">'Payload'</span>, <span class="s">'default'</span>: values.get(<span class="s">'template'</span>),
+         <span class="s">'required'</span>: <span class="k">True</span>, <span class="s">'validate'</span>: field_qr.check_template,
+         <span class="s">'hint'</span>: <span class="s">'Tokens: %s. A URL works too: https://example.com/asset?guid={guid}'</span>
+                 % <span class="s">' '</span>.join(<span class="s">'{%s}'</span> % t <span class="k">for</span> t <span class="k">in</span> field_qr.TOKENS)},
+        {<span class="s">'kind'</span>: <span class="s">'radio'</span>, <span class="s">'key'</span>: <span class="s">'level'</span>, <span class="s">'label'</span>: <span class="s">'Error correction (how much damage it survives)'</span>,
+         <span class="s">'options'</span>: LEVELS, <span class="s">'inline'</span>: <span class="k">True</span>, <span class="s">'default'</span>: values.get(<span class="s">'level'</span>, <span class="s">'M'</span>), <span class="s">'fallback'</span>: <span class="s">'M'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'int'</span>, <span class="s">'key'</span>: <span class="s">'scale'</span>, <span class="s">'label'</span>: <span class="s">'Module size in the PNG files'</span>, <span class="s">'min'</span>: 2, <span class="s">'max'</span>: 40,
+         <span class="s">'suffix'</span>: <span class="s">'px'</span>, <span class="s">'default'</span>: int(values.get(<span class="s">'scale'</span>) <span class="k">or</span> 8), <span class="s">'required'</span>: <span class="k">True</span>},
+        {<span class="s">'kind'</span>: <span class="s">'folder'</span>, <span class="s">'key'</span>: <span class="s">'folder'</span>, <span class="s">'label'</span>: <span class="s">'Save in'</span>, <span class="s">'default'</span>: folder, <span class="s">'required'</span>: <span class="k">True</span>,
+         <span class="s">'hint'</span>: <span class="s">'A new folder is made inside it for the PNG files and the label sheet.'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'sheet'</span>, <span class="s">'label'</span>: <span class="s">'Write a printable A4 label sheet'</span>,
+         <span class="s">'default'</span>: bool(values.get(<span class="s">'sheet'</span>, <span class="k">True</span>))},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'property'</span>, <span class="s">'label'</span>: <span class="s">'Write the payload into each object (Playground &gt; QR)'</span>,
+         <span class="s">'default'</span>: bool(values.get(<span class="s">'property'</span>, <span class="k">True</span>))},
+    ]
+    <span class="k">return</span> ui.form(TITLE, fields, intro=<span class="s">'%s selected.'</span> % fourd_common.plural(count, <span class="s">'object'</span>),
+                   ok=<span class="s">'Make codes'</span>, width=600)
+
+
+<span class="k">def</span> make(objects, answer, folder, doc, report):
+    standard = naming.standard_values(doc)
+    labels = []
+    payloads = []
+    <span class="k">for</span> index, obj <span class="k">in</span> enumerate(objects):
+        report(0.8 * index / float(len(objects) <span class="k">or</span> 1), <span class="s">'Encoding %s of %s'</span> % (<span class="s">'{:,}'</span>.format(index + 1),
+                                                                         <span class="s">'{:,}'</span>.format(len(objects))))
+        values = field_qr.object_values(obj, standard)
+        payload, _missing = field_qr.render_payload(answer[<span class="s">'template'</span>], values)
+        code = qr.encode(payload, answer[<span class="s">'level'</span>])
+        labels.append({<span class="s">'code'</span>: code, <span class="s">'payload'</span>: payload, <span class="s">'name'</span>: values[<span class="s">'name'</span>],
+                       <span class="s">'element_id'</span>: values[<span class="s">'element_id'</span>],
+                       <span class="s">'lines'</span>: [<span class="s">'ID %s'</span> % values[<span class="s">'element_id'</span>] <span class="k">if</span> values[<span class="s">'element_id'</span>] <span class="k">else</span> <span class="s">''</span>,
+                                 values[<span class="s">'guid'</span>]]})
+        payloads.append(payload)
+    paths.ensure_dir(folder)
+    <span class="k">for</span> label, name <span class="k">in</span> zip(labels, field_qr.file_names(labels)):
+        qr.write_png(label[<span class="s">'code'</span>], os.path.join(folder, name), scale=answer[<span class="s">'scale'</span>])
+        label[<span class="s">'file'</span>] = name
+    sheet = <span class="k">None</span>
+    <span class="k">if</span> answer[<span class="s">'sheet'</span>]:
+        report(0.85, <span class="s">'Writing the label sheet'</span>)
+        sheet = os.path.join(folder, <span class="s">'QR labels.html'</span>)
+        rows = [{<span class="s">'svg'</span>: qr.to_svg(l[<span class="s">'code'</span>]), <span class="s">'name'</span>: l[<span class="s">'name'</span>], <span class="s">'lines'</span>: l[<span class="s">'lines'</span>]} <span class="k">for</span> l <span class="k">in</span> labels]
+        paths.atomic_write_text(sheet, field_qr.sheet_html(
+            rows, <span class="s">'QR labels'</span>, <span class="s">'%s. Print at 100%% scale on A4.'</span> % fourd_common.plural(len(rows), <span class="s">'label'</span>)))
+    written, errors = 0, []
+    <span class="k">if</span> answer[<span class="s">'property'</span>]:
+        report(0.9, <span class="s">'Writing the Playground &gt; QR property'</span>)
+        written, errors = field_qr.write_property(objects, payloads, doc)
+    <span class="k">return</span> {<span class="s">'labels'</span>: labels, <span class="s">'sheet'</span>: sheet, <span class="s">'written'</span>: written, <span class="s">'errors'</span>: errors}
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> ui.is_runner():
+        toast.info(<span class="s">'%s works on the selection'</span> % TITLE, <span class="s">'Run it from the ribbon.'</span>)
+        <span class="k">return</span>
+    doc = fourd_common.active_doc()
+    <span class="c"># Stop the walk one past the limit: a whole-model selection must not be walked in full</span>
+    <span class="c"># just to be refused.</span>
+    objects = items.objects(items.selected(doc), budget=MAX_OBJECTS + 1)
+    <span class="k">if</span> <span class="k">not</span> objects:
+        toast.info(<span class="s">'Nothing selected'</span>, <span class="s">'Select the objects to tag, then run QR Tagger.'</span>)
+        <span class="k">return</span>
+    <span class="k">if</span> len(objects) &gt; MAX_OBJECTS:
+        toast.info(<span class="s">'Too many objects selected'</span>, <span class="s">'Select at most %s objects; more are selected.'</span>
+                   % <span class="s">'{:,}'</span>.format(MAX_OBJECTS))
+        <span class="k">return</span>
+    values = script.get_config(DEFAULTS)
+    answer = ask(doc, len(objects), values)
+    <span class="k">if</span> answer <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    values.update(dict((k, answer[k]) <span class="k">for</span> k <span class="k">in</span> (<span class="s">'template'</span>, <span class="s">'level'</span>, <span class="s">'scale'</span>, <span class="s">'folder'</span>, <span class="s">'sheet'</span>, <span class="s">'property'</span>)))
+    script.save_config(values)
+    folder = field_qr.output_folder(answer[<span class="s">'folder'</span>], fourd_common.doc_title(doc))
+    <span class="k">try</span>:
+        result = progress.run(TITLE, <span class="k">lambda</span> report: make(objects, answer, folder, doc, report))
+    <span class="k">except</span> qr.QRError <span class="k">as</span> error:
+        toast.error(<span class="s">'A payload is too long for a QR code'</span>, <span class="s">'%s Shorten the payload template.'</span> % error)
+        <span class="k">return</span>
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not write the QR files'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">if</span> result <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    largest = max(l[<span class="s">'code'</span>].version <span class="k">for</span> l <span class="k">in</span> result[<span class="s">'labels'</span>])
+    made = <span class="s">'Made %s'</span> % fourd_common.plural(len(result[<span class="s">'labels'</span>]), <span class="s">'QR code'</span>)
+    detail = <span class="s">'PNG files%s in %s. Largest code: version %d.'</span> % (
+        <span class="s">' and a label sheet'</span> <span class="k">if</span> result[<span class="s">'sheet'</span>] <span class="k">else</span> <span class="s">''</span>, folder, largest)
+    repeats = field_qr.repeated_payloads([l[<span class="s">'payload'</span>] <span class="k">for</span> l <span class="k">in</span> result[<span class="s">'labels'</span>]])
+    <span class="k">if</span> result[<span class="s">'errors'</span>]:
+        toast.warning(<span class="s">'%s; %s not written'</span> % (made, fourd_common.plural(len(result[<span class="s">'errors'</span>]), <span class="s">'property'</span>,
+                                                                        <span class="s">'properties'</span>)),
+                      <span class="s">'%s The files are in %s.'</span> % (result[<span class="s">'errors'</span>][0], folder))
+    <span class="k">elif</span> repeats:
+        toast.warning(made, <span class="s">'%s the same payload as another: the template has nothing that tells them '</span>
+                      <span class="s">'apart (no Element ID or GUID). Files in %s.'</span>
+                      % (<span class="s">'1 object has'</span> <span class="k">if</span> repeats == 1 <span class="k">else</span> <span class="s">'%s objects have'</span> % <span class="s">'{:,}'</span>.format(repeats), folder))
+    <span class="k">else</span>:
+        toast.success(made, detail)
+    fourd_common.open_file(result[<span class="s">'sheet'</span>] <span class="k">or</span> folder)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/field_qr.py" rel="noopener"><code>namo.field_qr</code></a><span class="mod-doc">QR Tagger: payloads from a template, PNG files, a printable label sheet and the &#x27;Playground &gt; QR&#x27; property.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/fourd_common.py" rel="noopener"><code>namo.fourd_common</code></a><span class="mod-doc">Helpers the 4D, Quantities and Field tools share: scopes, default files, text.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/naming.py" rel="noopener"><code>namo.naming</code></a><span class="mod-doc">Name templates: &#x27;{test} - {n:000}&#x27;, &#x27;{date:%Y%m%d} {project}&#x27;, &#x27;{{literal braces}}&#x27;.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/paths.py" rel="noopener"><code>namo.paths</code></a><span class="mod-doc">Where Playground keeps its files, and how it writes them safely.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/qr.py" rel="noopener"><code>namo.qr</code></a><span class="mod-doc">A pure QR Code encoder (ISO/IEC 18004:2015), PNG and SVG output.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Field.panel/QR_Tagger.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Field.panel/QR_Tagger.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: QR\nTagger
+tooltip: Makes a QR code for each selected object from a payload template (project, file, Element ID, IFC GUID or a URL), saved as PNG files with a printable A4 label sheet, and writes the payload into the object as Playground &gt; QR.
+context: selection
+</code></pre></div>
 <div class="pagenav">
 <a href="project-quantities-cog-calculator.html"><span class="dir">Previous</span><span class="ttl">COG Calculator</span></a>
 <a class="next" href="project-field-photo-pins.html"><span class="dir">Next</span><span class="ttl">Photo Pins</span></a>

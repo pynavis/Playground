@@ -6,6 +6,7 @@
 <title>Coordinate Spotter - pyNavis Playground</title>
 <meta name="description" content="Click points in the view to drop numbered markers with their coordinates, then get the table, a clipboard copy and an Excel or CSV file. The clicks use the Measure tool, so the pointer snaps to vertices and edges exactly as a measurement does; Esc or right-click ends. Shift+Click sets a local origin.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Coordinate Spotter", "description": "Click points in the view to drop numbered markers with their coordinates, then get the table, a clipboard copy and an Excel or CSV file. The clicks use the Measure tool, so the pointer snaps to vertices and edges exactly as a measurement does; Esc or right-click ends. Shift+Click sets a local origin.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/views-navigate-spotter-coordinate-spotter.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -225,6 +229,173 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Coordinate Spotter is on the Views tab, Navigate panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Coordinate%20Spotter&amp;tool=Views.tab%2FNavigate.panel%2FSpotter.stack%2FCoordinate_Spotter.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Navigate.panel/Spotter.stack/Coordinate_Spotter.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Navigate.panel/Spotter.stack/Coordinate_Spotter.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Drops numbered coordinate markers where you click until Esc, then lists the points and copies them."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> namo <span class="k">import</span> levels, picking, spotter, vp_common
+<span class="k">from</span> pynavis <span class="k">import</span> forms, output, overlay, script, toast
+
+TITLE = <span class="s">'Coordinate Spotter'</span>
+SAVE = [<span class="s">'Save as Excel'</span>, <span class="s">'Save as CSV'</span>]
+
+
+<span class="k">def</span> _overlay_redraw():
+    <span class="s">"""Redraws the overlay through namo.overlayfix, so labels land on their points."""</span>
+    <span class="k">from</span> namo <span class="k">import</span> overlayfix
+    <span class="k">return</span> overlayfix.redraw()
+
+
+<span class="k">def</span> pick_loop(document, units, origin, holder, size):
+    <span class="s">"""Picks until Esc, a right-click or another tool; returns how many points were
+    added. Each pick runs on the Measure tool with its prompt on the banner
+    (namo.picking shows and clears it), and the prompt carries the last reading."""</span>
+    added = 0
+    <span class="k">while</span> <span class="k">True</span>:
+        n = holder.count + 1
+        last = holder.points[-1] <span class="k">if</span> holder.points <span class="k">else</span> <span class="k">None</span>
+        hit = picking.point(spotter.prompt_text(n, last, units, origin), want_item=<span class="k">True</span>, doc=document)
+        <span class="k">if</span> hit <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span> added
+        record = spotter.record_of(n, hit)
+        holder.points.append(record)
+        holder.count = n
+        added += 1
+        spotter.draw(record, units, origin, size)
+        _overlay_redraw()
+
+
+<span class="k">def</span> save(document, head, rows, origin, units):
+    <span class="s">"""Offers Excel or CSV; True when saved, False when it failed, None when skipped."""</span>
+    choice = forms.ask_options(<span class="k">None</span>, SAVE, title=TITLE)
+    <span class="k">if</span> choice <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    excel = choice == SAVE[0]
+    stem = <span class="s">'%s - Coordinates'</span> % vp_common.file_stem(vp_common.doc_path(document))
+    folder = vp_common.default_folder(vp_common.doc_path(document))
+    <span class="k">if</span> excel:
+        path = forms.save_file(filter=<span class="s">'Excel workbooks (*.xlsx)|*.xlsx'</span>,
+                               default_name=os.path.join(folder, stem + <span class="s">'.xlsx'</span>), title=TITLE)
+    <span class="k">else</span>:
+        path = forms.save_file(filter=<span class="s">'CSV files (*.csv)|*.csv'</span>,
+                               default_name=os.path.join(folder, stem + <span class="s">'.csv'</span>), title=TITLE)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    title = <span class="s">'Coordinates in %s'</span> % units.lower()
+    <span class="k">if</span> origin:
+        title += <span class="s">', measured from the local origin at %s'</span> % vp_common.point_text(origin, units)
+    <span class="k">try</span>:
+        <span class="k">if</span> excel:
+            path = path <span class="k">if</span> path.lower().endswith(<span class="s">'.xlsx'</span>) <span class="k">else</span> path + <span class="s">'.xlsx'</span>
+            spotter.write_xlsx(path, head, rows, title)
+        <span class="k">else</span>:
+            path = path <span class="k">if</span> path.lower().endswith(<span class="s">'.csv'</span>) <span class="k">else</span> path + <span class="s">'.csv'</span>
+            spotter.write_csv(path, head, rows)
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not save the points'</span>, <span class="s">'%s. Close the file, then try again.'</span> % error)
+        <span class="k">return</span> <span class="k">False</span>
+    toast.success(<span class="s">'Saved %s'</span> % vp_common.plural(len(rows), <span class="s">'point'</span>), path)
+    <span class="k">return</span> <span class="k">True</span>
+
+
+<span class="k">def</span> run():
+    document = vp_common.active_doc()
+    <span class="k">if</span> <span class="k">not</span> vp_common.has_models(document):
+        toast.info(<span class="s">'No model open'</span>, <span class="s">'Open or append a model, then run Coordinate Spotter again.'</span>)
+        <span class="k">return</span>
+    units = str(document.Units)
+    origin = spotter.load_origin(document)
+    holder = spotter.state()
+    key = vp_common.doc_path(document).lower() <span class="k">or</span> <span class="s">'untitled'</span>
+    <span class="k">if</span> holder.doc <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> holder.doc != key:
+        spotter.clear()
+        holder = spotter.state()
+    holder.doc = key
+    size = spotter.marker_size(units, levels.model_box(document))
+    <span class="k">if</span> <span class="k">not</span> pick_loop(document, units, origin, holder, size):
+        <span class="k">return</span>                                  <span class="c"># ended without a new point: say nothing</span>
+    head = spotter.headers(units, origin)
+    where = <span class="s">''</span>
+    <span class="k">if</span> origin:
+        where = <span class="s">', measured from the local origin at %s'</span> % vp_common.point_text(origin, units)
+    output.set_title(TITLE)
+    output.print_md(<span class="s">'## Spotted points\nIn %s%s. Clear Spots removes the markers.'</span> % (units.lower(), where))
+    output.print_table(spotter.display_rows(holder.points, units, origin), head)
+    rows = spotter.data_rows(holder.points, units, origin)
+    script.clipboard_copy(spotter.tsv(head, rows))
+    <span class="k">if</span> save(document, head, rows, origin, units) <span class="k">is</span> <span class="k">None</span>:
+        toast.success(<span class="s">'%s spotted'</span> % vp_common.plural(len(holder.points), <span class="s">'point'</span>),
+                      <span class="s">'The table is in the output window and on the clipboard.'</span>)
+
+
+run()
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Navigate.panel/Spotter.stack/Coordinate_Spotter.pushbutton/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Navigate.panel/Spotter.stack/Coordinate_Spotter.pushbutton/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Sets the local origin Coordinate Spotter measures from, or goes back to the model origin."""</span>
+<span class="k">from</span> namo <span class="k">import</span> levels, picking, spotter, vp_common
+<span class="k">from</span> pynavis <span class="k">import</span> forms, toast
+
+TITLE = <span class="s">'Coordinate Spotter origin'</span>
+CHOICES = [<span class="s">'Pick the local origin'</span>, <span class="s">'Type the local origin'</span>, <span class="s">'Use the model origin'</span>]
+
+
+<span class="k">def</span> run():
+    document = vp_common.active_doc()
+    <span class="k">if</span> <span class="k">not</span> vp_common.has_models(document):
+        toast.info(<span class="s">'No model open'</span>, <span class="s">'Open or append a model first.'</span>)
+        <span class="k">return</span>
+    units = str(document.Units)
+    current = spotter.load_origin(document)
+    where = vp_common.point_text(current, units) <span class="k">if</span> current <span class="k">else</span> <span class="s">'the model origin'</span>
+    choice = forms.ask_options(<span class="s">'Coordinates are measured from %s.'</span> % where, CHOICES, title=TITLE)
+    <span class="k">if</span> choice <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    origin = <span class="k">None</span>
+    <span class="k">if</span> choice == CHOICES[0]:
+        hit = picking.point(<span class="s">'Click the point to measure from'</span>)
+        <span class="k">if</span> hit <span class="k">is</span> <span class="k">None</span>:                         <span class="c"># Esc, right-click or another tool: say nothing</span>
+            <span class="k">return</span>
+        origin = hit.point
+    <span class="k">elif</span> choice == CHOICES[1]:
+        start = <span class="s">', '</span>.join(<span class="s">'%.3f'</span> % v <span class="k">for</span> v <span class="k">in</span> current) <span class="k">if</span> current <span class="k">else</span> <span class="s">'0, 0, 0'</span>
+        text = forms.ask_string(<span class="s">'Local origin X, Y, Z in %s, with commas between:'</span> % units.lower(),
+                                default=start, title=TITLE)
+        <span class="k">if</span> text <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+        origin = spotter.parse_xyz(text, units)
+        <span class="k">if</span> origin <span class="k">is</span> <span class="k">None</span>:
+            toast.error(<span class="s">'That is not three coordinates'</span>, <span class="s">'Type X, Y and Z with commas between, like 12.5, 3, 0.'</span>)
+            <span class="k">return</span>
+    <span class="k">try</span>:
+        spotter.save_origin(document, origin)
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not save the origin'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">if</span> spotter.state().points:
+        spotter.redraw_all(units, origin, spotter.marker_size(units, levels.model_box(document)))
+    <span class="k">if</span> origin <span class="k">is</span> <span class="k">None</span>:
+        toast.success(<span class="s">'Measuring from the model origin'</span>)
+    <span class="k">else</span>:
+        toast.success(<span class="s">'Local origin set'</span>, vp_common.point_text(origin, units))
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/levels.py" rel="noopener"><code>namo.levels</code></a><span class="mod-doc">Levels of the model, and sectioning the view at one of them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/overlayfix.py" rel="noopener"><code>namo.overlayfix</code></a><span class="mod-doc">Keeps pynavis.overlay labels on their points, whichever way up the view counts pixels.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/picking.py" rel="noopener"><code>namo.picking</code></a><span class="mod-doc">The one way a Playground tool asks for a click in the 3D view.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/spotter.py" rel="noopener"><code>namo.spotter</code></a><span class="mod-doc">Coordinate Spotter: numbered coordinate markers dropped by clicking, a table of them, and Clear Spots.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/vp_common.py" rel="noopener"><code>namo.vp_common</code></a><span class="mod-doc">Shared helpers for the Views tools (Viewpoints, Capture and Navigate panels).</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Navigate.panel/Spotter.stack/Coordinate_Spotter.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Navigate.panel/Spotter.stack/Coordinate_Spotter.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Coordinate Spotter
+tooltip: Click points in the view to drop numbered markers with their coordinates, then get the table, a clipboard copy and an Excel or CSV file. The clicks use the Measure tool, so the pointer snaps to vertices and edges exactly as a measurement does; Esc or right-click ends. Shift+Click sets a local origin.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="views-navigate-camera-sync.html"><span class="dir">Previous</span><span class="ttl">Camera Sync</span></a>
 <a class="next" href="views-navigate-spotter-clear-spots.html"><span class="dir">Next</span><span class="ttl">Clear Spots</span></a>

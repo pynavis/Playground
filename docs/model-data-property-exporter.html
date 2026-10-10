@@ -6,6 +6,7 @@
 <title>Property Exporter - pyNavis Playground</title>
 <meta name="description" content="Exports the properties you tick for the selected objects (or their geometry items) to a styled Excel workbook or a CSV file, with name, file, Element ID and GUID columns in front. Your choice is remembered and can be saved as a named template.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Property Exporter", "description": "Exports the properties you tick for the selected objects (or their geometry items) to a styled Excel workbook or a CSV file, with name, file, Element ID and GUID columns in front. Your choice is remembered and can be saved as a named template.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-data-property-exporter.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -223,6 +227,151 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Property Exporter is on the Model tab, Data panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Property%20Exporter&amp;tool=Model.tab%2FData.panel%2FProperty_Exporter.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Data.panel/Property_Exporter.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Data.panel/Property_Exporter.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Exports chosen properties of the selected objects to Excel or CSV."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> data_common, items, progress, propindex, reports, templates, ui
+<span class="k">from</span> namo <span class="k">import</span> rep_property_export <span class="k">as</span> rep
+
+TEMPLATES = <span class="s">'property_export'</span>
+LAST = <span class="s">'(last used)'</span>
+DEFAULTS = {<span class="s">'properties'</span>: [], <span class="s">'identity'</span>: list(rep.DEFAULT_IDENTITY), <span class="s">'level'</span>: <span class="s">'objects'</span>, <span class="s">'format'</span>: <span class="s">'xlsx'</span>,
+            <span class="s">'open'</span>: <span class="k">True</span>}
+SAMPLE = 2000                <span class="c"># objects whose property names make up the choice list</span>
+
+
+<span class="k">def</span> pick_template(store, values):
+    <span class="s">"""The saved choice to start from: the last run, or a named template."""</span>
+    names = store.names()
+    <span class="k">if</span> <span class="k">not</span> names:
+        <span class="k">return</span> values
+    choice = forms.select_from_list([LAST] + names, title=<span class="s">'Property Exporter'</span>,
+                                    prompt=<span class="s">'Start from the last export or from a saved template?'</span>, checked=[LAST])
+    <span class="k">if</span> choice <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">if</span> choice == LAST:
+        <span class="k">return</span> values
+    saved = store.get(choice) <span class="k">or</span> {}
+    merged = dict(values)
+    merged.update(saved)
+    <span class="k">return</span> merged
+
+
+<span class="k">def</span> pick_properties(doc, values):
+    sample = propindex.scope_items(<span class="s">'selection'</span>, <span class="s">'objects'</span>, doc, budget=SAMPLE)
+    choices = items.sample_properties(sample, limit=SAMPLE)
+    <span class="k">if</span> <span class="k">not</span> choices:
+        toast.info(<span class="s">'No properties on the selection'</span>, <span class="s">'Select elements that carry properties.'</span>)
+        <span class="k">return</span> <span class="k">None</span>
+    rows = [{<span class="s">'cells'</span>: [c, p, n], <span class="s">'value'</span>: propindex.pair_text(c, p)} <span class="k">for</span> c, p, n <span class="k">in</span> choices]
+    known = [r[<span class="s">'value'</span>] <span class="k">for</span> r <span class="k">in</span> rows]
+    ticked = [propindex.pair_text(c, p) <span class="k">for</span> c, p <span class="k">in</span> values.get(<span class="s">'properties'</span>) <span class="k">or</span> []]
+    missing = [t <span class="k">for</span> t <span class="k">in</span> ticked <span class="k">if</span> t <span class="k">not</span> <span class="k">in</span> known]
+    <span class="k">for</span> text <span class="k">in</span> missing:
+        category, prop = propindex.split_pair(text)
+        rows.append({<span class="s">'cells'</span>: [category, prop, 0], <span class="s">'value'</span>: text})
+    prompt = <span class="s">'Tick the properties to export, one column each.'</span>
+    <span class="k">if</span> sample.sampled:
+        prompt += <span class="s">' The list comes from the first %s selected objects.'</span> % <span class="s">'{:,}'</span>.format(SAMPLE)
+    picked = ui.choose(<span class="s">'Property Exporter'</span>, rows, [<span class="s">'Tab'</span>, <span class="s">'Property'</span>, <span class="s">'Selected objects with it'</span>],
+                       multiselect=<span class="k">True</span>, checked=ticked, ok=<span class="s">'Next'</span>, prompt=prompt)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">return</span> [list(propindex.split_pair(text)) <span class="k">for</span> text <span class="k">in</span> picked]
+
+
+<span class="k">def</span> ask_options(values, count):
+    fields = [
+        {<span class="s">'kind'</span>: <span class="s">'label'</span>, <span class="s">'text'</span>: <span class="s">'%s selected. Rows are one per object, or one per geometry item.'</span>
+                                  % <span class="s">'{:,}'</span>.format(count)},
+        {<span class="s">'kind'</span>: <span class="s">'radio'</span>, <span class="s">'key'</span>: <span class="s">'level'</span>, <span class="s">'label'</span>: <span class="s">'Rows'</span>, <span class="s">'default'</span>: values.get(<span class="s">'level'</span>) <span class="k">or</span> <span class="s">'objects'</span>, <span class="s">'fallback'</span>: <span class="s">'objects'</span>,
+         <span class="s">'options'</span>: [(label, value) <span class="k">for</span> value, label <span class="k">in</span> propindex.LEVELS]},
+        {<span class="s">'kind'</span>: <span class="s">'multi'</span>, <span class="s">'key'</span>: <span class="s">'identity'</span>, <span class="s">'label'</span>: <span class="s">'Identity columns'</span>, <span class="s">'default'</span>: values.get(<span class="s">'identity'</span>) <span class="k">or</span> [],
+         <span class="s">'options'</span>: [(label, key) <span class="k">for</span> key, label <span class="k">in</span> rep.IDENTITY]},
+        {<span class="s">'kind'</span>: <span class="s">'radio'</span>, <span class="s">'key'</span>: <span class="s">'format'</span>, <span class="s">'label'</span>: <span class="s">'Format'</span>, <span class="s">'inline'</span>: <span class="k">True</span>,
+         <span class="s">'default'</span>: values.get(<span class="s">'format'</span>) <span class="k">or</span> <span class="s">'xlsx'</span>, <span class="s">'fallback'</span>: <span class="s">'xlsx'</span>, <span class="s">'options'</span>: [(<span class="s">'Excel workbook'</span>, <span class="s">'xlsx'</span>), (<span class="s">'CSV file'</span>, <span class="s">'csv'</span>)]},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'open'</span>, <span class="s">'label'</span>: <span class="s">'Open the file when done'</span>, <span class="s">'default'</span>: bool(values.get(<span class="s">'open'</span>))},
+        {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'template'</span>, <span class="s">'label'</span>: <span class="s">'Save these choices as a template (optional)'</span>,
+         <span class="s">'placeholder'</span>: <span class="s">'Template name'</span>},
+    ]
+    <span class="k">return</span> ui.form(<span class="s">'Property Exporter'</span>, fields, ok=<span class="s">'Export'</span>)
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> ui.is_runner():
+        config = dict(script.get_config(DEFAULTS), scope=<span class="s">'selection'</span>)
+        result = reports.run(<span class="s">'property_export'</span>, config, interactive=<span class="k">False</span>)
+        <span class="k">if</span> <span class="k">not</span> result.get(<span class="s">'cancelled'</span>):
+            toast.show(result[<span class="s">'level'</span>], result[<span class="s">'message'</span>], result[<span class="s">'detail'</span>])
+        <span class="k">return</span>
+    doc = data_common.active_doc()
+    count = data_common.selected_count(doc) <span class="k">if</span> data_common.has_models(doc) <span class="k">else</span> 0
+    <span class="k">if</span> <span class="k">not</span> count:
+        toast.info(<span class="s">'Nothing selected'</span>, <span class="s">'Select the elements to export, then run Property Exporter again.'</span>)
+        <span class="k">return</span>
+    store = templates.Templates(TEMPLATES)
+    values = pick_template(store, script.get_config(DEFAULTS))
+    <span class="k">if</span> values <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    properties = pick_properties(doc, values)
+    <span class="k">if</span> properties <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    answer = ask_options(values, count)
+    <span class="k">if</span> answer <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    config = {<span class="s">'properties'</span>: properties, <span class="s">'identity'</span>: answer[<span class="s">'identity'</span>], <span class="s">'level'</span>: answer[<span class="s">'level'</span>],
+              <span class="s">'format'</span>: answer[<span class="s">'format'</span>], <span class="s">'open'</span>: bool(answer[<span class="s">'open'</span>])}
+    <span class="k">if</span> <span class="k">not</span> config[<span class="s">'properties'</span>] <span class="k">and</span> <span class="k">not</span> config[<span class="s">'identity'</span>]:
+        toast.info(<span class="s">'Nothing to export'</span>, <span class="s">'Tick at least one property or identity column.'</span>)
+        <span class="k">return</span>
+    script.save_config(config)
+    saved_as = <span class="k">None</span>
+    <span class="k">if</span> answer.get(<span class="s">'template'</span>, <span class="s">''</span>).strip():
+        <span class="k">try</span>:
+            saved_as = store.save(answer[<span class="s">'template'</span>].strip(), dict(config))
+        <span class="k">except</span> (ValueError, IOError, OSError) <span class="k">as</span> error:
+            toast.warning(<span class="s">'Could not save the template'</span>, str(error))
+    path = data_common.ask_save(<span class="s">'{file} - Properties - {date}'</span>, config[<span class="s">'format'</span>], <span class="s">'Export properties'</span>, doc)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    run_config = dict(config, scope=<span class="s">'selection'</span>, path=path)
+    result = progress.run(<span class="s">'Property Exporter'</span>, <span class="k">lambda</span> report: reports.run(
+        <span class="s">'property_export'</span>, run_config, doc=doc, interactive=<span class="k">True</span>, progress=report))
+    <span class="k">if</span> result <span class="k">is</span> progress.CANCELLED <span class="k">or</span> result.get(<span class="s">'cancelled'</span>):
+        <span class="k">return</span>
+    detail = result[<span class="s">'detail'</span>]
+    <span class="k">if</span> saved_as:
+        detail = <span class="s">'%s. Saved as template %s.'</span> % (detail, saved_as)
+    toast.show(result[<span class="s">'level'</span>], result[<span class="s">'message'</span>], detail)
+    <span class="k">if</span> result[<span class="s">'level'</span>] <span class="k">in</span> (<span class="s">'success'</span>, <span class="s">'warning'</span>) <span class="k">and</span> config[<span class="s">'open'</span>] <span class="k">and</span> result.get(<span class="s">'paths'</span>):
+        <span class="k">try</span>:
+            ui.open_path(result[<span class="s">'paths'</span>][0])
+        <span class="k">except</span> Exception <span class="k">as</span> error:
+            toast.warning(<span class="s">'Could not open the file'</span>, str(error))
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/data_common.py" rel="noopener"><code>namo.data_common</code></a><span class="mod-doc">Shared plumbing for the Inspect and Data panel tools: progress stages, where files go by default, the scope dialog fields, and the small checks every button starts with.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/propindex.py" rel="noopener"><code>namo.propindex</code></a><span class="mod-doc">Property scanning shared by Property Explorer, Count by Property, Data Validator and the Write Data tools: scopes, fast value reading, the category &gt; property &gt; value index.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/rep_property_export.py" rel="noopener"><code>namo.rep_property_export</code></a><span class="mod-doc">Property Export: chosen properties of the selected objects (or their geometry items) as a styled Excel workbook or a CSV file, with identity columns in front.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/reports.py" rel="noopener"><code>namo.reports</code></a><span class="mod-doc">The registry of automation-ready reports, and the helpers every report shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/templates.py" rel="noopener"><code>namo.templates</code></a><span class="mod-doc">Named, saved configurations per tool (&quot;templates&quot;), shared with the team when a shared folder is set. Report Templates and Scheduled Reports read them all.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Data.panel/Property_Exporter.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Data.panel/Property_Exporter.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Property\nExporter
+tooltip: Exports the properties you tick for the selected objects (or their geometry items) to a styled Excel workbook or a CSV file, with name, file, Element ID and GUID columns in front. Your choice is remembered and can be saved as a named template.
+context: selection
+</code></pre></div>
 <div class="pagenav">
 <a href="model-data-count-by-property.html"><span class="dir">Previous</span><span class="ttl">Count by Property</span></a>
 <a class="next" href="model-data-data-validator.html"><span class="dir">Next</span><span class="ttl">Data Validator</span></a>

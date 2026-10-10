@@ -6,6 +6,7 @@
 <title>Clash Matrix - pyNavis Playground</title>
 <meta name="description" content="Builds a battery of clash tests from a workbook of trades and an H, C or D test matrix, referencing selection sets so the tests follow model updates. Can also write a template to fill in.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Clash Matrix", "description": "Builds a battery of clash tests from a workbook of trades and an H, C or D test matrix, referencing selection sets so the tests follow model updates. Can also write a template to fill in.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/coordinate-clash-setup-clash-matrix.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -223,6 +227,230 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Clash Matrix is on the Coordinate tab, Clash Setup panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Clash%20Matrix&amp;tool=Coordinate.tab%2FClash_Setup.panel%2FClash_Matrix.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Setup.panel/Clash_Matrix.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Setup.panel/Clash_Matrix.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Builds a battery of clash tests from a workbook of trades and a test matrix."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> pynavis <span class="k">import</span> forms, output, script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> clashmatrix, config, naming, progress, ui
+<span class="k">from</span> namo <span class="k">import</span> clashset_common <span class="k">as</span> common
+<span class="k">from</span> namo <span class="k">import</span> clashset_tests <span class="k">as</span> defs
+<span class="k">from</span> namo.htmlreport <span class="k">import</span> escape
+
+DEFAULTS = {<span class="s">'action'</span>: <span class="s">'build'</span>, <span class="s">'workbook'</span>: <span class="s">''</span>, <span class="s">'name_template'</span>: clashmatrix.DEFAULT_NAME,
+            <span class="s">'existing'</span>: <span class="s">'skip'</span>, <span class="s">'run'</span>: <span class="k">False</span>}
+FILTER = <span class="s">'Excel workbooks (*.xlsx)|*.xlsx'</span>
+OUTCOMES = {<span class="s">'created'</span>: <span class="s">'Created'</span>, <span class="s">'updated'</span>: <span class="s">'Updated'</span>, <span class="s">'skipped'</span>: <span class="s">'Left as it was'</span>,
+            <span class="s">'failed'</span>: <span class="s">'Not built'</span>}
+
+
+<span class="k">def</span> ask(values):
+    <span class="c"># Nothing to build from yet (first run, or the workbook has gone): start on the</span>
+    <span class="c"># template, which is the only thing that can work.</span>
+    action = values[<span class="s">'action'</span>]
+    <span class="k">if</span> <span class="k">not</span> values[<span class="s">'workbook'</span>] <span class="k">or</span> <span class="k">not</span> os.path.isfile(values[<span class="s">'workbook'</span>]):
+        action = <span class="s">'template'</span>
+    fields = [
+        {<span class="s">'kind'</span>: <span class="s">'radio'</span>, <span class="s">'key'</span>: <span class="s">'action'</span>, <span class="s">'label'</span>: <span class="s">'What to do'</span>, <span class="s">'default'</span>: action, <span class="s">'fallback'</span>: <span class="k">None</span>,
+         <span class="s">'options'</span>: [(<span class="s">'Build clash tests from a workbook'</span>, <span class="s">'build'</span>),
+                     (<span class="s">'Write a template workbook to fill in'</span>, <span class="s">'template'</span>)]},
+        {<span class="s">'kind'</span>: <span class="s">'file_open'</span>, <span class="s">'key'</span>: <span class="s">'workbook'</span>, <span class="s">'label'</span>: <span class="s">'Workbook'</span>, <span class="s">'default'</span>: values[<span class="s">'workbook'</span>],
+         <span class="s">'filter'</span>: FILTER, <span class="s">'title'</span>: <span class="s">'Open the clash matrix workbook'</span>, <span class="s">'enabled_if'</span>: (<span class="s">'action'</span>, <span class="s">'build'</span>)},
+        {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'name_template'</span>, <span class="s">'label'</span>: <span class="s">'Test names'</span>,
+         <span class="s">'default'</span>: values[<span class="s">'name_template'</span>], <span class="s">'enabled_if'</span>: (<span class="s">'action'</span>, <span class="s">'build'</span>),
+         <span class="s">'hint'</span>: <span class="s">'Tokens: {a} {b} {type} {tolerance} {code} {n:00}'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'radio'</span>, <span class="s">'key'</span>: <span class="s">'existing'</span>, <span class="s">'label'</span>: <span class="s">'Tests that already exist'</span>,
+         <span class="s">'default'</span>: values[<span class="s">'existing'</span>], <span class="s">'fallback'</span>: <span class="k">None</span>, <span class="s">'enabled_if'</span>: (<span class="s">'action'</span>, <span class="s">'build'</span>),
+         <span class="s">'options'</span>: [(<span class="s">'Leave them as they are'</span>, <span class="s">'skip'</span>),
+                     (<span class="s">'Update their settings (their results are kept)'</span>, <span class="s">'update'</span>)]},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'run'</span>, <span class="s">'label'</span>: <span class="s">'Run the tests after building them'</span>,
+         <span class="s">'default'</span>: values[<span class="s">'run'</span>], <span class="s">'enabled_if'</span>: (<span class="s">'action'</span>, <span class="s">'build'</span>)},
+    ]
+
+    <span class="k">def</span> validate(answers):
+        <span class="k">if</span> answers[<span class="s">'action'</span>] == <span class="s">'build'</span> <span class="k">and</span> <span class="k">not</span> answers[<span class="s">'workbook'</span>]:
+            <span class="k">return</span> {<span class="s">'workbook'</span>: <span class="s">'Choose the workbook to build from, or write a template first.'</span>}
+        <span class="k">if</span> answers[<span class="s">'action'</span>] == <span class="s">'build'</span> <span class="k">and</span> <span class="k">not</span> answers[<span class="s">'name_template'</span>].strip():
+            <span class="k">return</span> {<span class="s">'name_template'</span>: <span class="s">'Enter a name template, like {a} vs {b}.'</span>}
+        <span class="k">return</span> <span class="k">None</span>
+
+    <span class="k">return</span> ui.form(<span class="s">'Clash Matrix'</span>, fields, ok=<span class="s">'Continue'</span>, validate=validate,
+                   intro=<span class="s">'Trades on one sheet, a test matrix on another: each code builds a test.'</span>)
+
+
+<span class="k">def</span> write_template(doc):
+    path = common.ask_save_path(<span class="s">'Save the clash matrix template'</span>, <span class="s">'{file} - Clash matrix'</span>, <span class="s">'.xlsx'</span>,
+                                FILTER, doc)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    rows = clashmatrix.template_rows(doc)
+    <span class="k">try</span>:
+        clashmatrix.write_template(path, rows, defs.doc_units(doc), author=config.user_name())
+    <span class="k">except</span> (IOError, OSError):
+        toast.error(<span class="s">'Could not write the template'</span>, <span class="s">'Close the file in Excel, then try again.'</span>)
+        <span class="k">return</span>
+    ui.open_path(path)
+    toast.success(<span class="s">'Wrote a clash matrix template with %s'</span> % common.plural(len(rows), <span class="s">'trade'</span>),
+                  <span class="s">'Fill in the Matrix sheet with codes like H or C 50mm, save it, then build.'</span>)
+
+
+<span class="k">def</span> confirm_text(tests, existing_mode, doc, workbook, problems):
+    present = set(n.lower() <span class="k">for</span> n <span class="k">in</span> defs.test_names(doc))
+    already = sum(1 <span class="k">for</span> t <span class="k">in</span> tests <span class="k">if</span> t[<span class="s">'name'</span>].lower() <span class="k">in</span> present)
+    lines = [<span class="s">'Build %s from %s?'</span> % (common.plural(len(tests), <span class="s">'clash test'</span>), os.path.basename(workbook))]
+    <span class="k">if</span> already:
+        lines.append(<span class="s">'%s already exist%s and will be %s.'</span> % (
+            common.plural(already, <span class="s">'test'</span>), <span class="s">'s'</span> <span class="k">if</span> already == 1 <span class="k">else</span> <span class="s">''</span>,
+            <span class="s">'updated (results kept)'</span> <span class="k">if</span> existing_mode == <span class="s">'update'</span> <span class="k">else</span> <span class="s">'left as they are'</span>))
+    <span class="k">if</span> problems:
+        lines.append(<span class="s">''</span>)
+        lines.append(<span class="s">'%s will be skipped, starting with:'</span> % common.plural(len(problems), <span class="s">'problem'</span>))
+        lines.append(problems[0])
+    <span class="k">return</span> <span class="s">'\n'</span>.join(lines)
+
+
+<span class="k">def</span> report(rows, counts, problems, notes, workbook, doc):
+    units = defs.doc_units(doc)
+    output.set_title(<span class="s">'Clash Matrix'</span>)
+    output.print_md(<span class="s">'# Clash Matrix'</span>)
+    output.print_md(<span class="s">'Built from %s.'</span> % os.path.basename(workbook))
+    cells = [<span class="s">'&lt;table class="pynavis"&gt;&lt;tr&gt;&lt;th&gt;Test&lt;/th&gt;&lt;th&gt;Selection A&lt;/th&gt;&lt;th&gt;Selection B&lt;/th&gt;'</span>
+             <span class="s">'&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Tolerance&lt;/th&gt;&lt;th&gt;Result&lt;/th&gt;&lt;th&gt;Follows sets&lt;/th&gt;'</span>
+             <span class="s">'&lt;th class="num"&gt;Clashes&lt;/th&gt;&lt;th&gt;Note&lt;/th&gt;&lt;/tr&gt;'</span>]
+    <span class="k">for</span> row <span class="k">in</span> rows:
+        clashes = <span class="s">''</span>
+        <span class="k">if</span> row[<span class="s">'test'</span>] <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> counts:
+            <span class="k">try</span>:
+                clashes = counts.get(str(row[<span class="s">'test'</span>].Guid), <span class="s">''</span>)
+            <span class="k">except</span> Exception:
+                clashes = <span class="s">''</span>
+        cells.append(<span class="s">'&lt;tr&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;'</span>
+                     <span class="s">'&lt;td&gt;%s&lt;/td&gt;&lt;td class="num"&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;/tr&gt;'</span> % (
+                         escape(row[<span class="s">'name'</span>]), escape(row[<span class="s">'a'</span>]), escape(row[<span class="s">'b'</span>]),
+                         escape(defs.TYPE_LABELS.get(row[<span class="s">'type'</span>], row[<span class="s">'type'</span>])),
+                         escape(defs.tolerance_text(row[<span class="s">'tolerance_m'</span>], units) <span class="k">or</span> <span class="s">'0'</span>),
+                         escape(OUTCOMES[row[<span class="s">'outcome'</span>]]),
+                         <span class="s">'Yes'</span> <span class="k">if</span> row[<span class="s">'linked'</span>] <span class="k">else</span> (<span class="s">''</span> <span class="k">if</span> row[<span class="s">'outcome'</span>] <span class="k">in</span> (<span class="s">'failed'</span>, <span class="s">'skipped'</span>) <span class="k">else</span> <span class="s">'No'</span>),
+                         <span class="s">''</span> <span class="k">if</span> clashes == <span class="s">''</span> <span class="k">else</span> <span class="s">'{:,}'</span>.format(clashes), escape(row[<span class="s">'detail'</span>])))
+    cells.append(<span class="s">'&lt;/table&gt;'</span>)
+    output.print_html(<span class="s">''</span>.join(cells))
+    <span class="k">if</span> problems:
+        output.print_md(<span class="s">'## Skipped'</span>)
+        output.print_md(<span class="s">'\n'</span>.join(<span class="s">'- %s'</span> % p <span class="k">for</span> p <span class="k">in</span> problems[:200]))
+    <span class="k">if</span> notes:
+        output.print_md(<span class="s">'\n'</span>.join(<span class="s">'- %s'</span> % n <span class="k">for</span> n <span class="k">in</span> notes))
+
+
+<span class="k">def</span> build(values, doc):
+    units = defs.doc_units(doc)
+    workbook = values[<span class="s">'workbook'</span>]
+    <span class="k">try</span>:
+        trades, entries, problems = clashmatrix.read_workbook(workbook, units)
+    <span class="k">except</span> Exception <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not read the workbook'</span>, <span class="s">'%s: %s'</span> % (os.path.basename(workbook), error))
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> trades <span class="k">and</span> problems:
+        toast.error(<span class="s">'The workbook cannot be used'</span>, problems[0])
+        <span class="k">return</span>
+    tests, plan_problems, notes = clashmatrix.plan_tests(trades, entries, values[<span class="s">'name_template'</span>],
+                                                        units, naming.standard_values(doc))
+    problems = problems + plan_problems
+    <span class="k">if</span> <span class="k">not</span> tests:
+        <span class="k">if</span> problems:
+            toast.warning(<span class="s">'No clash tests to build'</span>, problems[0])
+        <span class="k">else</span>:
+            toast.info(<span class="s">'No clash tests to build'</span>,
+                       <span class="s">'Put codes like H or C 50mm in the Matrix sheet, save it, and build again.'</span>)
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> forms.confirm(confirm_text(tests, values[<span class="s">'existing'</span>], doc, workbook, problems), <span class="s">'Clash Matrix'</span>):
+        <span class="k">return</span>
+    rows = common.write_progress(<span class="s">'Building clash tests'</span>, <span class="k">lambda</span> report_to: clashmatrix.build(
+        tests, trades, values[<span class="s">'existing'</span>], doc, report_to))
+    built = [r[<span class="s">'test'</span>] <span class="k">for</span> r <span class="k">in</span> rows <span class="k">if</span> r[<span class="s">'outcome'</span>] <span class="k">in</span> (<span class="s">'created'</span>, <span class="s">'updated'</span>) <span class="k">and</span> r[<span class="s">'test'</span>] <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
+    counts = {}
+    stopped = <span class="k">False</span>
+    run_problem = <span class="k">None</span>
+    <span class="k">if</span> values[<span class="s">'run'</span>] <span class="k">and</span> built:
+        <span class="k">try</span>:
+            outcome = progress.run(<span class="s">'Running clash tests'</span>,
+                                   <span class="k">lambda</span> report_to: defs.run_tests(built, doc, report_to))
+        <span class="k">except</span> Exception <span class="k">as</span> error:
+            outcome = <span class="k">None</span>
+            run_problem = str(error)
+        <span class="k">if</span> outcome <span class="k">is</span> progress.CANCELLED:
+            stopped = <span class="k">True</span>
+        <span class="k">elif</span> outcome <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            counts = outcome
+    report(rows, counts, problems, notes, workbook, doc)
+    tally = dict((key, sum(1 <span class="k">for</span> r <span class="k">in</span> rows <span class="k">if</span> r[<span class="s">'outcome'</span>] == key)) <span class="k">for</span> key <span class="k">in</span> OUTCOMES)
+    parts = []
+    <span class="k">if</span> tally[<span class="s">'created'</span>]:
+        headline = <span class="s">'Built %s'</span> % common.plural(tally[<span class="s">'created'</span>], <span class="s">'clash test'</span>)
+        <span class="k">if</span> tally[<span class="s">'updated'</span>]:
+            parts.append(<span class="s">'%s updated'</span> % <span class="s">'{:,}'</span>.format(tally[<span class="s">'updated'</span>]))
+    <span class="k">else</span>:
+        headline = <span class="s">'Updated %s'</span> % common.plural(tally[<span class="s">'updated'</span>], <span class="s">'clash test'</span>)
+    <span class="k">if</span> tally[<span class="s">'skipped'</span>]:
+        parts.append(<span class="s">'%s left as they were'</span> % <span class="s">'{:,}'</span>.format(tally[<span class="s">'skipped'</span>]))
+    <span class="k">if</span> tally[<span class="s">'failed'</span>]:
+        parts.append(<span class="s">'%s could not be built'</span> % <span class="s">'{:,}'</span>.format(tally[<span class="s">'failed'</span>]))
+    <span class="k">if</span> run_problem:
+        parts.append(<span class="s">'Navisworks could not run them (%s)'</span> % run_problem)
+    <span class="k">elif</span> stopped:
+        parts.append(<span class="s">'running was stopped'</span>)
+    <span class="k">elif</span> counts:
+        parts.append(<span class="s">'%s found'</span> % common.plural(sum(counts.values()), <span class="s">'clash'</span>, <span class="s">'clashes'</span>))
+    detail = <span class="s">'; '</span>.join(parts) <span class="k">or</span> <span class="k">None</span>
+    <span class="k">if</span> <span class="k">not</span> tally[<span class="s">'created'</span>] <span class="k">and</span> <span class="k">not</span> tally[<span class="s">'updated'</span>]:
+        toast.warning(<span class="s">'No clash tests were built'</span>, detail)
+    <span class="k">elif</span> tally[<span class="s">'failed'</span>] <span class="k">or</span> run_problem:
+        toast.warning(headline, detail)
+    <span class="k">else</span>:
+        toast.success(headline, detail)
+
+
+<span class="k">def</span> run():
+    <span class="k">from</span> pynavis <span class="k">import</span> doc <span class="k">as</span> pdoc
+    doc = pdoc.get_doc()
+    <span class="k">if</span> <span class="k">not</span> defs.available(doc):
+        toast.error(<span class="s">'Clash Detective is not available'</span>, <span class="s">'Clash Matrix needs Navisworks Manage.'</span>)
+        <span class="k">return</span>
+    values = script.get_config(DEFAULTS)
+    answers = ask(values)
+    <span class="k">if</span> answers <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    values.update(answers)
+    script.save_config(values)
+    <span class="k">if</span> answers[<span class="s">'action'</span>] == <span class="s">'template'</span>:
+        write_template(doc)
+    <span class="k">else</span>:
+        build(values, doc)
+
+
+<span class="k">if</span> globals().get(<span class="s">'__runner__'</span>):
+    toast.warning(*common.RUNNER_MESSAGE)
+<span class="k">else</span>:
+    run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashmatrix.py" rel="noopener"><code>namo.clashmatrix</code></a><span class="mod-doc">Clash Matrix: a battery of clash tests driven by a workbook.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashset_common.py" rel="noopener"><code>namo.clashset_common</code></a><span class="mod-doc">Small things every Clash Setup and Clash Results tool shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashset_tests.py" rel="noopener"><code>namo.clashset_tests</code></a><span class="mod-doc">Clash test definitions as plain data, and the one place Playground builds tests from them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/config.py" rel="noopener"><code>namo.config</code></a><span class="mod-doc">Playground-wide settings: one JSON file shared by every Playground tool.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/htmlreport.py" rel="noopener"><code>namo.htmlreport</code></a><span class="mod-doc">Standalone HTML reports: one self-contained .html file (inline CSS, JS, SVG charts and base64 images) that opens in any browser, offline, in light or dark theme.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/naming.py" rel="noopener"><code>namo.naming</code></a><span class="mod-doc">Name templates: &#x27;{test} - {n:000}&#x27;, &#x27;{date:%Y%m%d} {project}&#x27;, &#x27;{{literal braces}}&#x27;.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Setup.panel/Clash_Matrix.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Setup.panel/Clash_Matrix.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Clash\nMatrix
+tooltip: Builds a battery of clash tests from a workbook of trades and an H, C or D test matrix, referencing selection sets so the tests follow model updates. Can also write a template to fill in.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="views-navigate-sheet-clear-sheet.html"><span class="dir">Previous</span><span class="ttl">Clear Sheet</span></a>
 <a class="next" href="coordinate-clash-setup-clash-templates.html"><span class="dir">Next</span><span class="ttl">Clash Templates</span></a>

@@ -6,6 +6,7 @@
 <title>Quick Find - pyNavis Playground</title>
 <meta name="description" content="Finds any element by name, Element ID, category, type, mark or level as you type. Enter selects and zooms, Shift+Enter selects every match. Shift+Click for settings.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Quick Find", "description": "Finds any element by name, Element ID, category, type, mark or level as you type. Enter selects and zooms, Shift+Enter selects every match. Shift+Click for settings.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-find-quick-find.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,117 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Quick Find is on the Model tab, Find panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Quick%20Find&amp;tool=Model.tab%2FFind.panel%2FQuick_Find.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Find.panel/Quick_Find.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Find.panel/Quick_Find.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Finds any element by name, Element ID, category, type, mark or level as you type."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+<span class="k">from</span> pynavis._api <span class="k">import</span> Application
+
+<span class="k">from</span> namo <span class="k">import</span> items, progress, quickfind, session
+
+cfg = script.get_config(quickfind.DEFAULTS)
+document = Application.ActiveDocument
+
+
+<span class="k">def</span> act(index, result):
+    rows = result[<span class="s">'rows'</span>]
+    <span class="k">if</span> result[<span class="s">'action'</span>] == <span class="s">'all'</span> <span class="k">and</span> len(rows) &gt; 2000:
+        outcome = progress.run(<span class="s">'Selecting %s results'</span> % <span class="s">'{:,}'</span>.format(len(rows)),
+                               <span class="k">lambda</span> report: quickfind.resolve(index, rows, document))
+        <span class="k">if</span> outcome <span class="k">is</span> progress.CANCELLED:
+            <span class="k">return</span>
+        found, missing = outcome
+    <span class="k">else</span>:
+        found, missing = quickfind.resolve(index, rows, document)
+    stale = <span class="s">'Shift+Click Quick Find and rebuild the index if the model changed.'</span>
+    <span class="k">if</span> <span class="k">not</span> found:
+        toast.warning(<span class="s">'That element is no longer in the model'</span> <span class="k">if</span> len(rows) == 1 <span class="k">else</span>
+                      <span class="s">'Those elements are no longer in the model'</span>, stale)
+        <span class="k">return</span>
+    shown = index.display(rows[0], result[<span class="s">'query'</span>])[<span class="s">'name'</span>]
+    <span class="k">if</span> result[<span class="s">'action'</span>] == <span class="s">'select'</span>:
+        items.select(found, zoom=<span class="k">True</span>, doc=document)
+        toast.success(<span class="s">'Selected %s'</span> % shown, index.display(rows[0], result[<span class="s">'query'</span>])[<span class="s">'detail'</span>] <span class="k">or</span> <span class="k">None</span>)
+    <span class="k">elif</span> result[<span class="s">'action'</span>] == <span class="s">'add'</span>:
+        document.CurrentSelection.AddRange(items.collection(found))
+        toast.success(<span class="s">'Added %s to the selection'</span> % shown)
+    <span class="k">else</span>:
+        items.select(found, doc=document)
+        message = <span class="s">'Selected %s %s'</span> % (<span class="s">'{:,}'</span>.format(len(found)), <span class="s">'result'</span> <span class="k">if</span> len(found) == 1 <span class="k">else</span> <span class="s">'results'</span>)
+        detail = <span class="s">"Every element matching '%s'."</span> % result[<span class="s">'query'</span>]
+        <span class="k">if</span> missing:
+            toast.warning(message, <span class="s">'%s %d could not be found: %s'</span> % (detail, missing, stale))
+        <span class="k">else</span>:
+            toast.success(message, detail)
+
+
+<span class="k">if</span> document <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> document.Models.Count == 0:
+    toast.info(<span class="s">'Nothing to search'</span>, <span class="s">'Open or append a model first.'</span>)
+<span class="k">else</span>:
+    index = quickfind.cached(document, cfg)
+    <span class="k">if</span> index <span class="k">is</span> <span class="k">None</span>:
+        built = progress.run(<span class="s">'Indexing the model for Quick Find'</span>,
+                             <span class="k">lambda</span> report: quickfind.build(document, cfg, report),
+                             <span class="s">'Finding elements'</span>)
+        index = <span class="k">None</span> <span class="k">if</span> built <span class="k">is</span> progress.CANCELLED <span class="k">else</span> built
+    <span class="k">if</span> index <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        <span class="k">if</span> <span class="k">not</span> len(index):
+            toast.info(<span class="s">'Nothing to search'</span>, <span class="s">'The model has no elements with geometry.'</span>)
+        <span class="k">else</span>:
+            last = session.get(<span class="s">'quickfind'</span>, <span class="s">'last_query'</span>, <span class="s">''</span>)
+            result = quickfind.dialog(index, cfg[<span class="s">'cap'</span>], last)
+            <span class="k">if</span> result <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                session.set(<span class="s">'quickfind'</span>, <span class="s">'last_query'</span>, result[<span class="s">'query'</span>])
+                act(index, result)
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Find.panel/Quick_Find.pushbutton/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Find.panel/Quick_Find.pushbutton/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Options for Quick Find: the fields it searches, how many results it lists, rebuild the index."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> quickfind, ui
+
+cfg = script.get_config(quickfind.DEFAULTS)
+values = ui.form(<span class="s">'Quick Find'</span>, [
+    {<span class="s">'kind'</span>: <span class="s">'multi'</span>, <span class="s">'key'</span>: <span class="s">'fields'</span>, <span class="s">'label'</span>: <span class="s">'Fields to search'</span>,
+     <span class="s">'options'</span>: [(f[<span class="s">'label'</span>], f[<span class="s">'key'</span>]) <span class="k">for</span> f <span class="k">in</span> quickfind.FIELDS], <span class="s">'default'</span>: cfg[<span class="s">'fields'</span>],
+     <span class="s">'hint'</span>: <span class="s">'Name is always searched. Changing the fields rebuilds the index on the next search.'</span>},
+    {<span class="s">'kind'</span>: <span class="s">'int'</span>, <span class="s">'key'</span>: <span class="s">'cap'</span>, <span class="s">'label'</span>: <span class="s">'Results listed'</span>, <span class="s">'default'</span>: cfg[<span class="s">'cap'</span>], <span class="s">'min'</span>: 20,
+     <span class="s">'max'</span>: 2000, <span class="s">'required'</span>: <span class="k">True</span>},
+    {<span class="s">'kind'</span>: <span class="s">'int'</span>, <span class="s">'key'</span>: <span class="s">'budget'</span>, <span class="s">'label'</span>: <span class="s">'Elements indexed at most'</span>, <span class="s">'default'</span>: cfg[<span class="s">'budget'</span>],
+     <span class="s">'min'</span>: 10000, <span class="s">'max'</span>: 5000000, <span class="s">'required'</span>: <span class="k">True</span>,
+     <span class="s">'hint'</span>: <span class="s">'Larger models are indexed from the start of the tree up to this many elements.'</span>},
+    {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'rebuild'</span>, <span class="s">'label'</span>: <span class="s">'Rebuild the index of this model now'</span>,
+     <span class="s">'default'</span>: <span class="k">False</span>},
+], ok=<span class="s">'Save'</span>, width=480)
+<span class="k">if</span> values <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+    cfg[<span class="s">'fields'</span>] = values[<span class="s">'fields'</span>] <span class="k">or</span> [<span class="s">'name'</span>]
+    cfg[<span class="s">'cap'</span>] = values[<span class="s">'cap'</span>]
+    cfg[<span class="s">'budget'</span>] = values[<span class="s">'budget'</span>]
+    script.save_config(cfg)
+    detail = <span class="s">'Searching %d fields, listing up to %s results.'</span> % (
+        len(quickfind.field_specs(cfg[<span class="s">'fields'</span>])), <span class="s">'{:,}'</span>.format(cfg[<span class="s">'cap'</span>]))
+    <span class="k">if</span> values[<span class="s">'rebuild'</span>]:
+        quickfind.forget()
+        detail += <span class="s">' The index is rebuilt on the next search.'</span>
+    toast.success(<span class="s">'Saved'</span>, detail)
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/quickfind.py" rel="noopener"><code>namo.quickfind</code></a><span class="mod-doc">Quick Find: type-ahead search over every element of the model.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/session.py" rel="noopener"><code>namo.session</code></a><span class="mod-doc">State that outlives one run, plus the one logger every namo module shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Find.panel/Quick_Find.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Find.panel/Quick_Find.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Quick\nFind
+tooltip: Finds any element by name, Element ID, category, type, mark or level as you type. Enter selects and zooms, Shift+Enter selects every match. Shift+Click for settings.
+shortcut: Ctrl+Alt+F
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="model-select-pick-order-actions-clear-picked.html"><span class="dir">Previous</span><span class="ttl">Clear Picked</span></a>
 <a class="next" href="model-find-search-set-wizard.html"><span class="dir">Next</span><span class="ttl">Search Set Wizard</span></a>

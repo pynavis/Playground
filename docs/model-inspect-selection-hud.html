@@ -6,6 +6,7 @@
 <title>Selection HUD - pyNavis Playground</title>
 <meta name="description" content="Shows a small readout in the bottom-left corner of the Navisworks window: how many items and objects are selected, from which models, the top categories, and a summed property when you set one. Shift+Click for settings.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Selection HUD", "description": "Shows a small readout in the bottom-left corner of the Navisworks window: how many items and objects are selected, from which models, the top categories, and a summed property when you set one. Shift+Click for settings.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-inspect-selection-hud.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,97 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Selection HUD is on the Model tab, Inspect panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Selection%20HUD&amp;tool=Model.tab%2FInspect.panel%2FSelection_HUD.toggle" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Inspect.panel/Selection_HUD.toggle/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Inspect.panel/Selection_HUD.toggle/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Turns the Selection HUD on and off: a live readout of the selection in the corner of the window."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> hud, ui
+
+DEFAULTS = {<span class="s">'sum_property'</span>: <span class="s">''</span>}
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> ui.is_runner():
+        toast.info(<span class="s">'The Selection HUD needs the Navisworks window'</span>, <span class="s">'It cannot open under pynavis run.'</span>)
+        <span class="k">return</span>
+    <span class="c"># The window decides, not the button's own on/off state, so the two can never</span>
+    <span class="c"># disagree (after a Reload the button forgets while the HUD is still showing).</span>
+    <span class="k">if</span> hud.is_running():
+        hud.stop()
+        script.set_toggle_state(<span class="k">False</span>)
+        toast.info(<span class="s">'Selection HUD off'</span>)
+        <span class="k">return</span>
+    config = script.get_config(DEFAULTS)
+    <span class="k">try</span>:
+        hud.start(config, ui.pinned_logger())
+    <span class="k">except</span> Exception <span class="k">as</span> error:
+        hud.stop()
+        script.set_toggle_state(<span class="k">False</span>)
+        toast.error(<span class="s">'Could not show the Selection HUD'</span>, str(error))
+        <span class="k">return</span>
+    script.set_toggle_state(<span class="k">True</span>)
+    detail = <span class="s">'Bottom left of the Navisworks window. Click again to hide it.'</span>
+    <span class="k">if</span> config.get(<span class="s">'sum_property'</span>):
+        detail = <span class="s">'It also sums %s. Click again to hide it.'</span> % config[<span class="s">'sum_property'</span>]
+    toast.info(<span class="s">'Selection HUD on'</span>, detail)
+
+
+run()
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Inspect.panel/Selection_HUD.toggle/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Inspect.panel/Selection_HUD.toggle/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Chooses the property the Selection HUD sums over the selected objects."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> data_common, hud, propindex, ui
+
+DEFAULTS = {<span class="s">'sum_property'</span>: <span class="s">''</span>}
+NOTHING = <span class="s">'(nothing)'</span>
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> ui.is_runner():
+        toast.info(<span class="s">'Settings need the Navisworks window'</span>, <span class="s">'They cannot open under pynavis run.'</span>)
+        <span class="k">return</span>
+    values = script.get_config(DEFAULTS)
+    rows = [{<span class="s">'cells'</span>: [<span class="s">'Sum nothing'</span>, <span class="s">''</span>, <span class="s">''</span>], <span class="s">'value'</span>: NOTHING}]
+    <span class="k">if</span> data_common.has_models():
+        has_selection = data_common.selected_count() &gt; 0
+        <span class="k">for</span> category, prop, count <span class="k">in</span> propindex.property_choices(scope=<span class="s">'selection'</span> <span class="k">if</span> has_selection <span class="k">else</span> <span class="s">'model'</span>):
+            rows.append({<span class="s">'cells'</span>: [category, prop, count], <span class="s">'value'</span>: propindex.pair_text(category, prop)})
+    current = values.get(<span class="s">'sum_property'</span>) <span class="k">or</span> NOTHING
+    picked = ui.choose(<span class="s">'Selection HUD'</span>, rows, [<span class="s">'Tab'</span>, <span class="s">'Property'</span>, <span class="s">'Items'</span>], multiselect=<span class="k">False</span>, checked=[current],
+                       prompt=<span class="s">'Sum which property over the selected objects? Lengths, areas and volumes show in '</span>
+                              <span class="s">'Playground report units.'</span>, ok=<span class="s">'Use'</span>)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    choice = <span class="s">''</span> <span class="k">if</span> picked[0] == NOTHING <span class="k">else</span> picked[0]
+    values[<span class="s">'sum_property'</span>] = choice
+    script.save_config(values)
+    hud.update_config({<span class="s">'sum_property'</span>: choice})
+    <span class="k">if</span> choice:
+        toast.success(<span class="s">'Selection HUD sums %s'</span> % choice)
+    <span class="k">else</span>:
+        toast.success(<span class="s">'Selection HUD sums nothing'</span>)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/data_common.py" rel="noopener"><code>namo.data_common</code></a><span class="mod-doc">Shared plumbing for the Inspect and Data panel tools: progress stages, where files go by default, the scope dialog fields, and the small checks every button starts with.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/hud.py" rel="noopener"><code>namo.hud</code></a><span class="mod-doc">Selection HUD: a small, non-activating readout of the current selection anchored to the bottom-left corner of the Navisworks window.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/propindex.py" rel="noopener"><code>namo.propindex</code></a><span class="mod-doc">Property scanning shared by Property Explorer, Count by Property, Data Validator and the Write Data tools: scopes, fast value reading, the category &gt; property &gt; value index.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Inspect.panel/Selection_HUD.toggle/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Inspect.panel/Selection_HUD.toggle/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Selection\nHUD
+tooltip: Shows a small readout in the bottom-left corner of the Navisworks window: how many items and objects are selected, from which models, the top categories, and a summed property when you set one. Shift+Click for settings.
+tooltip_on: Hides the Selection HUD. Shift+Click for settings.
+</code></pre></div>
 <div class="pagenav">
 <a href="model-inspect-properties-plus.html"><span class="dir">Previous</span><span class="ttl">Properties Plus</span></a>
 <a class="next" href="model-inspect-inspect-tools-copy-ids.html"><span class="dir">Next</span><span class="ttl">Copy IDs</span></a>

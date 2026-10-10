@@ -6,6 +6,7 @@
 <title>Import Sets - pyNavis Playground</title>
 <meta name="description" content="Recreates sets and folders from a Playground XML file, finding static set items by path, GUID or Element ID, and reports what was found.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Import Sets", "description": "Recreates sets and folders from a Playground XML file, finding static set items by path, GUID or Element ID, and reports what was found.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-find-set-exchange-import-sets.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -225,6 +229,136 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Import Sets is on the Model tab, Find panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Import%20Sets&amp;tool=Model.tab%2FFind.panel%2FSet_Exchange.stack%2FImport_Sets.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Find.panel/Set_Exchange.stack/Import_Sets.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Find.panel/Set_Exchange.stack/Import_Sets.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Recreates sets and folders from a Playground XML file and reports what each set found."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> forms, output, toast, viewpoints
+<span class="k">from</span> pynavis._api <span class="k">import</span> Application
+
+<span class="k">from</span> namo <span class="k">import</span> find_sets, paths, progress, setexchange, ui
+
+document = Application.ActiveDocument
+
+
+<span class="k">def</span> resolve_all(chosen, report):
+    <span class="s">"""[found items or None] per chosen set (None for search sets)."""</span>
+    out = []
+    statics = [n <span class="k">for</span> _f, n <span class="k">in</span> chosen <span class="k">if</span> n[<span class="s">'kind'</span>] == <span class="s">'static'</span>]
+    done = 0
+    <span class="k">for</span> _folder, node <span class="k">in</span> chosen:
+        <span class="k">if</span> node[<span class="s">'kind'</span>] != <span class="s">'static'</span>:
+            out.append(<span class="k">None</span>)
+            <span class="k">continue</span>
+        done += 1
+
+        <span class="k">def</span> part(fraction, label, _done=done):
+            report((_done - 1 + fraction) / float(len(statics)), <span class="s">"%s: %s"</span> % (node[<span class="s">'name'</span>], label))
+        found, _count = setexchange.resolve_refs(node.get(<span class="s">'items'</span>) <span class="k">or</span> [], document, part)
+        out.append(found)
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> create_all(chosen, found_lists, create_empty):
+    <span class="s">"""[(set, kind, result text, ok)] after writing every set in one undo step."""</span>
+    results = []
+    <span class="k">with</span> viewpoints.transaction(<span class="s">'Import sets'</span>, document):
+        <span class="k">for</span> (folder, node), found <span class="k">in</span> zip(chosen, found_lists):
+            name = node.get(<span class="s">'name'</span>) <span class="k">or</span> <span class="s">'Imported set'</span>
+            where = folder <span class="k">or</span> <span class="k">None</span>
+            <span class="k">try</span>:
+                <span class="k">if</span> node[<span class="s">'kind'</span>] == <span class="s">'search'</span>:
+                    <span class="k">if</span> setexchange.has_raw(node):
+                        results.append((name, <span class="s">'Search'</span>, <span class="s">'Not imported: a condition Navisworks did not '</span>
+                                        <span class="s">'export readably'</span>, <span class="k">False</span>))
+                        <span class="k">continue</span>
+                    final = setexchange.create_search(name, node, where, document)
+                    results.append((final, <span class="s">'Search'</span>, <span class="s">'Created'</span>, <span class="k">True</span>))
+                <span class="k">else</span>:
+                    total = len(node.get(<span class="s">'items'</span>) <span class="k">or</span> [])
+                    <span class="k">if</span> <span class="k">not</span> found <span class="k">and</span> total <span class="k">and</span> <span class="k">not</span> create_empty:
+                        results.append((name, <span class="s">'Static'</span>, <span class="s">'Skipped: none of its %d items found'</span> % total, <span class="k">False</span>))
+                        <span class="k">continue</span>
+                    final = setexchange.create_static(name, found <span class="k">or</span> [], where, document)
+                    text = <span class="s">'Created with %s of %s items'</span> % (<span class="s">'{:,}'</span>.format(len(found <span class="k">or</span> [])),
+                                                            <span class="s">'{:,}'</span>.format(total))
+                    results.append((final, <span class="s">'Static'</span>, text, len(found <span class="k">or</span> []) == total))
+            <span class="k">except</span> Exception <span class="k">as</span> error:
+                results.append((name, node[<span class="s">'kind'</span>].capitalize(), <span class="s">'Not imported: %s'</span> % error, <span class="k">False</span>))
+    <span class="k">return</span> results
+
+
+path = forms.open_file(<span class="s">'Playground sets (*.xml)|*.xml|All files (*.*)|*.*'</span>, <span class="s">'Import sets'</span>)
+<span class="k">if</span> path <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+    text = paths.read_text(path)
+    <span class="k">try</span>:
+        <span class="k">if</span> text <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">raise</span> ValueError(<span class="s">'The file could not be read.'</span>)
+        meta, tree = setexchange.read_xml(text)
+    <span class="k">except</span> ValueError <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not read the sets file'</span>, str(error))
+    <span class="k">else</span>:
+        flat = setexchange.flatten(tree)
+        <span class="k">if</span> <span class="k">not</span> flat:
+            toast.info(<span class="s">'No sets in the file'</span>, path)
+        <span class="k">else</span>:
+            picked = ui.choose(<span class="s">'Import sets'</span>, setexchange.preview_rows(flat), [<span class="s">'Folder'</span>, <span class="s">'Set'</span>, <span class="s">'Kind'</span>, <span class="s">'Holds'</span>],
+                               multiselect=<span class="k">True</span>, checked=list(range(len(flat))), ok=<span class="s">'Import'</span>, width=760,
+                               prompt=<span class="s">'From %s, exported %s by %s. Tick the sets to import.'</span> % (
+                                   meta.get(<span class="s">'document'</span>) <span class="k">or</span> <span class="s">'another model'</span>,
+                                   (meta.get(<span class="s">'exported'</span>) <span class="k">or</span> <span class="s">'?'</span>).replace(<span class="s">'T'</span>, <span class="s">' '</span>), meta.get(<span class="s">'user'</span>) <span class="k">or</span> <span class="s">'?'</span>))
+            <span class="k">if</span> picked <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                chosen = [flat[i] <span class="k">for</span> i <span class="k">in</span> picked]
+                <span class="k">if</span> any(n[<span class="s">'kind'</span>] == <span class="s">'static'</span> <span class="k">for</span> _f, n <span class="k">in</span> chosen):
+                    found_lists = progress.run(<span class="s">'Finding the items of static sets'</span>,
+                                               <span class="k">lambda</span> report: resolve_all(chosen, report))
+                <span class="k">else</span>:
+                    found_lists = [<span class="k">None</span>] * len(chosen)
+                <span class="k">if</span> found_lists <span class="k">is</span> <span class="k">not</span> progress.CANCELLED:
+                    empty = [n[<span class="s">'name'</span>] <span class="k">for</span> (f, n), found <span class="k">in</span> zip(chosen, found_lists)
+                             <span class="k">if</span> n[<span class="s">'kind'</span>] == <span class="s">'static'</span> <span class="k">and</span> <span class="k">not</span> found <span class="k">and</span> n.get(<span class="s">'items'</span>)]
+                    create_empty = <span class="k">False</span>
+                    go = <span class="k">True</span>
+                    <span class="k">if</span> empty:
+                        answer = forms.ask_options(
+                            <span class="s">'%d static %s found none of %s items in this model (%s).'</span> % (
+                                len(empty), <span class="s">'set'</span> <span class="k">if</span> len(empty) == 1 <span class="k">else</span> <span class="s">'sets'</span>,
+                                <span class="s">'its'</span> <span class="k">if</span> len(empty) == 1 <span class="k">else</span> <span class="s">'their'</span>, <span class="s">', '</span>.join(empty[:3]) +
+                                (<span class="s">' and more'</span> <span class="k">if</span> len(empty) &gt; 3 <span class="k">else</span> <span class="s">''</span>)),
+                            [<span class="s">'Skip them'</span>, <span class="s">'Create them empty'</span>], title=<span class="s">'Import sets'</span>)
+                        go = answer <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>
+                        create_empty = answer == <span class="s">'Create them empty'</span>
+                    <span class="k">if</span> go:
+                        results = create_all(chosen, found_lists, create_empty)
+                        written = [r <span class="k">for</span> r <span class="k">in</span> results <span class="k">if</span> <span class="k">not</span> r[2].startswith((<span class="s">'Skipped'</span>, <span class="s">'Not imported'</span>))]
+                        partial = [r <span class="k">for</span> r <span class="k">in</span> results <span class="k">if</span> <span class="k">not</span> r[3]]
+                        <span class="k">if</span> partial <span class="k">or</span> any(n[<span class="s">'kind'</span>] == <span class="s">'static'</span> <span class="k">for</span> _f, n <span class="k">in</span> chosen):
+                            output.print_md(<span class="s">'## Imported sets from %s'</span> % path)
+                            output.print_table([[r[0], r[1], r[2]] <span class="k">for</span> r <span class="k">in</span> results], [<span class="s">'Set'</span>, <span class="s">'Kind'</span>, <span class="s">'Result'</span>])
+                        message = <span class="s">'Imported %d of %d sets'</span> % (len(written), len(results))
+                        detail = <span class="s">'Every set and item was found.'</span> <span class="k">if</span> <span class="k">not</span> partial <span class="k">else</span> \
+                            <span class="s">'%d not complete; see the output window.'</span> % len(partial)
+                        <span class="k">if</span> <span class="k">not</span> written:
+                            toast.error(<span class="s">'No sets were imported'</span>, detail)
+                        <span class="k">elif</span> partial:
+                            toast.warning(message, detail)
+                        <span class="k">else</span>:
+                            toast.success(message, detail)
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/find_sets.py" rel="noopener"><code>namo.find_sets</code></a><span class="mod-doc">The saved-sets tree, shared by the Find tools: paths, lookups and creating sets.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/paths.py" rel="noopener"><code>namo.paths</code></a><span class="mod-doc">Where Playground keeps its files, and how it writes them safely.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/setexchange.py" rel="noopener"><code>namo.setexchange</code></a><span class="mod-doc">Set Exchange: selection sets to and from a portable Playground XML file.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Find.panel/Set_Exchange.stack/Import_Sets.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Find.panel/Set_Exchange.stack/Import_Sets.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Import Sets
+tooltip: Recreates sets and folders from a Playground XML file, finding static set items by path, GUID or Element ID, and reports what was found.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="model-find-set-exchange-export-sets.html"><span class="dir">Previous</span><span class="ttl">Export Sets</span></a>
 <a class="next" href="model-find-set-exchange-search-in-repair.html"><span class="dir">Next</span><span class="ttl">Repair Search In</span></a>

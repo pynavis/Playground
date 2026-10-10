@@ -626,6 +626,29 @@ nav.pages .sub {
 }
 .brand-mark { flex: 0 0 auto; color: var(--accent); }
 
+/* Source section: the tool's files verbatim. Long lines scroll inside the block, never the
+   page; the caption wraps. Token colours reuse the theme tokens, so both themes read. */
+.src-note { font-size: 13px; color: var(--muted); margin: -4px 0 8px; }
+.code.src { max-width: 100%; }
+.code.src .code-head { flex-wrap: wrap; gap: 6px 12px; }
+.code-cap { min-width: 0; flex: 1 1 200px; overflow-wrap: anywhere; word-break: break-word; }
+.code-cap code { background: none; padding: 0; font-size: inherit; color: var(--ink); }
+.code-cap a { font-family: var(--sans); margin-left: 6px; white-space: nowrap; }
+.code.src pre { overflow-x: auto; white-space: pre; tab-size: 4; }
+.code .k { color: var(--accent); }
+.code .s { color: var(--success); }
+.code .c { color: var(--muted); font-style: italic; }
+.code .d { color: var(--warning); }
+ul.modules { list-style: none; padding: 0; margin: 0 0 18px; }
+ul.modules li { margin: 0; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+ul.modules li:last-child { border-bottom: 0; }
+ul.modules a { margin-right: 8px; }
+.mod-doc { color: var(--muted); font-size: 13px; }
+
+/* Sidebar foot: the version, the family links and the theme button wrap as they need. */
+.side-foot { flex-wrap: wrap; gap: 6px 10px; }
+.side-links { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+
 @media (max-width: 860px) {
   nav.pages { display: none; }
   .main { padding: 24px 16px 80px; }

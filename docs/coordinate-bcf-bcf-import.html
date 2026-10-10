@@ -6,6 +6,7 @@
 <title>BCF Import - pyNavis Playground</title>
 <meta name="description" content="Reads a BCF 2.0, 2.1 or 3.0 file into the issue register, merging topics with the same GUID, saving their viewpoints under BCF in Saved Viewpoints and finding their components by IFC GUID or Revit Element ID.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "BCF Import", "description": "Reads a BCF 2.0, 2.1 or 3.0 file into the issue register, merging topics with the same GUID, saving their viewpoints under BCF in Saved Viewpoints and finding their components by IFC GUID or Revit Element ID.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/coordinate-bcf-bcf-import.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,101 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. BCF Import is on the Coordinate tab, BCF panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20BCF%20Import&amp;tool=Coordinate.tab%2FBCF.panel%2FBCF_Import.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/BCF.panel/BCF_Import.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/BCF.panel/BCF_Import.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Reads a BCF file into the issue register, with saved viewpoints and found elements."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> bcf, bcf_exchange, issueapi, issuestore, progress, ui
+
+DEFAULTS = {<span class="s">'viewpoints'</span>: <span class="k">True</span>, <span class="s">'elements'</span>: <span class="k">True</span>}
+
+
+<span class="k">def</span> run():
+    doc = issuestore.active_doc()
+    <span class="k">if</span> doc <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> <span class="k">not</span> issueapi.has_model(doc):
+        toast.info(<span class="s">'No model open'</span>, <span class="s">'Open the model the BCF file belongs to, then import it.'</span>)
+        <span class="k">return</span>
+    store = issuestore.for_doc(doc)
+    <span class="k">if</span> <span class="k">not</span> store.saved:
+        toast.info(<span class="s">'Save the model first'</span>, issuestore.NOT_SAVED)
+        <span class="k">return</span>
+    path = forms.open_file(filter=<span class="s">'BCF files (*.bcfzip;*.bcf)|*.bcfzip;*.bcf|All files (*.*)|*.*'</span>,
+                           title=<span class="s">'Import BCF'</span>)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">try</span>:
+        data = bcf.read(path)
+    <span class="k">except</span> bcf.BcfError <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not read %s'</span> % os.path.basename(path), str(error))
+        <span class="k">return</span>
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not open %s'</span> % os.path.basename(path), str(error))
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> data[<span class="s">'topics'</span>]:
+        toast.info(<span class="s">'No topics in %s'</span> % os.path.basename(path),
+                   data[<span class="s">'notes'</span>][0] <span class="k">if</span> data[<span class="s">'notes'</span>] <span class="k">else</span> <span class="s">'The file holds no issues.'</span>)
+        <span class="k">return</span>
+    preview = bcf_exchange.preview(data, store)
+    me = script.bind()
+    values = me.get_config(dict(DEFAULTS))
+    intro = (<span class="s">'%s: BCF %s, %d topic%s (%d new, %d already in this register), %d viewpoint%s, '</span>
+             <span class="s">'%d component%s.'</span> % (os.path.basename(path), preview[<span class="s">'version'</span>], preview[<span class="s">'topics'</span>],
+                                  <span class="s">''</span> <span class="k">if</span> preview[<span class="s">'topics'</span>] == 1 <span class="k">else</span> <span class="s">'s'</span>, preview[<span class="s">'new'</span>],
+                                  preview[<span class="s">'matching'</span>], preview[<span class="s">'viewpoints'</span>],
+                                  <span class="s">''</span> <span class="k">if</span> preview[<span class="s">'viewpoints'</span>] == 1 <span class="k">else</span> <span class="s">'s'</span>, preview[<span class="s">'components'</span>],
+                                  <span class="s">''</span> <span class="k">if</span> preview[<span class="s">'components'</span>] == 1 <span class="k">else</span> <span class="s">'s'</span>))
+    fields = [
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'viewpoints'</span>, <span class="s">'label'</span>: <span class="s">'Save the viewpoints under BCF in Saved Viewpoints'</span>,
+         <span class="s">'default'</span>: bool(values[<span class="s">'viewpoints'</span>])},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'elements'</span>, <span class="s">'label'</span>: <span class="s">'Find the components in the model'</span>,
+         <span class="s">'default'</span>: bool(values[<span class="s">'elements'</span>]),
+         <span class="s">'hint'</span>: <span class="s">'By IFC GUID, then Revit Element ID. Each lookup searches the model; large '</span>
+                 <span class="s">'models take longer (stops after 3 minutes).'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'label'</span>, <span class="s">'muted'</span>: <span class="k">True</span>,
+         <span class="s">'text'</span>: <span class="s">'Topics already in the register take the BCF fields when the BCF is newer; new '</span>
+                 <span class="s">'comments are added either way, never duplicated.'</span>},
+    ]
+    answers = ui.form(<span class="s">'BCF Import'</span>, fields, intro=intro, ok=<span class="s">'Import'</span>, width=560)
+    <span class="k">if</span> answers <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    values.update(answers)
+    me.save_config(values)
+    name = os.path.basename(path)
+    <span class="k">try</span>:
+        outcome = progress.run(<span class="s">'BCF import'</span>, <span class="k">lambda</span> report: bcf_exchange.import_topics(
+            data, name, answers, doc, report))
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not save the imported issues'</span>, <span class="s">'%s Check the data folder, then try again.'</span>
+                    % error)
+        <span class="k">return</span>
+    <span class="k">if</span> outcome <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    detail = bcf_exchange.detail_line(outcome)
+    level = <span class="s">'warning'</span> <span class="k">if</span> (outcome[<span class="s">'missing'</span>] <span class="k">or</span> outcome[<span class="s">'not_searched'</span>] <span class="k">or</span> outcome[<span class="s">'notes'</span>]) <span class="k">else</span> <span class="s">'success'</span>
+    toast.show(level, <span class="s">'Imported %s'</span> % bcf_exchange.summary_line(outcome), detail)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/bcf.py" rel="noopener"><code>namo.bcf</code></a><span class="mod-doc">BCF (BIM Collaboration Format) files: write 2.1 and 3.0, read 2.0, 2.1 and 3.0.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/bcf_exchange.py" rel="noopener"><code>namo.bcf_exchange</code></a><span class="mod-doc">BCF Export and BCF Import: issues (or clash results) to a .bcfzip and back.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/issueapi.py" rel="noopener"><code>namo.issueapi</code></a><span class="mod-doc">The Navisworks half of the issue tools: capture a view as issue material, go back to it, draw issue pins, pick stamp points, and find BCF components in the model.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/issuestore.py" rel="noopener"><code>namo.issuestore</code></a><span class="mod-doc">Where Playground issues live: one record per issue, per model file, in the data mode namo.config chooses, plus the session events every issue view listens to.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/BCF.panel/BCF_Import.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/BCF.panel/BCF_Import.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: BCF\nImport
+tooltip: Reads a BCF 2.0, 2.1 or 3.0 file into the issue register, merging topics with the same GUID, saving their viewpoints under BCF in Saved Viewpoints and finding their components by IFC GUID or Revit Element ID.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="coordinate-bcf-bcf-export.html"><span class="dir">Previous</span><span class="ttl">BCF Export</span></a>
 <a class="next" href="project-models-batch-append.html"><span class="dir">Next</span><span class="ttl">Batch Append</span></a>

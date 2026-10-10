@@ -6,6 +6,7 @@
 <title>Status Rules - pyNavis Playground</title>
 <meta name="description" content="Applies ordered rules (depth, trades, age, element properties) that set clash statuses, assignees and comments, with a count of what each rule would change before anything is written.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Status Rules", "description": "Applies ordered rules (depth, trades, age, element properties) that set clash statuses, assignees and comments, with a count of what each rule would change before anything is written.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/coordinate-clash-results-status-rules.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,154 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Status Rules is on the Coordinate tab, Clash Results panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Status%20Rules&amp;tool=Coordinate.tab%2FClash_Results.panel%2FStatus_Rules.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Results.panel/Status_Rules.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Results.panel/Status_Rules.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Sets clash statuses, assignees and notes with ordered rules that a team keeps and shares."""</span>
+<span class="k">import</span> datetime
+
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> clashrules, progress, ui
+<span class="k">from</span> namo <span class="k">import</span> clashset_common <span class="k">as</span> common
+<span class="k">from</span> namo <span class="k">import</span> clashset_tests <span class="k">as</span> defs
+
+DEFAULTS = {<span class="s">'tests'</span>: [], <span class="s">'set'</span>: clashrules.EXAMPLES_NAME}
+TITLE = <span class="s">'Status Rules'</span>
+NEW_SET = <span class="s">'\x00new'</span>
+
+
+<span class="k">def</span> run():
+    <span class="k">from</span> pynavis <span class="k">import</span> doc <span class="k">as</span> pdoc
+    doc = pdoc.get_doc()
+    problem = common.clash_problem(doc, need_results=<span class="k">True</span>)
+    <span class="k">if</span> problem:
+        toast.show(*problem)
+        <span class="k">return</span>
+    values = script.get_config(DEFAULTS)
+    tests = common.choose_tests(TITLE, <span class="s">'Tick the tests the rules should look at.'</span>, values[<span class="s">'tests'</span>],
+                                doc=doc)
+    <span class="k">if</span> tests <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> tests:
+        toast.info(<span class="s">'No clash results yet'</span>, <span class="s">'Run your clash tests in Clash Detective first.'</span>)
+        <span class="k">return</span>
+    <span class="k">try</span>:
+        entries = common.read_entries(tests, doc)
+    <span class="k">except</span> RuntimeError <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not read the clashes'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">if</span> entries <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    values[<span class="s">'tests'</span>] = [t.DisplayName <span class="k">for</span> t <span class="k">in</span> tests]
+    units = defs.doc_units(doc)
+    today = datetime.datetime.now()
+    rows_by_test = dict((entry[<span class="s">'name'</span>], entry[<span class="s">'rows'</span>]) <span class="k">for</span> entry <span class="k">in</span> entries)
+    readers = dict((entry[<span class="s">'name'</span>], clashrules.element_reader(entry[<span class="s">'leaves'</span>])) <span class="k">for</span> entry <span class="k">in</span> entries)
+    store = clashrules.store()
+    names = clashrules.ensure_examples(store)
+    set_name = values[<span class="s">'set'</span>] <span class="k">if</span> values[<span class="s">'set'</span>] <span class="k">in</span> names <span class="k">else</span> (names[0] <span class="k">if</span> names <span class="k">else</span> <span class="s">'My rules'</span>)
+    rules = clashrules.rules_of(store.get(set_name)) <span class="k">if</span> set_name <span class="k">in</span> names <span class="k">else</span> []
+
+    <span class="k">def</span> preview(rule_list):
+        <span class="k">if</span> <span class="k">not</span> rule_list:
+            <span class="k">return</span> <span class="k">None</span>
+        compiled = [clashrules.compile_rule(rule, units)[0] <span class="k">for</span> rule <span class="k">in</span> rule_list]
+        <span class="k">return</span> clashrules.plan(rows_by_test, compiled, units, today, <span class="k">lambda</span> name: readers[name])
+
+    <span class="k">def</span> edit_rule(rule):
+        start = rule <span class="k">or</span> {<span class="s">'name'</span>: <span class="s">'New rule'</span>, <span class="s">'conditions'</span>: [], <span class="s">'status'</span>: <span class="s">'Reviewed'</span>}
+        answers = ui.form(<span class="s">'Status rule'</span>, clashrules.rule_form_fields(start), ok=<span class="s">'OK'</span>, width=560,
+                          validate=<span class="k">lambda</span> answered: clashrules.validate_form(answered, units))
+        <span class="k">return</span> <span class="k">None</span> <span class="k">if</span> answers <span class="k">is</span> <span class="k">None</span> <span class="k">else</span> clashrules.normalise_rule(answers)
+
+    <span class="k">def</span> save_set(state):
+        <span class="k">try</span>:
+            store.save(state.set_name, clashrules.rule_set_config(state.rules))
+        <span class="k">except</span> (IOError, OSError, ValueError) <span class="k">as</span> error:
+            toast.error(<span class="s">'Could not save the rule set'</span>, str(error))
+            <span class="k">return</span> <span class="k">False</span>
+        state.dirty = <span class="k">False</span>
+        state.refresh()
+        <span class="k">return</span> <span class="k">True</span>
+
+    <span class="k">def</span> on_save(state):
+        <span class="k">if</span> save_set(state):
+            toast.success(<span class="s">'Saved the rule set "%s"'</span> % state.set_name)
+
+    <span class="k">def</span> on_switch(state):
+        <span class="k">if</span> state.dirty <span class="k">and</span> <span class="k">not</span> forms.confirm(<span class="s">'Discard your changes to "%s"?'</span> % state.set_name, TITLE):
+            <span class="k">return</span>
+        rows = [{<span class="s">'value'</span>: name, <span class="s">'cells'</span>: [name, common.plural(len(clashrules.rules_of(store.get(name))),
+                                                             <span class="s">'rule'</span>)]} <span class="k">for</span> name <span class="k">in</span> store.names()]
+        rows.append({<span class="s">'value'</span>: NEW_SET, <span class="s">'cells'</span>: [<span class="s">'New rule set'</span>, <span class="s">''</span>]})
+        picked = ui.choose(<span class="s">'Rule sets'</span>, rows, [<span class="s">'Rule set'</span>, <span class="s">'Rules'</span>], multiselect=<span class="k">False</span>,
+                           checked=[state.set_name], ok=<span class="s">'Open'</span>, width=480, height=420)
+        <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+        <span class="k">if</span> picked[0] == NEW_SET:
+            name = forms.ask_string(<span class="s">'Name of the new rule set:'</span>, <span class="s">''</span>, TITLE)
+            <span class="k">if</span> name <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> <span class="k">not</span> name.strip():
+                <span class="k">return</span>
+            state.load(name.strip(), [])
+            state.dirty = <span class="k">True</span>
+            state.refresh()
+        <span class="k">else</span>:
+            state.load(picked[0], clashrules.rules_of(store.get(picked[0])))
+
+    win = clashrules.build_window(set_name, rules, preview, units, edit_rule, on_save, on_switch, TITLE)
+    ui.show_modal(win)
+    state = win.Tag
+    values[<span class="s">'set'</span>] = state.set_name
+    script.save_config(values)
+    <span class="k">if</span> <span class="k">not</span> state.accepted:
+        <span class="k">if</span> state.dirty <span class="k">and</span> forms.confirm(<span class="s">'Save your changes to the rule set "%s"?'</span> % state.set_name, TITLE):
+            <span class="k">if</span> save_set(state):
+                toast.success(<span class="s">'Saved the rule set "%s"'</span> % state.set_name)
+        <span class="k">return</span>
+    <span class="k">if</span> state.dirty:
+        save_set(state)
+    planned = preview(state.result[<span class="s">'rules'</span>])
+    <span class="k">if</span> <span class="k">not</span> planned <span class="k">or</span> <span class="k">not</span> planned[<span class="s">'changed'</span>]:
+        toast.info(<span class="s">'No clash needs a change'</span>, <span class="s">'Every matching clash already has what its rule sets.'</span>)
+        <span class="k">return</span>
+    entries_by_name = dict((entry[<span class="s">'name'</span>], entry) <span class="k">for</span> entry <span class="k">in</span> entries)
+    <span class="k">try</span>:
+        totals = common.write_progress(<span class="s">'Applying status rules'</span>, <span class="k">lambda</span> report_to: clashrules.apply(
+            entries_by_name, planned, doc, report_to))
+    <span class="k">except</span> ValueError <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not update the clashes'</span>, str(error))
+        <span class="k">return</span>
+    parts = []
+    <span class="k">if</span> totals[<span class="s">'status'</span>]:
+        parts.append(<span class="s">'%s changed'</span> % common.plural(totals[<span class="s">'status'</span>], <span class="s">'status'</span>, <span class="s">'statuses'</span>))
+    <span class="k">if</span> totals[<span class="s">'assign'</span>]:
+        parts.append(<span class="s">'%s assigned'</span> % <span class="s">'{:,}'</span>.format(totals[<span class="s">'assign'</span>]))
+    <span class="k">if</span> totals[<span class="s">'notes'</span>]:
+        parts.append(<span class="s">'%s added'</span> % common.plural(totals[<span class="s">'notes'</span>], <span class="s">'comment'</span>))
+    toast.success(<span class="s">'Updated %s in %s'</span> % (common.plural(planned[<span class="s">'changed'</span>], <span class="s">'clash'</span>, <span class="s">'clashes'</span>),
+                                        common.plural(totals[<span class="s">'tests'</span>], <span class="s">'test'</span>)),
+                  <span class="s">', '</span>.join(parts) + <span class="s">'. One undo step.'</span>)
+
+
+<span class="k">if</span> globals().get(<span class="s">'__runner__'</span>):
+    toast.warning(*common.RUNNER_MESSAGE)
+<span class="k">else</span>:
+    run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashrules.py" rel="noopener"><code>namo.clashrules</code></a><span class="mod-doc">Status Rules: ordered rules that set clash statuses (and assignees, and a note).</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashset_common.py" rel="noopener"><code>namo.clashset_common</code></a><span class="mod-doc">Small things every Clash Setup and Clash Results tool shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashset_tests.py" rel="noopener"><code>namo.clashset_tests</code></a><span class="mod-doc">Clash test definitions as plain data, and the one place Playground builds tests from them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Results.panel/Status_Rules.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Results.panel/Status_Rules.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Status\nRules
+tooltip: Applies ordered rules (depth, trades, age, element properties) that set clash statuses, assignees and comments, with a count of what each rule would change before anything is written.
+context: clash-results
+</code></pre></div>
 <div class="pagenav">
 <a href="coordinate-clash-results-clash-namer.html"><span class="dir">Previous</span><span class="ttl">Clash Namer</span></a>
 <a class="next" href="coordinate-clash-results-clash-assigner.html"><span class="dir">Next</span><span class="ttl">Clash Assigner</span></a>

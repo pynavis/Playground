@@ -6,6 +6,7 @@
 <title>Model Tree Export - pyNavis Playground</title>
 <meta name="description" content="Exports the selection tree to a chosen depth (4 by default) as an Excel workbook with a sheet per model: each node&#x27;s depth, name, class, descendants, geometry items and hidden state, indented and one column per level so it filters in Excel.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Model Tree Export", "description": "Exports the selection tree to a chosen depth (4 by default) as an Excel workbook with a sheet per model: each node's depth, name, class, descendants, geometry items and hidden state, indented and one column per level so it filters in Excel.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-data-data-tools-model-tree-export.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -223,6 +227,77 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Model Tree Export is on the Model tab, Data panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Model%20Tree%20Export&amp;tool=Model.tab%2FData.panel%2FData_Tools.stack%2FModel_Tree_Export.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Data.panel/Data_Tools.stack/Model_Tree_Export.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Data.panel/Data_Tools.stack/Model_Tree_Export.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Exports the selection tree to a chosen depth as an Excel workbook, one sheet per model."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> data_common, items, progress, reports, ui
+<span class="k">from</span> namo <span class="k">import</span> rep_model_tree <span class="k">as</span> rep
+
+DEFAULTS = {<span class="s">'depth'</span>: rep.DEFAULT_DEPTH, <span class="s">'models'</span>: [], <span class="s">'open'</span>: <span class="k">True</span>}
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> ui.is_runner():
+        result = reports.run(<span class="s">'model_tree'</span>, script.get_config(DEFAULTS), interactive=<span class="k">False</span>)
+        <span class="k">if</span> <span class="k">not</span> result.get(<span class="s">'cancelled'</span>):
+            toast.show(result[<span class="s">'level'</span>], result[<span class="s">'message'</span>], result[<span class="s">'detail'</span>])
+        <span class="k">return</span>
+    doc = data_common.active_doc()
+    <span class="k">if</span> <span class="k">not</span> data_common.has_models(doc):
+        data_common.no_model_toast()
+        <span class="k">return</span>
+    values = script.get_config(DEFAULTS)
+    names = [m[<span class="s">'name'</span>] <span class="k">for</span> m <span class="k">in</span> items.models(doc)]
+    chosen = [n <span class="k">for</span> n <span class="k">in</span> values.get(<span class="s">'models'</span>) <span class="k">or</span> [] <span class="k">if</span> n <span class="k">in</span> names] <span class="k">or</span> names
+    fields = [{<span class="s">'kind'</span>: <span class="s">'int'</span>, <span class="s">'key'</span>: <span class="s">'depth'</span>, <span class="s">'label'</span>: <span class="s">'Depth'</span>, <span class="s">'default'</span>: int(values.get(<span class="s">'depth'</span>) <span class="k">or</span> 4),
+               <span class="s">'min'</span>: 0, <span class="s">'max'</span>: 20, <span class="s">'hint'</span>: <span class="s">'0 is the model files themselves; 4 usually reaches Revit types.'</span>},
+              {<span class="s">'kind'</span>: <span class="s">'multi'</span>, <span class="s">'key'</span>: <span class="s">'models'</span>, <span class="s">'label'</span>: <span class="s">'Models'</span>, <span class="s">'options'</span>: names, <span class="s">'default'</span>: chosen},
+              {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'open'</span>, <span class="s">'label'</span>: <span class="s">'Open the workbook when done'</span>,
+               <span class="s">'default'</span>: bool(values.get(<span class="s">'open'</span>))}]
+    answer = ui.form(<span class="s">'Model Tree Export'</span>, fields, ok=<span class="s">'Export'</span>)
+    <span class="k">if</span> answer <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> answer[<span class="s">'models'</span>]:
+        toast.info(<span class="s">'No models ticked'</span>, <span class="s">'Tick at least one model to export.'</span>)
+        <span class="k">return</span>
+    config = {<span class="s">'depth'</span>: answer[<span class="s">'depth'</span>], <span class="s">'models'</span>: answer[<span class="s">'models'</span>], <span class="s">'open'</span>: bool(answer[<span class="s">'open'</span>])}
+    script.save_config(config)
+    path = data_common.ask_save(<span class="s">'{file} - Model tree - {date}'</span>, <span class="s">'xlsx'</span>, <span class="s">'Export the model tree'</span>, doc)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    run_config = dict(config, path=path, models=[] <span class="k">if</span> len(answer[<span class="s">'models'</span>]) == len(names) <span class="k">else</span> answer[<span class="s">'models'</span>])
+    result = progress.run(<span class="s">'Model Tree Export'</span>, <span class="k">lambda</span> report: reports.run(
+        <span class="s">'model_tree'</span>, run_config, doc=doc, interactive=<span class="k">True</span>, progress=report))
+    <span class="k">if</span> result <span class="k">is</span> progress.CANCELLED <span class="k">or</span> result.get(<span class="s">'cancelled'</span>):
+        <span class="k">return</span>
+    toast.show(result[<span class="s">'level'</span>], result[<span class="s">'message'</span>], result[<span class="s">'detail'</span>])
+    <span class="k">if</span> config[<span class="s">'open'</span>] <span class="k">and</span> result.get(<span class="s">'paths'</span>) <span class="k">and</span> result[<span class="s">'level'</span>] <span class="k">in</span> (<span class="s">'success'</span>, <span class="s">'warning'</span>):
+        <span class="k">try</span>:
+            ui.open_path(result[<span class="s">'paths'</span>][0])
+        <span class="k">except</span> Exception <span class="k">as</span> error:
+            toast.warning(<span class="s">'Could not open the workbook'</span>, str(error))
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/data_common.py" rel="noopener"><code>namo.data_common</code></a><span class="mod-doc">Shared plumbing for the Inspect and Data panel tools: progress stages, where files go by default, the scope dialog fields, and the small checks every button starts with.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/rep_model_tree.py" rel="noopener"><code>namo.rep_model_tree</code></a><span class="mod-doc">Model Tree Export: the selection tree to depth N as an Excel workbook, one sheet per model, each node with its depth, name, class, descendant and geometry counts and whether it is hidden; names indented by depth and repeated in one column per level so the tree filters and pivots in Excel.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/reports.py" rel="noopener"><code>namo.reports</code></a><span class="mod-doc">The registry of automation-ready reports, and the helpers every report shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Data.panel/Data_Tools.stack/Model_Tree_Export.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Data.panel/Data_Tools.stack/Model_Tree_Export.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Model Tree Export
+tooltip: Exports the selection tree to a chosen depth (4 by default) as an Excel workbook with a sheet per model: each node's depth, name, class, descendants, geometry items and hidden state, indented and one column per level so it filters in Excel.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="model-data-write-data-external-data-link.html"><span class="dir">Previous</span><span class="ttl">External Data Link</span></a>
 <a class="next" href="model-data-data-tools-clear-labels.html"><span class="dir">Next</span><span class="ttl">Clear Labels</span></a>

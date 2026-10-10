@@ -6,6 +6,7 @@
 <title>IFC Exporter - pyNavis Playground</title>
 <meta name="description" content="Writes the selected objects to an IFC4 file with storeys from their levels, IFC classes from their categories, colours, GlobalIds and property sets. Shift+Click to change which IFC class a category becomes.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "IFC Exporter", "description": "Writes the selected objects to an IFC4 file with storeys from their levels, IFC classes from their categories, colours, GlobalIds and property sets. Shift+Click to change which IFC class a category becomes.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/project-exchange-ifc-exporter.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -221,6 +225,137 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. IFC Exporter is on the Project tab, Exchange panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20IFC%20Exporter&amp;tool=Project.tab%2FExchange.panel%2FIFC_Exporter.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Exchange.panel/IFC_Exporter.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Exchange.panel/IFC_Exporter.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Writes the selected objects to an IFC4 file with storeys, classes, colours, GlobalIds and property sets."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> pynavis <span class="k">import</span> doc <span class="k">as</span> nwdoc
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> config, ifc, ifcexport, items, progress, store, ui, xchg_common
+
+NAME_TEMPLATE = <span class="s">'{file} - {date}'</span>
+IFC_FILTER = <span class="s">'IFC files (*.ifc)|*.ifc'</span>
+
+
+<span class="k">def</span> class_overrides():
+    <span class="s">"""The team's category -&gt; IFC class overrides (Shift+Click to edit)."""</span>
+    <span class="k">return</span> ifcexport.stored_overrides(store.Store(<span class="s">'ifc-class-map'</span>, scope=<span class="s">'global'</span>).load({}))
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> xchg_common.under_runner():
+        <span class="k">return</span>
+    document = nwdoc.get_doc()
+    selected = items.selected(document)
+    <span class="k">if</span> <span class="k">not</span> selected:
+        toast.info(<span class="s">'Nothing selected'</span>, <span class="s">'Select the objects to export, then run IFC Exporter again.'</span>)
+        <span class="k">return</span>
+    values = dict(ifcexport.DEFAULT_OPTIONS)
+    values.update(script.get_config(ifcexport.DEFAULT_OPTIONS))
+    stem = os.path.splitext(xchg_common.doc_title(document))[0]
+    fields = ifcexport.form_fields(values, config.get(<span class="s">'project_name'</span>) <span class="k">or</span> stem, stem)
+    answer = ui.form(<span class="s">'IFC exporter'</span>, fields, ok=<span class="s">'Export'</span>, width=560, intro=ifcexport.FORM_INTRO)
+    <span class="k">if</span> answer <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    values.update(answer)
+    script.save_config(dict((k, values[k]) <span class="k">for</span> k <span class="k">in</span> ifcexport.DEFAULT_OPTIONS))
+    path = xchg_common.ask_save(document, NAME_TEMPLATE, <span class="s">'.ifc'</span>, IFC_FILTER, <span class="s">'Export IFC'</span>)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    overrides = class_overrides()
+    seed = (xchg_common.doc_path(document) <span class="k">or</span> xchg_common.doc_title(document)).lower()
+
+    <span class="k">def</span> work(report):
+        read = ifcexport.collect(selected, document, values, progress=<span class="k">lambda</span> f, label: report(f * 0.6, label))
+        <span class="k">if</span> <span class="k">not</span> read[<span class="s">'records'</span>]:
+            <span class="k">return</span> read, <span class="k">None</span>, []
+        report(0.62, <span class="s">'Placing objects on storeys'</span>)
+        model, dropped = ifcexport.model_for(read, document, values, os.path.basename(path), seed, overrides)
+        <span class="k">if</span> <span class="k">not</span> model[<span class="s">'elements'</span>]:
+            <span class="k">return</span> read, model, dropped
+        ifc.write(path, model, progress=<span class="k">lambda</span> f, label: report(0.65 + 0.35 * f, label))
+        <span class="k">return</span> read, model, dropped
+
+    <span class="k">try</span>:
+        outcome = progress.run(<span class="s">'Exporting IFC'</span>, work)
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not write the IFC file'</span>, <span class="s">'%s. Close it in any program that has it open, then try again.'</span>
+                    % error)
+        <span class="k">return</span>
+    <span class="k">if</span> outcome <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    read, model, dropped = outcome
+    xchg_common.show_skipped(<span class="s">'IFC exporter'</span>, read[<span class="s">'skipped'</span>], dropped)
+    written = len(model[<span class="s">'elements'</span>]) <span class="k">if</span> model <span class="k">else</span> 0
+    storeys = len(set(e[<span class="s">'storey'</span>] <span class="k">for</span> e <span class="k">in</span> model[<span class="s">'elements'</span>])) <span class="k">if</span> written <span class="k">else</span> 0
+    level, message, detail = ifcexport.summary(written, len(read[<span class="s">'skipped'</span>]) + len(dropped), read[<span class="s">'sampled'</span>],
+                                               storeys)
+    <span class="k">if</span> written:
+        detail = xchg_common.where_text(detail, path)
+    toast.show(level, message, detail)
+    <span class="k">if</span> written:
+        xchg_common.reveal(path)
+
+
+run()
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Exchange.panel/IFC_Exporter.pushbutton/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Exchange.panel/IFC_Exporter.pushbutton/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Sets which IFC class a category becomes in IFC Exporter, for the whole team."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> output, toast
+
+<span class="k">from</span> namo <span class="k">import</span> ifcexport, store, ui, xchg_common
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> xchg_common.under_runner():
+        <span class="k">return</span>
+    holder = store.Store(<span class="s">'ifc-class-map'</span>, scope=<span class="s">'global'</span>)
+    current = ifcexport.stored_overrides(holder.load({}))
+    answer = ui.form(<span class="s">'IFC classes'</span>, ifcexport.override_fields(current), ok=<span class="s">'Save'</span>, width=600,
+                     intro=<span class="s">'These lines win over the built-in mapping for everyone who shares your '</span>
+                           <span class="s">'Playground team folder.'</span>)
+    <span class="k">if</span> answer <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    mapping, _errors = ifcexport.parse_overrides(answer[<span class="s">'map'</span>])
+    <span class="k">try</span>:
+        holder.save(dict((category, list(mapping[category])) <span class="k">for</span> category <span class="k">in</span> mapping))
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not save the IFC classes'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">if</span> answer[<span class="s">'show'</span>]:
+        output.set_title(<span class="s">'IFC classes'</span>)
+        output.print_md(<span class="s">'### Built-in IFC classes'</span>)
+        output.print_table(ifcexport.builtin_rows(), [<span class="s">'Category'</span>, <span class="s">'IFC class'</span>, <span class="s">'Predefined type'</span>])
+    <span class="k">if</span> mapping:
+        toast.success(<span class="s">'Saved %d IFC class %s'</span> % (len(mapping), <span class="s">'rule'</span> <span class="k">if</span> len(mapping) == 1 <span class="k">else</span> <span class="s">'rules'</span>),
+                      holder.note <span class="k">or</span> <span class="k">None</span>)
+    <span class="k">else</span>:
+        toast.success(<span class="s">'Using the built-in IFC classes'</span>, holder.note <span class="k">or</span> <span class="k">None</span>)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/config.py" rel="noopener"><code>namo.config</code></a><span class="mod-doc">Playground-wide settings: one JSON file shared by every Playground tool.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ifc.py" rel="noopener"><code>namo.ifc</code></a><span class="mod-doc">A pure IFC4 (ISO 10303-21 STEP) writer for the IFC Exporter, plus the reader its tests use.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ifcexport.py" rel="noopener"><code>namo.ifcexport</code></a><span class="mod-doc">IFC Exporter: which IFC class each object becomes, which storey it sits on, its property sets, and the walk that turns a Navisworks selection into a namo.ifc model.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/store.py" rel="noopener"><code>namo.store</code></a><span class="mod-doc">Per-document and global JSON stores, in one of three places.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/xchg_common.py" rel="noopener"><code>namo.xchg_common</code></a><span class="mod-doc">Small pieces the Geometry and IFC exporters share: where files go, default names, and the list of skipped objects in the output window.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Exchange.panel/IFC_Exporter.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Exchange.panel/IFC_Exporter.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: IFC\nExporter
+tooltip: Writes the selected objects to an IFC4 file with storeys from their levels, IFC classes from their categories, colours, GlobalIds and property sets. Shift+Click to change which IFC class a category becomes.
+context: selection
+</code></pre></div>
 <div class="pagenav">
 <a href="project-exchange-geometry-exporter.html"><span class="dir">Previous</span><span class="ttl">Geometry Exporter</span></a>
 <a class="next" href="dev-automate-command-palette.html"><span class="dir">Next</span><span class="ttl">Command Palette</span></a>

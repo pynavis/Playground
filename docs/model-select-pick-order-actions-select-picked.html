@@ -6,6 +6,7 @@
 <title>Select Picked - pyNavis Playground</title>
 <meta name="description" content="Selects the items in the pick list.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Select Picked", "description": "Selects the items in the pick list.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-select-pick-order-actions-select-picked.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,42 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Select Picked is on the Model tab, Select panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Select%20Picked&amp;tool=Model.tab%2FSelect.panel%2FPick_Order_Actions.pulldown%2FSelect_Picked.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Select.panel/Pick_Order_Actions.pulldown/Select_Picked.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Select.panel/Pick_Order_Actions.pulldown/Select_Picked.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Selects the items in the pick list."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> toast
+
+<span class="k">from</span> namo <span class="k">import</span> items, sel_pickorder
+
+picks = sel_pickorder.load()
+<span class="k">if</span> <span class="k">not</span> picks:
+    toast.info(<span class="s">'No picked items'</span>, <span class="s">'Turn on Pick Order and click items in order first.'</span>)
+<span class="k">else</span>:
+    found, missing = sel_pickorder.resolve()
+    <span class="k">if</span> <span class="k">not</span> found:
+        toast.warning(<span class="s">'None of the picked items are in the model'</span>,
+                      <span class="s">'They may have been removed or re-exported. Clear Picked starts a new list.'</span>)
+    <span class="k">else</span>:
+        items.select(found)
+        noun = <span class="s">'item'</span> <span class="k">if</span> len(found) == 1 <span class="k">else</span> <span class="s">'items'</span>
+        <span class="k">if</span> missing:
+            toast.warning(<span class="s">'Selected %d picked %s'</span> % (len(found), noun),
+                          <span class="s">'%d no longer in the model.'</span> % missing)
+        <span class="k">else</span>:
+            toast.success(<span class="s">'Selected %d picked %s'</span> % (len(found), noun))
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/sel_pickorder.py" rel="noopener"><code>namo.sel_pickorder</code></a><span class="mod-doc">Pick Order: an ordered list of items the user clicks, and what to do with it.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Select.panel/Pick_Order_Actions.pulldown/Select_Picked.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Select.panel/Pick_Order_Actions.pulldown/Select_Picked.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Select Picked
+tooltip: Selects the items in the pick list.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="model-select-pick-order.html"><span class="dir">Previous</span><span class="ttl">Pick Order</span></a>
 <a class="next" href="model-select-pick-order-actions-number-picked.html"><span class="dir">Next</span><span class="ttl">Number Picked</span></a>

@@ -6,6 +6,7 @@
 <title>Clash Heatmap - pyNavis Playground</title>
 <meta name="description" content="Colours elements by how many open clashes they have, lists the top hotspots, and can mark the densest spots in the view. Shift+Click clears the colours and markers.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Clash Heatmap", "description": "Colours elements by how many open clashes they have, lists the top hotspots, and can mark the densest spots in the view. Shift+Click clears the colours and markers.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/coordinate-clash-results-clash-heatmap.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,134 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Clash Heatmap is on the Coordinate tab, Clash Results panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Clash%20Heatmap&amp;tool=Coordinate.tab%2FClash_Results.panel%2FClash_Heatmap.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Results.panel/Clash_Heatmap.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Results.panel/Clash_Heatmap.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Colours elements by how many open clashes they have and marks the densest spots in the view."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> clashheat, progress, ui, units
+<span class="k">from</span> namo <span class="k">import</span> clashset_common <span class="k">as</span> common
+<span class="k">from</span> namo <span class="k">import</span> clashset_tests <span class="k">as</span> defs
+
+DEFAULTS = {<span class="s">'tests'</span>: [], <span class="s">'statuses'</span>: list(common.OPEN_STATUSES), <span class="s">'ghost'</span>: <span class="k">True</span>, <span class="s">'markers'</span>: <span class="k">False</span>,
+            <span class="s">'cell_m'</span>: clashheat.DEFAULT_CELL_M}
+TITLE = <span class="s">'Clash Heatmap'</span>
+
+
+<span class="k">def</span> ask(values, doc_units):
+    fields = [
+        {<span class="s">'kind'</span>: <span class="s">'multi'</span>, <span class="s">'key'</span>: <span class="s">'statuses'</span>, <span class="s">'label'</span>: <span class="s">'Count clashes with these statuses'</span>,
+         <span class="s">'options'</span>: [(s, s) <span class="k">for</span> s <span class="k">in</span> common.STATUS_NAMES], <span class="s">'default'</span>: values[<span class="s">'statuses'</span>]},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'ghost'</span>, <span class="s">'label'</span>: <span class="s">'Ghost the elements without clashes'</span>,
+         <span class="s">'default'</span>: values[<span class="s">'ghost'</span>]},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'markers'</span>, <span class="s">'label'</span>: <span class="s">'Mark the densest spots in the view'</span>,
+         <span class="s">'default'</span>: values[<span class="s">'markers'</span>]},
+        {<span class="s">'kind'</span>: <span class="s">'length'</span>, <span class="s">'key'</span>: <span class="s">'cell'</span>, <span class="s">'label'</span>: <span class="s">'Marker cell size'</span>, <span class="s">'required'</span>: <span class="k">True</span>,
+         <span class="s">'default'</span>: units.from_meters(values[<span class="s">'cell_m'</span>] <span class="k">or</span> clashheat.DEFAULT_CELL_M, doc_units),
+         <span class="s">'min'</span>: 0.0001, <span class="s">'enabled_if'</span>: (<span class="s">'markers'</span>, <span class="k">True</span>)},
+    ]
+
+    <span class="k">def</span> validate(answers):
+        <span class="k">if</span> <span class="k">not</span> answers[<span class="s">'statuses'</span>]:
+            <span class="k">return</span> {<span class="s">'statuses'</span>: <span class="s">'Tick at least one status.'</span>}
+        <span class="k">return</span> <span class="k">None</span>
+
+    <span class="k">return</span> ui.form(TITLE, fields, ok=<span class="s">'Show'</span>, validate=validate, units=doc_units,
+                   intro=<span class="s">'Every chosen clash counts once for each of its two elements.'</span>)
+
+
+<span class="k">def</span> run():
+    <span class="k">from</span> pynavis <span class="k">import</span> doc <span class="k">as</span> pdoc
+    doc = pdoc.get_doc()
+    problem = common.clash_problem(doc, need_results=<span class="k">True</span>)
+    <span class="k">if</span> problem:
+        toast.show(*problem)
+        <span class="k">return</span>
+    values = script.get_config(DEFAULTS)
+    tests = common.choose_tests(TITLE, <span class="s">'Tick the tests to count.'</span>, values[<span class="s">'tests'</span>], doc=doc)
+    <span class="k">if</span> tests <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> tests:
+        toast.info(<span class="s">'No clash results yet'</span>, <span class="s">'Run your clash tests in Clash Detective first.'</span>)
+        <span class="k">return</span>
+    doc_units = defs.doc_units(doc)
+    answers = ask(values, doc_units)
+    <span class="k">if</span> answers <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    values.update({<span class="s">'statuses'</span>: answers[<span class="s">'statuses'</span>], <span class="s">'ghost'</span>: answers[<span class="s">'ghost'</span>],
+                   <span class="s">'markers'</span>: answers[<span class="s">'markers'</span>], <span class="s">'tests'</span>: [t.DisplayName <span class="k">for</span> t <span class="k">in</span> tests]})
+    <span class="k">if</span> answers.get(<span class="s">'cell'</span>):
+        values[<span class="s">'cell_m'</span>] = units.to_meters(answers[<span class="s">'cell'</span>], doc_units)
+    script.save_config(values)
+    <span class="k">try</span>:
+        entries = common.read_entries(tests, doc)
+    <span class="k">except</span> RuntimeError <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not read the clashes'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">if</span> entries <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    counts, elements, names, centres = clashheat.collect(entries, answers[<span class="s">'statuses'</span>])
+    <span class="k">if</span> <span class="k">not</span> counts:
+        toast.info(<span class="s">'No clashes to count'</span>, <span class="s">'None of the chosen tests has %s clashes.'</span>
+                   % <span class="s">' or '</span>.join(answers[<span class="s">'statuses'</span>]))
+        <span class="k">return</span>
+    coloured = common.write_progress(TITLE, <span class="k">lambda</span> report_to: clashheat.show(
+        counts, elements, answers[<span class="s">'ghost'</span>], doc))
+    markers = 0
+    overlay_ok = <span class="k">True</span>
+    <span class="k">if</span> answers[<span class="s">'markers'</span>]:
+        cell = units.from_meters(values[<span class="s">'cell_m'</span>], doc_units)
+        markers, overlay_ok = clashheat.draw_markers(centres, cell)
+    legend = clashheat.legend(counts)
+    title = <span class="s">'Clash heatmap: %s'</span> % <span class="s">', '</span>.join(e[<span class="s">'name'</span>] <span class="k">for</span> e <span class="k">in</span> entries)
+    clashheat.report(counts, elements, names, legend, markers <span class="k">if</span> overlay_ok <span class="k">else</span> 0, title, doc)
+    top_key, top_count = clashheat.ranked(counts, names, 1)[0]
+    detail = <span class="s">'Hotspot: %s with %s.'</span> % (names.get(top_key) <span class="k">or</span> <span class="s">'an element'</span>,
+                                       common.plural(top_count, <span class="s">'clash'</span>, <span class="s">'clashes'</span>))
+    <span class="k">if</span> answers[<span class="s">'markers'</span>] <span class="k">and</span> <span class="k">not</span> overlay_ok:
+        toast.warning(clashheat.summary_text(coloured, len(legend), 0),
+                      <span class="s">'Markers need the pyNavis overlay; restart Navisworks to finish installing it.'</span>)
+        <span class="k">return</span>
+    toast.success(clashheat.summary_text(coloured, len(legend), markers), detail)
+
+
+<span class="k">if</span> globals().get(<span class="s">'__runner__'</span>):
+    toast.warning(*common.RUNNER_MESSAGE)
+<span class="k">else</span>:
+    run()
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Results.panel/Clash_Heatmap.pushbutton/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Results.panel/Clash_Heatmap.pushbutton/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Clears the last clash heatmap: removes its markers and puts the element colours back."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> toast
+
+<span class="k">from</span> namo <span class="k">import</span> clashheat
+
+markers, reset = clashheat.clear()
+<span class="k">if</span> <span class="k">not</span> markers <span class="k">and</span> <span class="k">not</span> reset:
+    toast.info(<span class="s">'No heatmap to clear'</span>, <span class="s">'Run Clash Heatmap first; this clears what it drew.'</span>)
+<span class="k">else</span>:
+    parts = []
+    <span class="k">if</span> reset:
+        parts.append(<span class="s">'colours reset'</span>)
+    <span class="k">if</span> markers:
+        parts.append(<span class="s">'{:,} marker{} removed'</span>.format(markers, <span class="s">''</span> <span class="k">if</span> markers == 1 <span class="k">else</span> <span class="s">'s'</span>))
+    toast.success(<span class="s">'Cleared the clash heatmap'</span>, <span class="s">', '</span>.join(parts).capitalize() + <span class="s">'.'</span>)
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashheat.py" rel="noopener"><code>namo.clashheat</code></a><span class="mod-doc">Clash Heatmap: which elements clash most, coloured by count, plus density markers.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashset_common.py" rel="noopener"><code>namo.clashset_common</code></a><span class="mod-doc">Small things every Clash Setup and Clash Results tool shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashset_tests.py" rel="noopener"><code>namo.clashset_tests</code></a><span class="mod-doc">Clash test definitions as plain data, and the one place Playground builds tests from them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/units.py" rel="noopener"><code>namo.units</code></a><span class="mod-doc">Units: document lengths, conversions, and quantities as people and Revit write them.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Results.panel/Clash_Heatmap.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Results.panel/Clash_Heatmap.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Clash\nHeatmap
+tooltip: Colours elements by how many open clashes they have, lists the top hotspots, and can mark the densest spots in the view. Shift+Click clears the colours and markers.
+context: clash-results
+</code></pre></div>
 <div class="pagenav">
 <a href="coordinate-clash-results-clash-to-viewpoints.html"><span class="dir">Previous</span><span class="ttl">Clash to Viewpoints</span></a>
 <a class="next" href="coordinate-clash-results-revit-link-show-in-revit.html"><span class="dir">Next</span><span class="ttl">Show in Revit</span></a>

@@ -6,6 +6,7 @@
 <title>Clash Assigner - pyNavis Playground</title>
 <meta name="description" content="Assigns clash groups and ungrouped clashes to the trade that moves, keeps the ball-in-court history in the model, and shows who holds what and for how long. Shift+Click for settings.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Clash Assigner", "description": "Assigns clash groups and ungrouped clashes to the trade that moves, keeps the ball-in-court history in the model, and shows who holds what and for how long. Shift+Click for settings.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/coordinate-clash-results-clash-assigner.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -222,6 +226,193 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Clash Assigner is on the Coordinate tab, Clash Results panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Clash%20Assigner&amp;tool=Coordinate.tab%2FClash_Results.panel%2FClash_Assigner.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Results.panel/Clash_Assigner.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Results.panel/Clash_Assigner.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Assigns clash groups and ungrouped clashes to the trade that moves, and tracks ball in court."""</span>
+<span class="k">import</span> datetime
+
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> clashassign, config, progress, ui
+<span class="k">from</span> namo <span class="k">import</span> clashset_common <span class="k">as</span> common
+
+DEFAULTS = {<span class="s">'tests'</span>: [], <span class="s">'priority'</span>: list(clashassign.DEFAULT_PRIORITY), <span class="s">'names'</span>: <span class="s">''</span>,
+            <span class="s">'reassign'</span>: <span class="k">False</span>, <span class="s">'mode'</span>: <span class="s">'auto'</span>}
+TITLE = <span class="s">'Clash Assigner'</span>
+MODES = [(<span class="s">'Auto: the lower-priority trade of each clash moves'</span>, <span class="s">'auto'</span>),
+         (<span class="s">'Manual: pick a trade or person for chosen items'</span>, <span class="s">'manual'</span>),
+         (<span class="s">'Show the ball-in-court dashboard'</span>, <span class="s">'dashboard'</span>)]
+SOMEONE = <span class="s">'\x00someone'</span>
+
+
+<span class="k">def</span> pick_assignee(values, units):
+    <span class="s">"""A trade or person for manual mode, or None."""</span>
+    names = clashassign.names_map(values[<span class="s">'names'</span>])
+    choices = []
+    <span class="k">for</span> trade <span class="k">in</span> config.get(<span class="s">'trades'</span>) <span class="k">or</span> clashassign.DEFAULT_PRIORITY:
+        person = names.get(trade.lower())
+        choices.append((trade <span class="k">if</span> <span class="k">not</span> person <span class="k">else</span> person, trade))
+    <span class="k">for</span> unit <span class="k">in</span> units:
+        current = unit.get(<span class="s">'assigned'</span>)
+        <span class="k">if</span> current <span class="k">and</span> current <span class="k">not</span> <span class="k">in</span> [c[0] <span class="k">for</span> c <span class="k">in</span> choices]:
+            choices.append((current, <span class="s">'already used'</span>))
+    rows = [{<span class="s">'value'</span>: name, <span class="s">'cells'</span>: [name, note <span class="k">if</span> note != name <span class="k">else</span> <span class="s">''</span>]} <span class="k">for</span> name, note <span class="k">in</span> choices]
+    rows.append({<span class="s">'value'</span>: SOMEONE, <span class="s">'cells'</span>: [<span class="s">'Someone else...'</span>, <span class="s">'type a name'</span>]})
+    picked = ui.choose(TITLE, rows, [<span class="s">'Assign to'</span>, <span class="s">'Trade'</span>], multiselect=<span class="k">False</span>, ok=<span class="s">'Assign'</span>,
+                       prompt=<span class="s">'Who has the ball for these items?'</span>, width=520, height=480)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">if</span> picked[0] != SOMEONE:
+        <span class="k">return</span> picked[0]
+    typed = forms.ask_string(<span class="s">'Assign to:'</span>, <span class="s">''</span>, TITLE)
+    <span class="k">if</span> typed <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> <span class="k">not</span> typed.strip():
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">return</span> typed.strip()
+
+
+<span class="k">def</span> write(pairs, mode, doc):
+    changes = common.write_progress(<span class="s">'Assigning clashes'</span>, <span class="k">lambda</span> report_to: clashassign.assign(pairs, doc))
+    <span class="k">try</span>:
+        note = clashassign.save_history(changes, mode, doc)
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        <span class="k">return</span> <span class="s">'The ball-in-court history could not be saved (%s).'</span> % error
+    <span class="k">if</span> note:
+        <span class="k">return</span> note
+    <span class="k">return</span> <span class="s">'Ball-in-court history saved in the model; save the file to keep it.'</span>
+
+
+<span class="k">def</span> run():
+    <span class="k">from</span> pynavis <span class="k">import</span> doc <span class="k">as</span> pdoc
+    doc = pdoc.get_doc()
+    problem = common.clash_problem(doc, need_results=<span class="k">True</span>)
+    <span class="k">if</span> problem:
+        toast.show(*problem)
+        <span class="k">return</span>
+    values = script.get_config(DEFAULTS)
+    tests = common.choose_tests(TITLE, <span class="s">'Tick the tests to assign.'</span>, values[<span class="s">'tests'</span>], doc=doc)
+    <span class="k">if</span> tests <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> tests:
+        toast.info(<span class="s">'No clash results yet'</span>, <span class="s">'Run your clash tests in Clash Detective first.'</span>)
+        <span class="k">return</span>
+    labels = [label <span class="k">for</span> label, _value <span class="k">in</span> MODES]
+    picked = forms.ask_options(<span class="s">'How do you want to assign?'</span>, labels, TITLE)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    mode = dict(MODES)[picked]
+    values[<span class="s">'mode'</span>] = mode
+    values[<span class="s">'tests'</span>] = [t.DisplayName <span class="k">for</span> t <span class="k">in</span> tests]
+    script.save_config(values)
+    <span class="k">try</span>:
+        entries = common.read_entries(tests, doc)
+    <span class="k">except</span> RuntimeError <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not read the clashes'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">if</span> entries <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    units = []
+    <span class="k">for</span> entry <span class="k">in</span> entries:
+        units.extend(clashassign.units_of(entry))
+    title = <span class="s">'Ball in court: %s'</span> % (pdoc.get_title(doc) <span class="k">or</span> <span class="s">'this model'</span>)
+    today = datetime.datetime.now()
+    <span class="k">if</span> mode == <span class="s">'dashboard'</span>:
+        board = clashassign.show_dashboard(units, clashassign.load_owners(doc), today, title)
+        toast.info(<span class="s">'%s open across %s'</span> % (common.plural(board[<span class="s">'open'</span>], <span class="s">'item'</span>),
+                                          common.plural(len(board[<span class="s">'by_assignee'</span>]), <span class="s">'assignee'</span>)))
+        <span class="k">return</span>
+    <span class="k">if</span> mode == <span class="s">'auto'</span>:
+        planned = clashassign.plan_auto(units, clashassign.priority_list(values[<span class="s">'priority'</span>]),
+                                        clashassign.names_map(values[<span class="s">'names'</span>]), values[<span class="s">'reassign'</span>])
+        <span class="k">if</span> <span class="k">not</span> planned[<span class="s">'assign'</span>]:
+            reason = <span class="s">'Every open item already has an assignee.'</span> <span class="k">if</span> planned[<span class="s">'kept'</span>] <span class="k">else</span> \
+                <span class="s">'No trade could be decided; add trade rules in Playground settings.'</span>
+            toast.info(<span class="s">'Nothing to assign'</span>, reason)
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="k">not</span> forms.confirm(clashassign.confirm_text(planned), TITLE):
+            <span class="k">return</span>
+        pairs = planned[<span class="s">'assign'</span>]
+    <span class="k">else</span>:
+        rows = [{<span class="s">'value'</span>: i, <span class="s">'cells'</span>: clashassign.unit_cells(unit)} <span class="k">for</span> i, unit <span class="k">in</span> enumerate(units)
+                <span class="k">if</span> unit[<span class="s">'open'</span>]]
+        <span class="k">if</span> <span class="k">not</span> rows:
+            toast.info(<span class="s">'Nothing to assign'</span>, <span class="s">'Every item in these tests is resolved or approved.'</span>)
+            <span class="k">return</span>
+        chosen = ui.choose(TITLE, rows, [<span class="s">'Test'</span>, <span class="s">'Item'</span>, <span class="s">'Kind'</span>, <span class="s">'Clashes'</span>, <span class="s">'Status'</span>, <span class="s">'Assigned to'</span>,
+                                         <span class="s">'Trades'</span>], multiselect=<span class="k">True</span>, ok=<span class="s">'Next'</span>, width=980,
+                           prompt=<span class="s">'Tick the groups and clashes to assign.'</span>)
+        <span class="k">if</span> chosen <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+        who = pick_assignee(values, units)
+        <span class="k">if</span> who <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+        pairs = [(units[i], who) <span class="k">for</span> i <span class="k">in</span> chosen]
+    <span class="k">try</span>:
+        note = write(pairs, mode, doc)
+    <span class="k">except</span> ValueError <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not assign the clashes'</span>, str(error))
+        <span class="k">return</span>
+    clashassign.show_dashboard(units, clashassign.load_owners(doc), today, title)
+    tally = clashassign.tally_names(pairs)
+    detail = <span class="s">'%s. %s'</span> % (<span class="s">', '</span>.join(<span class="s">'%s %s'</span> % (name, <span class="s">'{:,}'</span>.format(n)) <span class="k">for</span> name, n <span class="k">in</span> tally[:4]), note)
+    toast.success(<span class="s">'Assigned %s'</span> % common.plural(len(pairs), <span class="s">'item'</span>), detail)
+
+
+<span class="k">if</span> globals().get(<span class="s">'__runner__'</span>):
+    toast.warning(*common.RUNNER_MESSAGE)
+<span class="k">else</span>:
+    run()
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Results.panel/Clash_Assigner.pushbutton/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Results.panel/Clash_Assigner.pushbutton/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Options for Clash Assigner: who moves first, who stands for each trade, and reassignment."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> clashassign, ui
+
+DEFAULTS = {<span class="s">'tests'</span>: [], <span class="s">'priority'</span>: list(clashassign.DEFAULT_PRIORITY), <span class="s">'names'</span>: <span class="s">''</span>,
+            <span class="s">'reassign'</span>: <span class="k">False</span>, <span class="s">'mode'</span>: <span class="s">'auto'</span>}
+
+values = script.get_config(DEFAULTS)
+fields = [
+    {<span class="s">'kind'</span>: <span class="s">'textarea'</span>, <span class="s">'key'</span>: <span class="s">'priority'</span>, <span class="s">'label'</span>: <span class="s">'Who moves (highest priority first)'</span>,
+     <span class="s">'default'</span>: <span class="s">'\n'</span>.join(clashassign.priority_list(values[<span class="s">'priority'</span>])), <span class="s">'rows'</span>: 7,
+     <span class="s">'hint'</span>: <span class="s">'One trade per line. In a clash, the trade lower in this list moves; a trade not '</span>
+             <span class="s">'listed moves before every listed one.'</span>},
+    {<span class="s">'kind'</span>: <span class="s">'textarea'</span>, <span class="s">'key'</span>: <span class="s">'names'</span>, <span class="s">'label'</span>: <span class="s">'Assign trades to people'</span>, <span class="s">'rows'</span>: 4,
+     <span class="s">'default'</span>: values[<span class="s">'names'</span>] <span class="k">if</span> isinstance(values[<span class="s">'names'</span>], str) <span class="k">else</span> <span class="s">''</span>,
+     <span class="s">'hint'</span>: <span class="s">'Optional, one per line: Mechanical = Jane Smith. Without a line the trade name is used.'</span>},
+    {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'reassign'</span>, <span class="s">'label'</span>: <span class="s">'Auto mode also reassigns items that already have an assignee'</span>,
+     <span class="s">'default'</span>: values[<span class="s">'reassign'</span>]},
+]
+
+
+<span class="k">def</span> validate(answers):
+    <span class="k">if</span> <span class="k">not</span> clashassign.priority_list(answers[<span class="s">'priority'</span>]):
+        <span class="k">return</span> {<span class="s">'priority'</span>: <span class="s">'List at least one trade.'</span>}
+    <span class="k">return</span> <span class="k">None</span>
+
+
+answers = ui.form(<span class="s">'Clash Assigner options'</span>, fields, ok=<span class="s">'Save'</span>, width=520, validate=validate)
+<span class="k">if</span> answers <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+    values[<span class="s">'priority'</span>] = clashassign.priority_list(answers[<span class="s">'priority'</span>])
+    values[<span class="s">'names'</span>] = answers[<span class="s">'names'</span>]
+    values[<span class="s">'reassign'</span>] = answers[<span class="s">'reassign'</span>]
+    script.save_config(values)
+    toast.success(<span class="s">'Saved Clash Assigner options'</span>, <span class="s">'Who moves: %s.'</span> % <span class="s">' &gt; '</span>.join(values[<span class="s">'priority'</span>]))
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashassign.py" rel="noopener"><code>namo.clashassign</code></a><span class="mod-doc">Clash Assigner: ball in court for clash groups and ungrouped clashes.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashset_common.py" rel="noopener"><code>namo.clashset_common</code></a><span class="mod-doc">Small things every Clash Setup and Clash Results tool shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/config.py" rel="noopener"><code>namo.config</code></a><span class="mod-doc">Playground-wide settings: one JSON file shared by every Playground tool.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Results.panel/Clash_Assigner.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Results.panel/Clash_Assigner.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Clash\nAssigner
+tooltip: Assigns clash groups and ungrouped clashes to the trade that moves, keeps the ball-in-court history in the model, and shows who holds what and for how long. Shift+Click for settings.
+context: clash-results
+</code></pre></div>
 <div class="pagenav">
 <a href="coordinate-clash-results-status-rules.html"><span class="dir">Previous</span><span class="ttl">Status Rules</span></a>
 <a class="next" href="coordinate-clash-results-clash-to-viewpoints.html"><span class="dir">Next</span><span class="ttl">Clash to Viewpoints</span></a>

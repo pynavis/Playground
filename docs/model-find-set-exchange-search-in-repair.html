@@ -6,6 +6,7 @@
 <title>Repair Search In - pyNavis Playground</title>
 <meta name="description" content="Finds search sets whose Search In scope is empty or points at models that are gone, and re-scopes them to matching models or the whole model.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Repair Search In", "description": "Finds search sets whose Search In scope is empty or points at models that are gone, and re-scopes them to matching models or the whole model.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-find-set-exchange-search-in-repair.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -225,6 +229,97 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Repair Search In is on the Model tab, Find panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Repair%20Search%20In&amp;tool=Model.tab%2FFind.panel%2FSet_Exchange.stack%2FSearch_In_Repair.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Find.panel/Set_Exchange.stack/Search_In_Repair.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Find.panel/Set_Exchange.stack/Search_In_Repair.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Finds search sets whose Search In scope finds nothing and re-scopes them."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> output, toast
+<span class="k">from</span> pynavis._api <span class="k">import</span> Application
+
+<span class="k">from</span> namo <span class="k">import</span> find_repair, items, ui
+
+document = Application.ActiveDocument
+HEADERS = [<span class="s">'Set'</span>, <span class="s">'Folder'</span>, <span class="s">'Status'</span>, <span class="s">'Pointed at'</span>, <span class="s">'Matched models'</span>, <span class="s">'After'</span>]
+
+entries, total = find_repair.scan(document)
+model_names = [m[<span class="s">'name'</span>] <span class="k">for</span> m <span class="k">in</span> items.models(document)]
+
+<span class="k">if</span> <span class="k">not</span> total:
+    toast.info(<span class="s">'No search sets'</span>, <span class="s">'This model has no search sets to check.'</span>)
+<span class="k">elif</span> <span class="k">not</span> entries:
+    toast.success(<span class="s">'Every search set has a working Search In scope'</span>,
+                  <span class="s">'%d search %s checked.'</span> % (total, <span class="s">'set'</span> <span class="k">if</span> total == 1 <span class="k">else</span> <span class="s">'sets'</span>))
+<span class="k">else</span>:
+    holder = {}
+
+    <span class="k">def</span> selected_entries(guids):
+        wanted = set(guids)
+        <span class="k">return</span> [e <span class="k">for</span> e <span class="k">in</span> entries <span class="k">if</span> e[<span class="s">'guid'</span>] <span class="k">in</span> wanted]
+
+    <span class="k">def</span> refresh():
+        holder[<span class="s">'win'</span>].Tag.update(find_repair.table_rows(entries), find_repair.status_line(entries, total))
+
+    <span class="k">def</span> report(done, failed, skipped=0):
+        refresh()
+        parts = []
+        <span class="k">if</span> failed:
+            parts.append(<span class="s">'%d could not be rewritten; see the After column'</span> % failed)
+        <span class="k">if</span> skipped:
+            parts.append(<span class="s">'%d had no file name to match'</span> % skipped)
+        <span class="k">if</span> done:
+            toast.show(<span class="s">'warning'</span> <span class="k">if</span> parts <span class="k">else</span> <span class="s">'success'</span>,
+                       <span class="s">'Re-scoped %d search %s'</span> % (done, <span class="s">'set'</span> <span class="k">if</span> done == 1 <span class="k">else</span> <span class="s">'sets'</span>),
+                       <span class="s">'; '</span>.join(parts) <span class="k">or</span> <span class="k">None</span>)
+        <span class="k">elif</span> parts:
+            toast.warning(<span class="s">'No search set was re-scoped'</span>, <span class="s">'; '</span>.join(parts))
+
+    <span class="k">def</span> use_matches(guids):
+        chosen = selected_entries(guids)
+        ready = [e <span class="k">for</span> e <span class="k">in</span> chosen <span class="k">if</span> e[<span class="s">'suggest'</span>]]
+        done, failed = find_repair.rescope_many(ready, <span class="k">lambda</span> e: e[<span class="s">'suggest'</span>], document)
+        report(done, failed, len(chosen) - len(ready))
+
+    <span class="k">def</span> choose_models(guids):
+        chosen = selected_entries(guids)
+        picked = ui.choose(<span class="s">'Search in these models'</span>, [{<span class="s">'value'</span>: n, <span class="s">'cells'</span>: [n]} <span class="k">for</span> n <span class="k">in</span> model_names],
+                           [<span class="s">'Model'</span>], multiselect=<span class="k">True</span>, ok=<span class="s">'Re-scope'</span>, width=480, height=460,
+                           prompt=<span class="s">'The %d chosen search %s will search these models.'</span> % (
+                               len(chosen), <span class="s">'set'</span> <span class="k">if</span> len(chosen) == 1 <span class="k">else</span> <span class="s">'sets'</span>))
+        <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+        done, failed = find_repair.rescope_many(chosen, <span class="k">lambda</span> e: list(picked), document)
+        report(done, failed)
+
+    <span class="k">def</span> whole_model(guids):
+        done, failed = find_repair.rescope_many(selected_entries(guids), <span class="k">lambda</span> e: find_repair.WHOLE,
+                                                document)
+        report(done, failed)
+
+    holder[<span class="s">'win'</span>] = ui.build_table(
+        <span class="s">'Repair Search In'</span>, HEADERS, find_repair.table_rows(entries),
+        actions=[{<span class="s">'label'</span>: <span class="s">'Use matched models'</span>, <span class="s">'fn'</span>: use_matches, <span class="s">'primary'</span>: <span class="k">True</span>},
+                 (<span class="s">'Choose models'</span>, choose_models), (<span class="s">'Whole model'</span>, whole_model)],
+        status=find_repair.status_line(entries, total), width=1100, height=560)
+    ui.show_modal(holder[<span class="s">'win'</span>])
+
+    changed = [e <span class="k">for</span> e <span class="k">in</span> entries <span class="k">if</span> e[<span class="s">'status'</span>] <span class="k">in</span> (<span class="s">'repaired'</span>, <span class="s">'failed'</span>)]
+    <span class="k">if</span> changed:
+        output.print_md(<span class="s">'## Search In repairs'</span>)
+        output.print_table([[e[<span class="s">'name'</span>], e[<span class="s">'folder'</span>], e[<span class="s">'before'</span>], e.get(<span class="s">'after'</span>, <span class="s">''</span>)] <span class="k">for</span> e <span class="k">in</span> changed],
+                           [<span class="s">'Set'</span>, <span class="s">'Folder'</span>, <span class="s">'Before'</span>, <span class="s">'After'</span>])
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/find_repair.py" rel="noopener"><code>namo.find_repair</code></a><span class="mod-doc">Search-In Repair: search sets whose &#x27;Search In&#x27; scope finds nothing any more.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Find.panel/Set_Exchange.stack/Search_In_Repair.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Find.panel/Set_Exchange.stack/Search_In_Repair.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Repair Search In
+tooltip: Finds search sets whose Search In scope is empty or points at models that are gone, and re-scopes them to matching models or the whole model.
+context: selection-sets
+</code></pre></div>
 <div class="pagenav">
 <a href="model-find-set-exchange-import-sets.html"><span class="dir">Previous</span><span class="ttl">Import Sets</span></a>
 <a class="next" href="model-inspect-what-is-it.html"><span class="dir">Next</span><span class="ttl">What Is It</span></a>

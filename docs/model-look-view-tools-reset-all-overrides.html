@@ -6,6 +6,7 @@
 <title>Reset Overrides - pyNavis Playground</title>
 <meta name="description" content="Puts back the model colors, transparency, hidden items, moved items or required and frozen flags you choose, all in one undo step.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Reset Overrides", "description": "Puts back the model colors, transparency, hidden items, moved items or required and frozen flags you choose, all in one undo step.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-look-view-tools-reset-all-overrides.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -221,6 +225,60 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Reset Overrides is on the Model tab, Look panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Reset%20Overrides&amp;tool=Model.tab%2FLook.panel%2FView_Tools.stack%2FReset_All_Overrides.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Look.panel/View_Tools.stack/Reset_All_Overrides.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Look.panel/View_Tools.stack/Reset_All_Overrides.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Resets the chosen kinds of override (colors, hidden items, moves, flags) in one undo step."""</span>
+<span class="k">from</span> namo <span class="k">import</span> explode, look_ghost, look_tools, ui
+<span class="k">from</span> pynavis <span class="k">import</span> doc <span class="k">as</span> nwdoc
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+TITLE = <span class="s">'Reset Overrides'</span>
+DEFAULTS = {<span class="s">'kinds'</span>: list(look_tools.RESET_DEFAULT)}
+
+
+<span class="k">def</span> run():
+    document = nwdoc.get_doc()
+    <span class="k">if</span> document.Models.Count == 0:
+        toast.info(<span class="s">'No model open'</span>, <span class="s">'Open a model, then run Reset Overrides again.'</span>)
+        <span class="k">return</span>
+    cfg = script.get_config(DEFAULTS)
+    values = ui.form(TITLE, look_tools.reset_fields(cfg.get(<span class="s">'kinds'</span>)), ok=<span class="s">'Reset'</span>)
+    <span class="k">if</span> values <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    kinds = look_tools.normalize_kinds(values[<span class="s">'kinds'</span>])
+    <span class="k">if</span> <span class="s">'transforms'</span> <span class="k">in</span> kinds <span class="k">and</span> <span class="k">not</span> forms.confirm(
+            <span class="s">'Put every moved or rotated item back where its source file has it? This also undoes '</span>
+            <span class="s">'moves made on purpose, such as a model aligned by hand.'</span>, title=TITLE):
+        <span class="k">return</span>
+    cfg[<span class="s">'kinds'</span>] = kinds
+    script.save_config(cfg)
+    look_tools.reset(kinds, document)
+    <span class="k">if</span> <span class="s">'transforms'</span> <span class="k">in</span> kinds <span class="k">and</span> explode.load_record(document) <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        explode.save_record(<span class="k">None</span>, document)       <span class="c"># nothing is exploded any more</span>
+    <span class="k">if</span> <span class="s">'materials'</span> <span class="k">in</span> kinds <span class="k">and</span> look_ghost.load_record(document) <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        look_ghost.save_record(<span class="k">None</span>, document)    <span class="c"># nothing is ghosted any more</span>
+    <span class="k">if</span> <span class="s">'temporary'</span> <span class="k">in</span> kinds:
+        detail = <span class="s">'Ctrl+Z undoes it in one step, except the temporary colors, which Navisworks does not keep.'</span>
+    <span class="k">else</span>:
+        detail = <span class="s">'Ctrl+Z undoes it in one step.'</span>
+    toast.success(look_tools.reset_summary(kinds), detail)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/explode.py" rel="noopener"><code>namo.explode</code></a><span class="mod-doc">Exploded View: pull objects (or whole models) apart from their common centre.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/look_ghost.py" rel="noopener"><code>namo.look_ghost</code></a><span class="mod-doc">Trade Ghost: one or more trades stay solid, every other model fades.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/look_tools.py" rel="noopener"><code>namo.look_tools</code></a><span class="mod-doc">The small Look tools: Match Appearance, Reset All Overrides and Background.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Look.panel/View_Tools.stack/Reset_All_Overrides.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Look.panel/View_Tools.stack/Reset_All_Overrides.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Reset Overrides
+tooltip: Puts back the model colors, transparency, hidden items, moved items or required and frozen flags you choose, all in one undo step.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="model-look-look-tools-exploded-view.html"><span class="dir">Previous</span><span class="ttl">Exploded View</span></a>
 <a class="next" href="model-look-view-tools-background.html"><span class="dir">Next</span><span class="ttl">Background</span></a>

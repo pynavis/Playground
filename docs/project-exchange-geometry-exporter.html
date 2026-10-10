@@ -6,6 +6,7 @@
 <title>Geometry Exporter - pyNavis Playground</title>
 <meta name="description" content="Exports the selected objects&#x27; own triangles with their colours to glTF (.glb), OBJ, STL or DXF 3D faces, adding IDs and chosen properties in glTF. Big selections are budgeted and anything skipped is listed.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Geometry Exporter", "description": "Exports the selected objects' own triangles with their colours to glTF (.glb), OBJ, STL or DXF 3D faces, adding IDs and chosen properties in glTF. Big selections are budgeted and anything skipped is listed.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/project-exchange-geometry-exporter.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -221,6 +225,119 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Geometry Exporter is on the Project tab, Exchange panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Geometry%20Exporter&amp;tool=Project.tab%2FExchange.panel%2FGeometry_Exporter.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Exchange.panel/Geometry_Exporter.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Exchange.panel/Geometry_Exporter.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Exports the selected objects' triangles to glTF (.glb), OBJ, STL or DXF 3D faces."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> pynavis <span class="k">import</span> doc <span class="k">as</span> nwdoc
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> items, meshexport, paths, progress, ui, xchg_common
+
+NAME_TEMPLATE = <span class="s">'{file} - Geometry - {date}'</span>
+
+
+<span class="k">def</span> property_options(selected):
+    <span class="s">"""Chooser options for the property names on the first objects of the selection."""</span>
+    <span class="k">try</span>:
+        sample = items.objects(selected, budget=150)
+        names = items.sample_properties(sample, limit=150)
+    <span class="k">except</span> Exception:
+        <span class="k">return</span> []
+    <span class="k">return</span> [meshexport.property_option(cat, prop) <span class="k">for</span> cat, prop, _n <span class="k">in</span> names][:400]
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> xchg_common.under_runner():
+        <span class="k">return</span>
+    document = nwdoc.get_doc()
+    selected = items.selected(document)
+    <span class="k">if</span> <span class="k">not</span> selected:
+        toast.info(<span class="s">'Nothing selected'</span>, <span class="s">'Select the objects to export, then run Geometry Exporter again.'</span>)
+        <span class="k">return</span>
+    doc_units = str(document.Units)
+    values = dict(meshexport.DEFAULT_OPTIONS)
+    values.update(script.get_config(meshexport.DEFAULT_OPTIONS))
+    fields = meshexport.form_fields(values, doc_units, property_options(selected))
+    answer = ui.form(<span class="s">'Geometry exporter'</span>, fields, ok=<span class="s">'Export'</span>, width=560)
+    <span class="k">if</span> answer <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    values.update(answer)
+    script.save_config(dict((k, values[k]) <span class="k">for</span> k <span class="k">in</span> meshexport.DEFAULT_OPTIONS))
+    fmt = values[<span class="s">'format'</span>]
+    ext = meshexport.EXTENSIONS[fmt]
+    path = xchg_common.ask_save(document, NAME_TEMPLATE, ext, meshexport.FILTERS[fmt], <span class="s">'Export geometry'</span>)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    pairs = meshexport.property_pairs(values.get(<span class="s">'properties'</span>))
+    title = xchg_common.doc_title(document)
+    y_up = fmt == <span class="s">'glb'</span> <span class="k">or</span> (fmt == <span class="s">'obj'</span> <span class="k">and</span> values[<span class="s">'obj_y_up'</span>])
+
+    <span class="k">def</span> work(report):
+        read = meshexport.read_objects(selected, per_object=values[<span class="s">'per_object'</span>], total=values[<span class="s">'total'</span>],
+                                       progress=<span class="k">lambda</span> f, label: report(f * 0.85, label),
+                                       identity=values[<span class="s">'identity'</span>] <span class="k">and</span> fmt == <span class="s">'glb'</span>,
+                                       property_pairs=pairs <span class="k">if</span> fmt == <span class="s">'glb'</span> <span class="k">else</span> <span class="k">None</span>, doc_units=doc_units)
+        records = read[<span class="s">'records'</span>]
+        <span class="k">if</span> <span class="k">not</span> records:
+            <span class="k">return</span> read, [], [], []
+        shift = meshexport.local_origin(meshexport.union_box(records), doc_units) <span class="k">if</span> values[<span class="s">'shift'</span>] <span class="k">else</span> <span class="k">None</span>
+        report(0.87, <span class="s">'Preparing %s objects'</span> % <span class="s">'{:,}'</span>.format(len(records)))
+        meshes, dropped = meshexport.build_meshes(records, fmt, doc_units, shift, values[<span class="s">'units'</span>],
+                                                  values[<span class="s">'obj_y_up'</span>])
+        _scale, word = meshexport.target_units(fmt, values[<span class="s">'units'</span>], doc_units)
+        header = [<span class="s">'Source: %s'</span> % title, <span class="s">'Units: %s'</span> % word, <span class="s">'Up axis: %s'</span> % (<span class="s">'Y'</span> <span class="k">if</span> y_up <span class="k">else</span> <span class="s">'Z'</span>)]
+        extras = {<span class="s">'source'</span>: title, <span class="s">'units'</span>: <span class="s">'metres'</span>, <span class="s">'up'</span>: <span class="s">'Y'</span>, <span class="s">'model_units'</span>: doc_units}
+        <span class="k">if</span> shift:
+            header.append(<span class="s">'Local origin subtracted (model units): %s'</span> % <span class="s">', '</span>.join(
+                meshexport.num_text(v, 12) <span class="k">for</span> v <span class="k">in</span> shift))
+            extras[<span class="s">'local_origin_model_units'</span>] = list(shift)
+        report(0.94, <span class="s">'Writing %s'</span> % os.path.basename(path))
+        written = meshexport.write_files(path, fmt, meshes, title=title, extras=extras,
+                                         layer_by=values[<span class="s">'layers'</span>], header_lines=header)
+        <span class="k">if</span> shift:
+            note = meshexport.offset_note(shift, doc_units, fmt, word, title, axes_y_up=y_up)
+            written.append(paths.atomic_write_text(meshexport.sidecar_path(path), note))
+        report(1.0, <span class="s">'Done'</span>)
+        <span class="k">return</span> read, meshes, dropped, written
+
+    <span class="k">try</span>:
+        outcome = progress.run(<span class="s">'Exporting geometry'</span>, work)
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not write the file'</span>, <span class="s">'%s. Close it in any program that has it open, then try again.'</span> % error)
+        <span class="k">return</span>
+    <span class="k">if</span> outcome <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    read, meshes, dropped, written = outcome
+    xchg_common.show_skipped(<span class="s">'Geometry exporter'</span>, read[<span class="s">'skipped'</span>], dropped)
+    level, message, detail = meshexport.summary(meshes, read[<span class="s">'skipped'</span>], dropped, fmt, read[<span class="s">'sampled'</span>])
+    <span class="k">if</span> written:
+        <span class="c"># Say where the file is whatever else there is to say, and show it in Explorer.</span>
+        detail = written[0] <span class="k">if</span> level == <span class="s">'success'</span> <span class="k">else</span> xchg_common.where_text(detail, written[0])
+    toast.show(level, message, detail)
+    <span class="k">if</span> written:
+        xchg_common.reveal(written[0])
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/meshexport.py" rel="noopener"><code>namo.meshexport</code></a><span class="mod-doc">Geometry out of Navisworks: glTF 2.0 binary (.glb), OBJ + MTL, binary STL and DXF 3D faces, from the selected objects&#x27; own triangles.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/paths.py" rel="noopener"><code>namo.paths</code></a><span class="mod-doc">Where Playground keeps its files, and how it writes them safely.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/xchg_common.py" rel="noopener"><code>namo.xchg_common</code></a><span class="mod-doc">Small pieces the Geometry and IFC exporters share: where files go, default names, and the list of skipped objects in the output window.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Exchange.panel/Geometry_Exporter.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Exchange.panel/Geometry_Exporter.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Geometry\nExporter
+tooltip: Exports the selected objects' own triangles with their colours to glTF (.glb), OBJ, STL or DXF 3D faces, adding IDs and chosen properties in glTF. Big selections are budgeted and anything skipped is listed.
+context: selection
+</code></pre></div>
 <div class="pagenav">
 <a href="project-field-field-checklists.html"><span class="dir">Previous</span><span class="ttl">Field Checklists</span></a>
 <a class="next" href="project-exchange-ifc-exporter.html"><span class="dir">Next</span><span class="ttl">IFC Exporter</span></a>

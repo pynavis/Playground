@@ -6,6 +6,7 @@
 <title>Session Stats - pyNavis Playground</title>
 <meta name="description" content="Measures every appended model (file sizes, items, geometry items, primitives, fragments, extent, units, when it arrived and how long it took to load) in a table and a chart, and saves the table as an Excel workbook beside the document.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Session Stats", "description": "Measures every appended model (file sizes, items, geometry items, primitives, fragments, extent, units, when it arrived and how long it took to load) in a table and a chart, and saves the table as an Excel workbook beside the document.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/project-quality-session-stats.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -220,6 +224,63 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Session Stats is on the Project tab, Quality panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Session%20Stats&amp;tool=Project.tab%2FQuality.panel%2FSession_Stats.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Quality.panel/Session_Stats.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Quality.panel/Session_Stats.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Measures every appended model: file sizes, items, geometry, primitives, fragments, extent and load time."""</span>
+<span class="k">from</span> namo <span class="k">import</span> mdl_output, mdl_stats, modelmgmt, progress, reports, rep_session_stats
+
+<span class="k">from</span> pynavis <span class="k">import</span> app, output, toast
+
+
+<span class="k">def</span> run():
+    doc = app.get_doc()
+    <span class="k">if</span> <span class="k">not</span> modelmgmt.has_models(doc):
+        toast.info(<span class="s">'No models to measure'</span>, <span class="s">'Append models first.'</span>)
+        <span class="k">return</span>
+    config = modelmgmt.report_config(doc, <span class="s">'Session stats'</span>, rep_session_stats.default_config())
+    result = progress.run(<span class="s">'Session Stats'</span>, <span class="k">lambda</span> report: reports.run(
+        <span class="s">'session_stats'</span>, config, doc=doc, interactive=<span class="k">True</span>, progress=report), <span class="s">'Counting'</span>)
+    <span class="k">if</span> result <span class="k">is</span> progress.CANCELLED <span class="k">or</span> result.get(<span class="s">'cancelled'</span>):
+        <span class="k">return</span>
+    rows = result.get(<span class="s">'rows'</span>) <span class="k">or</span> []
+    <span class="k">if</span> rows:
+        total = result[<span class="s">'totals'</span>]
+        html = [mdl_output.heading(<span class="s">'Session stats'</span>, 2),
+                mdl_output.kpis([(<span class="s">'Models'</span>, total[<span class="s">'models'</span>], <span class="k">None</span>), (<span class="s">'Items'</span>, total[<span class="s">'items'</span>], <span class="k">None</span>),
+                                 (<span class="s">'Geometry items'</span>, total[<span class="s">'geometry'</span>], <span class="k">None</span>),
+                                 (<span class="s">'Primitives'</span>, total[<span class="s">'primitives'</span>], <span class="k">None</span>),
+                                 (<span class="s">'Loaded files'</span>, modelmgmt.format_size(total[<span class="s">'cache_bytes'</span>]), <span class="k">None</span>)]),
+                mdl_output.table(mdl_stats.HEADERS, mdl_stats.table_rows(rows), numeric=[5, 6, 7, 8])]
+        <span class="k">if</span> total[<span class="s">'sampled'</span>]:
+            html.append(mdl_output.note(<span class="s">'Primitives and fragments of the largest models are estimated from '</span>
+                                        <span class="s">'a sample of their geometry items (see Note).'</span>))
+        output.print_html(<span class="s">''</span>.join(html))
+        ordered = sorted(rows, key=<span class="k">lambda</span> r: -r[<span class="s">'primitives'</span>])[:20]
+        output.chart_bar([r[<span class="s">'name'</span>] <span class="k">for</span> r <span class="k">in</span> ordered], [r[<span class="s">'primitives'</span>] <span class="k">for</span> r <span class="k">in</span> ordered],
+                         <span class="s">'Primitives per model'</span> + (<span class="s">' (largest 20)'</span> <span class="k">if</span> len(rows) &gt; 20 <span class="k">else</span> <span class="s">''</span>))
+        <span class="k">for</span> path <span class="k">in</span> result.get(<span class="s">'paths'</span>) <span class="k">or</span> []:
+            output.print_html(mdl_output.path_line(<span class="s">'Workbook:'</span>, path))
+    toast.show(result[<span class="s">'level'</span>], result[<span class="s">'message'</span>], result[<span class="s">'detail'</span>] <span class="k">or</span> <span class="k">None</span>)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/mdl_output.py" rel="noopener"><code>namo.mdl_output</code></a><span class="mod-doc">Output-window HTML for the Models, Quality and Publish tools (pure string building).</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/mdl_stats.py" rel="noopener"><code>namo.mdl_stats</code></a><span class="mod-doc">Session Stats: what each appended model weighs (files, items, geometry, primitives, fragments, extent) and when and how fast it arrived this session.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/modelmgmt.py" rel="noopener"><code>namo.modelmgmt</code></a><span class="mod-doc">Appended models: listing, identifying, file freshness, batch append and model actions.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/rep_session_stats.py" rel="noopener"><code>namo.rep_session_stats</code></a><span class="mod-doc">Session Stats: one workbook row per appended model (files, items, geometry, primitives, fragments, extent, arrival and load time).</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/reports.py" rel="noopener"><code>namo.reports</code></a><span class="mod-doc">The registry of automation-ready reports, and the helpers every report shares.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Quality.panel/Session_Stats.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Quality.panel/Session_Stats.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Session\nStats
+tooltip: Measures every appended model (file sizes, items, geometry items, primitives, fragments, extent, units, when it arrived and how long it took to load) in a table and a chart, and saves the table as an Excel workbook beside the document.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="project-quality-preflight.html"><span class="dir">Previous</span><span class="ttl">Preflight</span></a>
 <a class="next" href="project-publish-nwd-publisher.html"><span class="dir">Next</span><span class="ttl">NWD Publisher</span></a>

@@ -6,6 +6,7 @@
 <title>Stale Files - pyNavis Playground</title>
 <meta name="description" content="Compares every model&#x27;s loaded file (the NWC) with its source file and lists the models whose source was saved later, whose file is missing, or whose source is not on this computer. Shift+Click to check automatically whenever a model opens.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Stale Files", "description": "Compares every model's loaded file (the NWC) with its source file and lists the models whose source was saved later, whose file is missing, or whose source is not on this computer. Shift+Click to check automatically whenever a model opens.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/project-models-stale-file-alert.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -224,6 +228,92 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Stale Files is on the Project tab, Models panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Stale%20Files&amp;tool=Project.tab%2FModels.panel%2FStale_File_Alert.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Models.panel/Stale_File_Alert.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Models.panel/Stale_File_Alert.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Compares every model's loaded file with its source file and lists what is out of date or missing."""</span>
+<span class="k">from</span> namo <span class="k">import</span> hk_stalecheck, mdl_output, modelmgmt, rep_stale_files
+
+<span class="k">from</span> pynavis <span class="k">import</span> app, output, toast
+
+
+<span class="k">def</span> run():
+    doc = app.get_doc()
+    <span class="k">if</span> <span class="k">not</span> modelmgmt.has_models(doc):
+        toast.info(<span class="s">'No models to check'</span>, <span class="s">'Append models first.'</span>)
+        <span class="k">return</span>
+    config = hk_stalecheck.load_config()
+    rows = modelmgmt.stale_rows(doc, tolerance=config[<span class="s">'tolerance_seconds'</span>])
+    level, message, detail = modelmgmt.stale_summary(rows)
+    late = sum(1 <span class="k">for</span> r <span class="k">in</span> rows <span class="k">if</span> r[<span class="s">'status'</span>] == modelmgmt.OUT_OF_DATE)
+    lost = sum(1 <span class="k">for</span> r <span class="k">in</span> rows <span class="k">if</span> r[<span class="s">'status'</span>] <span class="k">in</span> (modelmgmt.CACHE_NOT_FOUND, modelmgmt.CACHE_OFFLINE))
+    elsewhere = sum(1 <span class="k">for</span> r <span class="k">in</span> rows <span class="k">if</span> modelmgmt.STATUS_LEVEL.get(r[<span class="s">'status'</span>]) == <span class="s">'info'</span>)
+    table = rep_stale_files.table_rows(rows)
+    shown = [[mdl_output.chip(r[<span class="s">'level'</span>], r[<span class="s">'status'</span>]), t[0], t[2], t[4], t[5], t[7]]
+             <span class="k">for</span> r, t <span class="k">in</span> zip(rows, table)]
+    html = [mdl_output.heading(<span class="s">'Stale files'</span>, 2),
+            mdl_output.kpis([(<span class="s">'Models'</span>, len(rows), <span class="k">None</span>), (<span class="s">'Out of date'</span>, late, <span class="s">'warn'</span> <span class="k">if</span> late <span class="k">else</span> <span class="k">None</span>),
+                             (<span class="s">'Not found'</span>, lost, <span class="s">'fail'</span> <span class="k">if</span> lost <span class="k">else</span> <span class="k">None</span>),
+                             (<span class="s">'No source here'</span>, elsewhere, <span class="k">None</span>)]),
+            mdl_output.table([<span class="s">'Status'</span>, <span class="s">'Model'</span>, <span class="s">'File time'</span>, <span class="s">'Source time'</span>, <span class="s">'Source newer by'</span>, <span class="s">'Detail'</span>],
+                             shown, raw=set([0]), numeric=[])]
+    <span class="k">if</span> late:
+        html.append(mdl_output.note(<span class="s">'Refresh (Home &gt; Refresh, or Refresh changed in Source Files) '</span>
+                                    <span class="s">'loads the newer source files.'</span>))
+    output.print_html(<span class="s">''</span>.join(html))
+    toast.show(level, message, detail)
+
+
+run()
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Models.panel/Stale_File_Alert.pushbutton/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Models.panel/Stale_File_Alert.pushbutton/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Options for Stale File Alert: check whenever a model opens, and how much clock difference to ignore."""</span>
+<span class="k">from</span> namo <span class="k">import</span> hk_stalecheck, ui
+
+<span class="k">from</span> pynavis <span class="k">import</span> settings, toast
+
+
+<span class="k">def</span> run():
+    values = hk_stalecheck.load_config()
+    fields = [
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'check_on_open'</span>, <span class="s">'default'</span>: values[<span class="s">'check_on_open'</span>],
+         <span class="s">'label'</span>: <span class="s">'Check the files whenever a model opens, and warn only when something is out of date'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'number'</span>, <span class="s">'key'</span>: <span class="s">'tolerance_seconds'</span>, <span class="s">'label'</span>: <span class="s">'Ignore differences up to'</span>,
+         <span class="s">'default'</span>: values[<span class="s">'tolerance_seconds'</span>], <span class="s">'min'</span>: 0.0, <span class="s">'max'</span>: 86400.0, <span class="s">'suffix'</span>: <span class="s">'s'</span>,
+         <span class="s">'hint'</span>: <span class="s">'File servers round times; 2 s covers that. Raise it when clocks between servers drift.'</span>},
+    ]
+    answer = ui.form(<span class="s">'Stale File Alert'</span>, fields, ok=<span class="s">'Save'</span>)
+    <span class="k">if</span> answer <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    values.update(answer)
+    <span class="k">if</span> values[<span class="s">'tolerance_seconds'</span>] <span class="k">is</span> <span class="k">None</span>:
+        values[<span class="s">'tolerance_seconds'</span>] = 2.0
+    <span class="k">try</span>:
+        settings.save(hk_stalecheck.TOOL, values)
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not save the options'</span>, str(error))
+        <span class="k">return</span>
+    toast.success(<span class="s">'Stale File Alert options saved'</span>,
+                  <span class="s">'Checks every model that opens.'</span> <span class="k">if</span> values[<span class="s">'check_on_open'</span>] <span class="k">else</span> <span class="s">'Checks only when you click.'</span>)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/hk_stalecheck.py" rel="noopener"><code>namo.hk_stalecheck</code></a><span class="mod-doc">Stale File Alert handler: when a document opens and &#x27;Check when a model opens&#x27; is on (Stale File Alert&#x27;s Shift+Click, off by default), compares every model&#x27;s loaded file with its source and toasts only when something is out of date or missing.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/mdl_output.py" rel="noopener"><code>namo.mdl_output</code></a><span class="mod-doc">Output-window HTML for the Models, Quality and Publish tools (pure string building).</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/modelmgmt.py" rel="noopener"><code>namo.modelmgmt</code></a><span class="mod-doc">Appended models: listing, identifying, file freshness, batch append and model actions.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/rep_stale_files.py" rel="noopener"><code>namo.rep_stale_files</code></a><span class="mod-doc">Stale File Alert: every appended model&#x27;s loaded file against its source file, as a workbook (model, file times, age difference, status).</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Models.panel/Stale_File_Alert.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Models.panel/Stale_File_Alert.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Stale\nFiles
+tooltip: Compares every model's loaded file (the NWC) with its source file and lists the models whose source was saved later, whose file is missing, or whose source is not on this computer. Shift+Click to check automatically whenever a model opens.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="project-models-folder-watch.html"><span class="dir">Previous</span><span class="ttl">Folder Watch</span></a>
 <a class="next" href="project-quality-model-health-check.html"><span class="dir">Next</span><span class="ttl">Health Check</span></a>

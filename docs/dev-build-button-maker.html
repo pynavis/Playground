@@ -6,6 +6,7 @@
 <title>Button Maker - pyNavis Playground</title>
 <meta name="description" content="Makes a new ribbon button in your MyTools extension from a template or your own script, with an icon and an optional shortcut.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Button Maker", "description": "Makes a new ribbon button in your MyTools extension from a template or your own script, with an icon and an optional shortcut.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/dev-build-button-maker.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,68 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Button Maker is on the Dev tab, Build panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Button%20Maker&amp;tool=Dev.tab%2FBuild.panel%2FButton_Maker.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Dev.tab/Build.panel/Button_Maker.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Dev.tab/Build.panel/Button_Maker.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Makes a new pyNavis button in your own MyTools extension."""</span>
+<span class="k">import</span> io
+
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> buttonmaker, hotkeys, ribbon, ui
+
+root = buttonmaker.user_root()
+last = script.get_config({<span class="s">'template'</span>: <span class="s">'selection'</span>, <span class="s">'tab'</span>: buttonmaker.DEFAULT_TAB,
+                          <span class="s">'panel'</span>: buttonmaker.DEFAULT_PANEL, <span class="s">'icon'</span>: <span class="s">'letters'</span>})
+cfg, _error = hotkeys.read_config(ribbon.user_config_path())
+allow_bare = hotkeys.allow_bare_of(cfg <span class="k">or</span> {})
+taken = buttonmaker.taken_chords(ribbon.buttons())
+
+<span class="k">if</span> globals().get(<span class="s">'__runner__'</span>):
+    toast.info(<span class="s">'Button Maker needs the Navisworks window'</span>, <span class="s">'It cannot open under pynavis run.'</span>)
+<span class="k">else</span>:
+    values = ui.form(<span class="s">'Button Maker'</span>, buttonmaker.form_fields(last, buttonmaker.existing_tabs(root)),
+                     ok=<span class="s">'Make button'</span>, width=520,
+                     intro=<span class="s">'The new button goes in %s, which pyNavis loads by itself.'</span>
+                           % buttonmaker.extension_folder(root),
+                     validate=<span class="k">lambda</span> v: buttonmaker.validate_spec(buttonmaker.spec_from(v), root, taken, allow_bare))
+    <span class="k">if</span> values <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        spec = buttonmaker.spec_from(values)
+        problem = <span class="k">None</span>
+        <span class="k">if</span> spec[<span class="s">'template'</span>] == <span class="s">'file'</span>:
+            <span class="k">try</span>:
+                <span class="k">with</span> io.open(spec[<span class="s">'script_file'</span>], encoding=<span class="s">'utf-8-sig'</span>) <span class="k">as</span> handle:
+                    spec[<span class="s">'script_text'</span>] = handle.read()
+            <span class="k">except</span> (IOError, OSError, UnicodeDecodeError) <span class="k">as</span> error:
+                problem = str(error)
+        <span class="k">if</span> problem:
+            toast.error(<span class="s">'Could not read the script'</span>, problem)
+        <span class="k">else</span>:
+            <span class="k">try</span>:
+                plan = buttonmaker.make(root, spec)
+            <span class="k">except</span> (IOError, OSError, ValueError) <span class="k">as</span> error:
+                toast.error(<span class="s">'Could not make the button'</span>, str(error))
+            <span class="k">else</span>:
+                script.save_config(buttonmaker.remembered(values))
+                ribbon.reload()
+                detail = <span class="s">'%s &gt; %s. Edit it with Script Editor.'</span> % (plan[<span class="s">'tab'</span>], plan[<span class="s">'panel'</span>])
+                <span class="k">if</span> spec.get(<span class="s">'shortcut'</span>):
+                    detail = <span class="s">'%s &gt; %s, shortcut %s. Edit it with Script Editor.'</span> % (plan[<span class="s">'tab'</span>], plan[<span class="s">'panel'</span>],
+                                                                                    spec[<span class="s">'shortcut'</span>])
+                toast.success(<span class="s">'Added %s'</span> % ribbon.flatten_title(spec[<span class="s">'title'</span>]), detail)
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/buttonmaker.py" rel="noopener"><code>namo.buttonmaker</code></a><span class="mod-doc">Button Maker: writes new pyNavis bundles into the user&#x27;s own extension.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/hotkeys.py" rel="noopener"><code>namo.hotkeys</code></a><span class="mod-doc">Hotkey Manager: one list of every command, with chords you can assign or clear.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ribbon.py" rel="noopener"><code>namo.ribbon</code></a><span class="mod-doc">The ribbon as data: every pyNavis button and every native Navisworks command, and safe ways to run them from code. Shared by the Command Palette, macros, the Hotkey Manager, usage analytics and the Environment Doctor.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Dev.tab/Build.panel/Button_Maker.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Dev.tab/Build.panel/Button_Maker.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Button\nMaker
+tooltip: Makes a new ribbon button in your MyTools extension from a template or your own script, with an icon and an optional shortcut.
+</code></pre></div>
 <div class="pagenav">
 <a href="dev-reports-scheduled-reports.html"><span class="dir">Previous</span><span class="ttl">Scheduled Reports</span></a>
 <a class="next" href="dev-build-script-editor.html"><span class="dir">Next</span><span class="ttl">Script Editor</span></a>

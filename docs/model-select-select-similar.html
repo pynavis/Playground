@@ -6,6 +6,7 @@
 <title>Select Similar - pyNavis Playground</title>
 <meta name="description" content="Selects every item that shares the property values you tick with the first selected item, in the whole model, its own model or the selection.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Select Similar", "description": "Selects every item that shares the property values you tick with the first selected item, in the whole model, its own model or the selection.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-select-select-similar.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -221,6 +225,53 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Select Similar is on the Model tab, Select panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Select%20Similar&amp;tool=Model.tab%2FSelect.panel%2FSelect_Similar.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Select.panel/Select_Similar.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Select.panel/Select_Similar.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Selects every item that shares the ticked property values with the first selected item."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> items, selecttools, variants
+
+cfg = script.get_config(selecttools.SIMILAR_DEFAULTS)
+selected = items.selected()
+
+<span class="k">if</span> <span class="k">not</span> selected:
+    toast.info(<span class="s">'Nothing selected'</span>, <span class="s">'Select one item, then run Select Similar again.'</span>)
+<span class="k">else</span>:
+    element = items.object_of(selected[0])
+    name = element.DisplayName <span class="k">or</span> element.ClassDisplayName <span class="k">or</span> <span class="s">'the first selected item'</span>
+    rows = selecttools.similar_rows(variants.all_of(element))
+    <span class="k">if</span> <span class="k">not</span> rows:
+        toast.info(<span class="s">'Nothing to match'</span>, <span class="s">'%s has no property a search can compare.'</span> % name)
+    <span class="k">else</span>:
+        checked = selecttools.default_checked(rows, cfg.get(<span class="s">'checked'</span>))
+        choice = selecttools.similar_dialog(rows, checked, cfg.get(<span class="s">'scope'</span>),
+                                            cfg.get(<span class="s">'show_identity'</span>), name)
+        <span class="k">if</span> choice <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            script.save_config({<span class="s">'checked'</span>: choice[<span class="s">'keys'</span>], <span class="s">'scope'</span>: choice[<span class="s">'scope'</span>],
+                                <span class="s">'show_identity'</span>: choice[<span class="s">'show_identity'</span>]})
+            chosen = [r <span class="k">for</span> r <span class="k">in</span> rows <span class="k">if</span> r[<span class="s">'key'</span>] <span class="k">in</span> choice[<span class="s">'keys'</span>]]
+            found, dropped = selecttools.run_similar(element, chosen, choice[<span class="s">'scope'</span>])
+            <span class="k">if</span> found.Count:
+                items.select(found)
+            kept = [r <span class="k">for</span> r <span class="k">in</span> chosen <span class="k">if</span> r <span class="k">not</span> <span class="k">in</span> dropped]
+            level, message, detail = selecttools.similar_summary(found.Count, kept, choice[<span class="s">'scope'</span>],
+                                                                 dropped)
+            toast.show(level, message, detail)
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/selecttools.py" rel="noopener"><code>namo.selecttools</code></a><span class="mod-doc">Select panel logic: Select Similar, Filter Selection, Invert, Select by File, Save as Set.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/variants.py" rel="noopener"><code>namo.variants</code></a><span class="mod-doc">Property values as Python values, the way pynavis.props reads them, minus one trap.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Select.panel/Select_Similar.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Select.panel/Select_Similar.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Select\nSimilar
+tooltip: Selects every item that shares the property values you tick with the first selected item, in the whole model, its own model or the selection.
+context: selection
+</code></pre></div>
 <div class="pagenav">
 <span></span>
 <a class="next" href="model-select-filter-selection.html"><span class="dir">Next</span><span class="ttl">Filter Selection</span></a>

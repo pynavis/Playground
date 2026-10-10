@@ -6,6 +6,7 @@
 <title>TimeLiner from Excel - pyNavis Playground</title>
 <meta name="description" content="Builds or updates TimeLiner tasks from an Excel or CSV schedule (Task ID, Parent ID or WBS, dates, task type, attachments, progress), checking every row before anything changes. Write a template first to start from the tasks already in the model.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "TimeLiner from Excel", "description": "Builds or updates TimeLiner tasks from an Excel or CSV schedule (Task ID, Parent ID or WBS, dates, task type, attachments, progress), checking every row before anything changes. Write a template first to start from the tasks already in the model.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/project-4d-timeliner-from-excel.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -222,6 +226,229 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. TimeLiner from Excel is on the Project tab, 4D panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20TimeLiner%20from%20Excel&amp;tool=Project.tab%2F4D.panel%2FTimeLiner_from_Excel.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/4D.panel/TimeLiner_from_Excel.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/4D.panel/TimeLiner_from_Excel.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Builds or updates TimeLiner tasks from an Excel or CSV schedule, or writes a template to fill in."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> config <span class="k">as</span> namo_config
+<span class="k">from</span> namo <span class="k">import</span> fourd_attach, fourd_common, fourd_ui, progress, timeliner, ui
+
+TITLE = <span class="s">'TimeLiner from Excel'</span>
+DEFAULTS = {<span class="s">'mode'</span>: <span class="s">'merge'</span>, <span class="s">'day_first'</span>: <span class="k">True</span>, <span class="s">'attach'</span>: <span class="k">True</span>, <span class="s">'last_file'</span>: <span class="s">''</span>}
+FILTER = (<span class="s">'Schedules (*.xlsx;*.csv)|*.xlsx;*.csv|Excel workbooks (*.xlsx)|*.xlsx|'</span>
+          <span class="s">'CSV files (*.csv)|*.csv'</span>)
+
+
+<span class="k">def</span> write_template(doc, rows, types):
+    path = fourd_common.ask_save(doc, <span class="s">'TimeLiner tasks'</span>, <span class="s">'xlsx'</span>, <span class="s">'Write a TimeLiner template'</span>)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">for</span> row <span class="k">in</span> rows:
+        row[<span class="s">'attach_hint'</span>] = timeliner.attach_paths(row, doc)
+    <span class="k">try</span>:
+        timeliner.write_template_xlsx(path, timeliner.template_rows(rows), types,
+                                      author=namo_config.user_name())
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not write the template'</span>, <span class="s">'Close it in Excel, then try again. %s'</span> % error)
+        <span class="k">return</span>
+    what = <span class="s">'%s from the model'</span> % fourd_common.plural(len(rows), <span class="s">'task'</span>) <span class="k">if</span> rows <span class="k">else</span> <span class="s">'three example tasks'</span>
+    toast.success(<span class="s">'Template written with %s'</span> % what, path)
+    fourd_common.open_file(path)
+
+
+<span class="k">def</span> ask_import(existing):
+    values = script.get_config(DEFAULTS)
+    last = values.get(<span class="s">'last_file'</span>) <span class="k">or</span> <span class="s">''</span>
+    fields = [
+        {<span class="s">'kind'</span>: <span class="s">'file_open'</span>, <span class="s">'key'</span>: <span class="s">'path'</span>, <span class="s">'label'</span>: <span class="s">'Schedule (Excel or CSV)'</span>, <span class="s">'filter'</span>: FILTER,
+         <span class="s">'default'</span>: last <span class="k">if</span> last <span class="k">and</span> os.path.exists(last) <span class="k">else</span> <span class="s">''</span>, <span class="s">'required'</span>: <span class="k">True</span>},
+        {<span class="s">'kind'</span>: <span class="s">'radio'</span>, <span class="s">'key'</span>: <span class="s">'mode'</span>, <span class="s">'label'</span>: <span class="s">'Tasks already in TimeLiner'</span>,
+         <span class="s">'options'</span>: [(<span class="s">'Merge: update tasks with the same Task ID, add the rest'</span>, <span class="s">'merge'</span>),
+                     (<span class="s">'Replace: delete every task, then import the sheet'</span>, <span class="s">'replace'</span>)],
+         <span class="s">'default'</span>: values.get(<span class="s">'mode'</span>, <span class="s">'merge'</span>), <span class="s">'fallback'</span>: <span class="s">'merge'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'radio'</span>, <span class="s">'key'</span>: <span class="s">'day_first'</span>, <span class="s">'label'</span>: <span class="s">'Dates typed as text'</span>, <span class="s">'inline'</span>: <span class="k">True</span>,
+         <span class="s">'options'</span>: [(<span class="s">'Day first (31/12/2026)'</span>, <span class="k">True</span>), (<span class="s">'Month first (12/31/2026)'</span>, <span class="k">False</span>)],
+         <span class="s">'default'</span>: bool(values.get(<span class="s">'day_first'</span>, <span class="k">True</span>))},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'attach'</span>, <span class="s">'label'</span>: <span class="s">'Attach model items from the Attach column'</span>,
+         <span class="s">'default'</span>: bool(values.get(<span class="s">'attach'</span>, <span class="k">True</span>))},
+    ]
+    intro = (<span class="s">'TimeLiner holds %s now. Rows are checked before anything changes.'</span>
+             % fourd_common.plural(len(existing), <span class="s">'task'</span>))
+    answer = ui.form(TITLE, fields, intro=intro, ok=<span class="s">'Check'</span>)
+    <span class="k">if</span> answer <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    values.update({<span class="s">'mode'</span>: answer[<span class="s">'mode'</span>], <span class="s">'day_first'</span>: bool(answer[<span class="s">'day_first'</span>]),
+                   <span class="s">'attach'</span>: bool(answer[<span class="s">'attach'</span>]), <span class="s">'last_file'</span>: answer[<span class="s">'path'</span>]})
+    script.save_config(values)
+    <span class="k">return</span> values
+
+
+<span class="k">def</span> resolve_attachments(doc, tasks, report):
+    <span class="s">"""{row: target} for every task with attach text, and [(row, name, entry, why)] misses."""</span>
+    <span class="k">from</span> pynavis <span class="k">import</span> sets
+    found_sets = {}
+
+    <span class="k">def</span> set_exists(path):
+        <span class="k">if</span> path <span class="k">not</span> <span class="k">in</span> found_sets:
+            <span class="k">try</span>:
+                saved = sets.find(path, doc)
+                found_sets[path] = saved <span class="k">if</span> saved <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> <span class="k">not</span> saved.IsGroup <span class="k">else</span> <span class="k">None</span>
+            <span class="k">except</span> Exception:
+                found_sets[path] = <span class="k">None</span>
+        <span class="k">return</span> found_sets[path] <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>
+    plans = timeliner.attach_targets(tasks, set_exists)
+    names = dict((t[<span class="s">'row'</span>], t[<span class="s">'name'</span>]) <span class="k">for</span> t <span class="k">in</span> tasks)
+    misses = []
+    groups = [conds <span class="k">for</span> plan <span class="k">in</span> plans.values() <span class="k">for</span> conds <span class="k">in</span> plan[<span class="s">'rules'</span>]]
+    index = <span class="k">None</span>
+    <span class="k">if</span> groups:
+        report(0.1, <span class="s">'Finding every object in the model'</span>)
+        objects = fourd_attach.model_objects(doc, tick=<span class="k">lambda</span> done, total: report(0.15, <span class="s">'Finding objects'</span>))
+        index = fourd_attach.ObjectIndex(objects, fourd_attach.read_pairs)
+        index.prepare(groups, tick=<span class="k">lambda</span> done, total: report(
+            0.2 + 0.5 * done / float(total <span class="k">or</span> 1), <span class="s">'Reading properties of %s objects'</span> % <span class="s">'{:,}'</span>.format(total)))
+    targets = {}
+    <span class="k">for</span> row <span class="k">in</span> sorted(plans):
+        plan = plans[row]
+        <span class="k">for</span> entry, why <span class="k">in</span> plan[<span class="s">'misses'</span>]:
+            misses.append((row, names.get(row, <span class="s">''</span>), entry, why))
+        matched = []
+        <span class="k">for</span> conds <span class="k">in</span> plan[<span class="s">'rules'</span>]:
+            hits = index.find(conds)
+            <span class="k">if</span> <span class="k">not</span> hits:
+                misses.append((row, names.get(row, <span class="s">''</span>), <span class="s">' &amp; '</span>.join(_rule_text(c) <span class="k">for</span> c <span class="k">in</span> conds),
+                               <span class="s">'The rule matched no objects.'</span>))
+            matched.extend(hits)
+        saved = [found_sets[path] <span class="k">for</span> path <span class="k">in</span> plan[<span class="s">'sets'</span>]]
+        <span class="k">if</span> matched <span class="k">and</span> saved:
+            <span class="k">for</span> item <span class="k">in</span> saved:
+                matched.extend(list(sets.items_of(item, doc)))
+            targets[row] = (<span class="s">'items'</span>, matched)
+        <span class="k">elif</span> matched:
+            targets[row] = (<span class="s">'items'</span>, matched)
+        <span class="k">elif</span> saved:
+            targets[row] = (<span class="s">'sets'</span>, saved)
+    <span class="k">return</span> targets, misses
+
+
+<span class="k">def</span> _rule_text(cond):
+    <span class="k">from</span> namo <span class="k">import</span> rules
+    <span class="k">return</span> rules.describe(cond)
+
+
+<span class="k">def</span> import_schedule(doc, existing, types):
+    values = ask_import(existing)
+    <span class="k">if</span> values <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">try</span>:
+        sheet = timeliner.read_sheet(values[<span class="s">'last_file'</span>])
+    <span class="k">except</span> ValueError <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not read the schedule'</span>, str(error))
+        <span class="k">return</span>
+    ids = [r[<span class="s">'id'</span>] <span class="k">for</span> r <span class="k">in</span> existing <span class="k">if</span> r.get(<span class="s">'id'</span>)]
+    parsed = timeliner.parse_rows(sheet, values[<span class="s">'day_first'</span>], types,
+                                  ids <span class="k">if</span> values[<span class="s">'mode'</span>] == <span class="s">'merge'</span> <span class="k">else</span> <span class="k">None</span>)
+    <span class="k">if</span> parsed[<span class="s">'header_row'</span>] <span class="k">is</span> <span class="k">None</span>:
+        toast.error(<span class="s">'No header row found'</span>, parsed[<span class="s">'problems'</span>][0][<span class="s">'message'</span>])
+        <span class="k">return</span>
+    valid = [t <span class="k">for</span> t <span class="k">in</span> parsed[<span class="s">'tasks'</span>] <span class="k">if</span> t[<span class="s">'ok'</span>]]
+    <span class="k">if</span> <span class="k">not</span> valid:
+        first = parsed[<span class="s">'problems'</span>][0][<span class="s">'message'</span>] <span class="k">if</span> parsed[<span class="s">'problems'</span>] <span class="k">else</span> <span class="s">'The sheet has no task rows.'</span>
+        toast.error(<span class="s">'No task can be imported'</span>, first)
+        <span class="k">return</span>
+    plan = timeliner.plan_import(parsed, existing, values[<span class="s">'mode'</span>])
+    summary = fourd_ui.import_summary(plan)
+    <span class="k">if</span> parsed[<span class="s">'problems'</span>]:
+        rows = fourd_ui.problem_rows(parsed[<span class="s">'problems'</span>])
+        <span class="k">if</span> <span class="k">not</span> fourd_ui.review(TITLE, [<span class="s">'Row'</span>, <span class="s">'Level'</span>, <span class="s">'Column'</span>, <span class="s">'Problem'</span>], rows, summary,
+                               <span class="s">'Import %s'</span> % fourd_common.plural(len(valid), <span class="s">'task'</span>)):
+            <span class="k">return</span>
+    <span class="k">elif</span> <span class="k">not</span> forms.confirm(summary + <span class="s">' Continue?'</span>, title=TITLE):
+        <span class="k">return</span>
+
+    <span class="k">def</span> work(report):
+        targets, misses = {}, []
+        <span class="k">if</span> values[<span class="s">'attach'</span>] <span class="k">and</span> <span class="s">'attach'</span> <span class="k">in</span> parsed[<span class="s">'columns'</span>]:
+            targets, misses = resolve_attachments(doc, valid, report)
+        report(0.8, <span class="s">'Writing TimeLiner tasks'</span>)
+        timeliner.commit_import(plan, <span class="k">lambda</span> task: targets.get(task[<span class="s">'row'</span>]), doc)
+        <span class="k">return</span> targets, misses
+    <span class="k">try</span>:
+        outcome = progress.run(TITLE, work)
+    <span class="k">except</span> RuntimeError <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not write the TimeLiner tasks'</span>, <span class="s">'%s Nothing was imported; if tasks look wrong, '</span>
+                    <span class="s">'press Ctrl+Z.'</span> % error)
+        <span class="k">return</span>
+    <span class="k">if</span> outcome <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    targets, misses = outcome
+    detail = <span class="s">'%s new, %s updated'</span> % (<span class="s">'{:,}'</span>.format(plan[<span class="s">'created'</span>]), <span class="s">'{:,}'</span>.format(plan[<span class="s">'updated'</span>]))
+    <span class="k">if</span> targets:
+        detail += <span class="s">', %s attached'</span> % fourd_common.plural(len(targets), <span class="s">'task'</span>)
+    <span class="k">if</span> parsed[<span class="s">'problems'</span>]:
+        errors = len([p <span class="k">for</span> p <span class="k">in</span> parsed[<span class="s">'problems'</span>] <span class="k">if</span> p[<span class="s">'level'</span>] == <span class="s">'error'</span>])
+        <span class="k">if</span> errors:
+            detail += <span class="s">', %s skipped'</span> % fourd_common.plural(plan[<span class="s">'skipped'</span>], <span class="s">'row'</span>)
+    total = plan[<span class="s">'created'</span>] + plan[<span class="s">'updated'</span>]
+    <span class="k">if</span> misses:
+        toast.warning(<span class="s">'Imported %s; %s found nothing'</span> % (fourd_common.plural(total, <span class="s">'task'</span>),
+                                                         fourd_common.plural(len(misses), <span class="s">'attach entry'</span>,
+                                                                             <span class="s">'attach entries'</span>)), detail)
+        rows = [{<span class="s">'cells'</span>: [m[0], m[1], m[2], m[3]], <span class="s">'value'</span>: i} <span class="k">for</span> i, m <span class="k">in</span> enumerate(misses)]
+        ui.table_window(<span class="s">'Attach entries that found nothing'</span>, [<span class="s">'Row'</span>, <span class="s">'Task'</span>, <span class="s">'Entry'</span>, <span class="s">'Why'</span>], rows,
+                        modeless=<span class="k">True</span>, key=<span class="s">'playground-timeliner-misses'</span>,
+                        status=<span class="s">'Fix the Attach cells, then import again with Merge.'</span>)
+    <span class="k">else</span>:
+        toast.success(<span class="s">'Imported %s'</span> % fourd_common.plural(total, <span class="s">'task'</span>), detail)
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> ui.is_runner():
+        toast.info(<span class="s">'%s asks for a file'</span> % TITLE, <span class="s">'Run it from the ribbon.'</span>)
+        <span class="k">return</span>
+    doc = fourd_common.active_doc()
+    <span class="k">if</span> <span class="k">not</span> fourd_common.has_models(doc):
+        toast.info(<span class="s">'No model is open'</span>, <span class="s">'Open or append a model first.'</span>)
+        <span class="k">return</span>
+    <span class="k">try</span>:
+        types = timeliner.task_types(doc)
+        existing = timeliner.snapshot(doc)
+    <span class="k">except</span> RuntimeError <span class="k">as</span> error:
+        toast.error(<span class="s">'TimeLiner is not available'</span>, str(error))
+        <span class="k">return</span>
+    action = forms.ask_options(<span class="s">'Import a schedule into TimeLiner, or write a template to fill in?'</span>,
+                               [<span class="s">'Import a schedule'</span>, <span class="s">'Write a template'</span>], title=TITLE)
+    <span class="k">if</span> action <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">if</span> action == <span class="s">'Write a template'</span>:
+        write_template(doc, existing, types)
+    <span class="k">else</span>:
+        import_schedule(doc, existing, types)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/config.py" rel="noopener"><code>namo.config</code></a><span class="mod-doc">Playground-wide settings: one JSON file shared by every Playground tool.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/fourd_attach.py" rel="noopener"><code>namo.fourd_attach</code></a><span class="mod-doc">Auto Attach rules, and the one-walk object index both Auto Attach and TimeLiner from Excel use to turn conditions into model items.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/fourd_common.py" rel="noopener"><code>namo.fourd_common</code></a><span class="mod-doc">Helpers the 4D, Quantities and Field tools share: scopes, default files, text.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/fourd_ui.py" rel="noopener"><code>namo.fourd_ui</code></a><span class="mod-doc">Windows of the 4D tools, built on namo.ui.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/rules.py" rel="noopener"><code>namo.rules</code></a><span class="mod-doc">One condition engine for every rule-driven Playground tool.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/timeliner.py" rel="noopener"><code>namo.timeliner</code></a><span class="mod-doc">TimeLiner: every Playground access to Navisworks TimeLiner, plus the pure schedule logic.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/4D.panel/TimeLiner_from_Excel.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/4D.panel/TimeLiner_from_Excel.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: TimeLiner\nfrom Excel
+tooltip: Builds or updates TimeLiner tasks from an Excel or CSV schedule (Task ID, Parent ID or WBS, dates, task type, attachments, progress), checking every row before anything changes. Write a template first to start from the tasks already in the model.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="project-publish-model-wipe.html"><span class="dir">Previous</span><span class="ttl">Model Wipe</span></a>
 <a class="next" href="project-4d-auto-attach.html"><span class="dir">Next</span><span class="ttl">Auto Attach</span></a>

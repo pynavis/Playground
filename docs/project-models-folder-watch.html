@@ -6,6 +6,7 @@
 <title>Folder Watch - pyNavis Playground</title>
 <meta name="description" content="Watches the files of the appended models and, when one changes on disk, offers to refresh it with a small notice that never takes focus. Shift+Click to choose the folders, how often to check and whether to start with Navisworks.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Folder Watch", "description": "Watches the files of the appended models and, when one changes on disk, offers to refresh it with a small notice that never takes focus. Shift+Click to choose the folders, how often to check and whether to start with Navisworks.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/project-models-folder-watch.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -220,6 +224,90 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Folder Watch is on the Project tab, Models panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Folder%20Watch&amp;tool=Project.tab%2FModels.panel%2FFolder_Watch.toggle" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Models.panel/Folder_Watch.toggle/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Models.panel/Folder_Watch.toggle/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Starts or stops watching the appended models' files for changes."""</span>
+<span class="k">from</span> namo <span class="k">import</span> folderwatch
+
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> folderwatch.is_on():
+        folderwatch.stop(save=<span class="k">True</span>)
+        script.set_toggle_state(<span class="k">False</span>)
+        toast.info(<span class="s">'Folder Watch is off'</span>)
+        <span class="k">return</span>
+    result = folderwatch.start(logger=script.get_logger())
+    script.set_toggle_state(bool(result[<span class="s">'ok'</span>]))
+    toast.show(result[<span class="s">'level'</span>], result[<span class="s">'message'</span>], result[<span class="s">'detail'</span>])
+
+
+run()
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Models.panel/Folder_Watch.toggle/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Models.panel/Folder_Watch.toggle/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Options for Folder Watch: the folders to watch, how often to check, and whether to start with Navisworks."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> namo <span class="k">import</span> folderwatch, ui
+
+<span class="k">from</span> pynavis <span class="k">import</span> toast
+
+
+<span class="k">def</span> run():
+    values = folderwatch.load_config()
+    fields = [
+        {<span class="s">'kind'</span>: <span class="s">'textarea'</span>, <span class="s">'key'</span>: <span class="s">'folders'</span>, <span class="s">'label'</span>: <span class="s">'Folders to watch'</span>, <span class="s">'rows'</span>: 4,
+         <span class="s">'default'</span>: <span class="s">'\n'</span>.join(values[<span class="s">'folders'</span>]),
+         <span class="s">'placeholder'</span>: <span class="s">'One folder per line'</span>,
+         <span class="s">'hint'</span>: <span class="s">'Leave empty to watch the folders the appended models were loaded from.'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'int'</span>, <span class="s">'key'</span>: <span class="s">'interval'</span>, <span class="s">'label'</span>: <span class="s">'Check every'</span>, <span class="s">'suffix'</span>: <span class="s">'s'</span>,
+         <span class="s">'default'</span>: values[<span class="s">'interval'</span>], <span class="s">'min'</span>: folderwatch.MIN_INTERVAL,
+         <span class="s">'max'</span>: folderwatch.MAX_INTERVAL, <span class="s">'required'</span>: <span class="k">True</span>},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'watch_sources'</span>, <span class="s">'default'</span>: values[<span class="s">'watch_sources'</span>],
+         <span class="s">'label'</span>: <span class="s">'Also watch the native files (RVT, IFC, DWG) the models were made from'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'remember'</span>, <span class="s">'default'</span>: values[<span class="s">'remember'</span>],
+         <span class="s">'label'</span>: <span class="s">'Start watching with Navisworks when it was on at the last close'</span>},
+    ]
+    answer = ui.form(<span class="s">'Folder Watch'</span>, fields, ok=<span class="s">'Save'</span>)
+    <span class="k">if</span> answer <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    values[<span class="s">'folders'</span>] = [line <span class="k">for</span> line <span class="k">in</span> answer[<span class="s">'folders'</span>].splitlines() <span class="k">if</span> line.strip()]
+    values[<span class="s">'interval'</span>] = answer[<span class="s">'interval'</span>]
+    values[<span class="s">'watch_sources'</span>] = answer[<span class="s">'watch_sources'</span>]
+    values[<span class="s">'remember'</span>] = answer[<span class="s">'remember'</span>]
+    missing = [f <span class="k">for</span> f <span class="k">in</span> values[<span class="s">'folders'</span>] <span class="k">if</span> <span class="k">not</span> os.path.isdir(f.strip().strip(<span class="s">'"'</span>))]
+    <span class="k">try</span>:
+        folderwatch.save_config(values)
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not save the options'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">if</span> folderwatch.is_on():
+        result = folderwatch.start(values)
+        toast.success(<span class="s">'Folder Watch options saved'</span>, result[<span class="s">'detail'</span>])
+    <span class="k">elif</span> missing:
+        toast.warning(<span class="s">'Folder Watch options saved'</span>,
+                      <span class="s">'%s not found: %s'</span> % (<span class="s">'Folder'</span> <span class="k">if</span> len(missing) == 1 <span class="k">else</span> <span class="s">'Folders'</span>, <span class="s">', '</span>.join(missing[:3])))
+    <span class="k">else</span>:
+        toast.success(<span class="s">'Folder Watch options saved'</span>, <span class="s">'Used the next time you start watching.'</span>)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/folderwatch.py" rel="noopener"><code>namo.folderwatch</code></a><span class="mod-doc">Folder Watch: notices when an appended model&#x27;s file changes on disk and offers a refresh.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Models.panel/Folder_Watch.toggle/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Models.panel/Folder_Watch.toggle/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Folder\nWatch
+title_on: Watching
+tooltip: Watches the files of the appended models and, when one changes on disk, offers to refresh it with a small notice that never takes focus. Shift+Click to choose the folders, how often to check and whether to start with Navisworks.
+tooltip_on: Watching the model files for changes. Click to stop; Shift+Click for the folders and how often to check.
+</code></pre></div>
 <div class="pagenav">
 <a href="project-models-transform-fixer.html"><span class="dir">Previous</span><span class="ttl">Transform Fixer</span></a>
 <a class="next" href="project-models-stale-file-alert.html"><span class="dir">Next</span><span class="ttl">Stale Files</span></a>

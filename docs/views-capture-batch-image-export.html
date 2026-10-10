@@ -6,6 +6,7 @@
 <title>Batch Images - pyNavis Playground</title>
 <meta name="description" content="Saves images of saved viewpoints, clash results (by test and status) and Playground issues in one run, into Viewpoints, Clashes and Issues folders with one index.html contact sheet.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Batch Images", "description": "Saves images of saved viewpoints, clash results (by test and status) and Playground issues in one run, into Viewpoints, Clashes and Issues folders with one index.html contact sheet.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/views-capture-batch-image-export.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -221,6 +225,147 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Batch Images is on the Views tab, Capture panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Batch%20Images&amp;tool=Views.tab%2FCapture.panel%2FBatch_Image_Export.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Capture.panel/Batch_Image_Export.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Capture.panel/Batch_Image_Export.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Saves images of saved viewpoints, clash results and Playground issues in one run, with one index.html."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> namo <span class="k">import</span> capture, dates, paths, progress, ui, vp_common
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+TITLE = <span class="s">'Batch Image Export'</span>
+DEFAULTS = {<span class="s">'views_on'</span>: <span class="k">True</span>, <span class="s">'clashes_on'</span>: <span class="k">False</span>, <span class="s">'issues_on'</span>: <span class="k">False</span>, <span class="s">'views'</span>: <span class="k">None</span>, <span class="s">'tests'</span>: [],
+            <span class="s">'statuses'</span>: [<span class="s">'New'</span>, <span class="s">'Active'</span>], <span class="s">'cap'</span>: 300, <span class="s">'issue_statuses'</span>: [], <span class="s">'width'</span>: 1280, <span class="s">'height'</span>: 720,
+            <span class="s">'format'</span>: <span class="s">'jpg'</span>, <span class="s">'quality'</span>: 88, <span class="s">'folder'</span>: <span class="s">''</span>, <span class="s">'open'</span>: <span class="k">True</span>}
+
+
+<span class="k">def</span> ask_sources(document, cfg, have_views, have_tests, have_issues):
+    fields = capture.source_fields(cfg, vp_common.default_folder(vp_common.doc_path(document)),
+                                   have_views, have_tests, have_issues)
+    <span class="k">return</span> ui.form(TITLE, fields, ok=<span class="s">'Next'</span>, width=500, validate=capture.source_validator(have_views, have_tests))
+
+
+<span class="k">def</span> ask_clashes(document, cfg):
+    <span class="s">"""[(test name, units)] or None when cancelled."""</span>
+    tests = [t <span class="k">for</span> t <span class="k">in</span> capture.clash_tests(document) <span class="k">if</span> t[2]]
+    rows = [{<span class="s">'value'</span>: name, <span class="s">'cells'</span>: [name, count]} <span class="k">for</span> _test, name, count <span class="k">in</span> tests]
+    remembered = [name <span class="k">for</span> name <span class="k">in</span> cfg.get(<span class="s">'tests'</span>) <span class="k">or</span> [] <span class="k">if</span> name <span class="k">in</span> [t[1] <span class="k">for</span> t <span class="k">in</span> tests]]
+    picked = ui.choose(<span class="s">'%s: clash tests'</span> % TITLE, rows, [<span class="s">'Test'</span>, <span class="s">'Groups and clashes'</span>],
+                       checked=remembered <span class="k">or</span> [t[1] <span class="k">for</span> t <span class="k">in</span> tests], ok=<span class="s">'Next'</span>)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    values = ui.form(TITLE, capture.clash_fields(cfg),
+                     intro=<span class="s">'One image per top-level group and per clash outside a group, from its own clash view.'</span>,
+                     ok=<span class="s">'Next'</span>)
+    <span class="k">if</span> values <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    cfg[<span class="s">'tests'</span>] = picked
+    cfg[<span class="s">'statuses'</span>] = values[<span class="s">'statuses'</span>]
+    cfg[<span class="s">'cap'</span>] = values[<span class="s">'cap'</span>]
+    out = []
+    <span class="k">for</span> test, name, _count <span class="k">in</span> tests:
+        <span class="k">if</span> name <span class="k">in</span> picked:
+            units = capture.clash_units(test, values[<span class="s">'statuses'</span>])
+            <span class="k">if</span> units:
+                out.append((name, units))
+    total = sum(len(u) <span class="k">for</span> _n, u <span class="k">in</span> out)
+    <span class="k">if</span> total &gt; values[<span class="s">'cap'</span>]:
+        <span class="k">if</span> <span class="k">not</span> forms.confirm(<span class="s">'This saves %s clash images, which can take a while. Continue?'</span>
+                             % vp_common.count_text(total), TITLE):
+            <span class="k">return</span> <span class="k">None</span>
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> ask_issues(document, cfg):
+    statuses = capture.issue_statuses()
+    values = ui.form(TITLE, capture.issue_fields(cfg, statuses), intro=<span class="s">'One image per issue that has a saved view.'</span>,
+                     ok=<span class="s">'Next'</span>)
+    <span class="k">if</span> values <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    cfg[<span class="s">'issue_statuses'</span>] = values[<span class="s">'issue_statuses'</span>]
+    <span class="k">return</span> capture.issue_units(values[<span class="s">'issue_statuses'</span>], document)
+
+
+<span class="k">def</span> run():
+    document = vp_common.active_doc()
+    <span class="k">if</span> <span class="k">not</span> vp_common.has_models(document):
+        toast.info(<span class="s">'No model open'</span>, <span class="s">'Open or append a model, then run Batch Image Export again.'</span>)
+        <span class="k">return</span>
+    cfg = script.get_config(DEFAULTS)
+    rows = vp_common.view_rows(document)
+    <span class="k">try</span>:
+        have_tests = any(t[2] <span class="k">for</span> t <span class="k">in</span> capture.clash_tests(document))
+    <span class="k">except</span> Exception:
+        have_tests = <span class="k">False</span>
+    have_issues = capture.issues_available()
+    <span class="k">if</span> <span class="k">not</span> rows <span class="k">and</span> <span class="k">not</span> have_tests <span class="k">and</span> <span class="k">not</span> have_issues:
+        toast.info(<span class="s">'Nothing to capture'</span>, <span class="s">'This model has no saved viewpoints and no clash results.'</span>)
+        <span class="k">return</span>
+    values = ask_sources(document, cfg, bool(rows), have_tests, have_issues)
+    <span class="k">if</span> values <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    cfg = capture.image_values(cfg, values)
+    <span class="k">for</span> key <span class="k">in</span> (<span class="s">'views_on'</span>, <span class="s">'clashes_on'</span>, <span class="s">'issues_on'</span>, <span class="s">'open'</span>):
+        cfg[key] = bool(values.get(key))
+    views = []
+    <span class="k">if</span> cfg[<span class="s">'views_on'</span>]:
+        picked = vp_common.choose_views(<span class="s">'%s: viewpoints'</span> % TITLE, rows, cfg.get(<span class="s">'views'</span>), ok=<span class="s">'Next'</span>)
+        <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+        views, cfg[<span class="s">'views'</span>] = picked
+    clashes = []
+    <span class="k">if</span> cfg[<span class="s">'clashes_on'</span>]:
+        clashes = ask_clashes(document, cfg)
+        <span class="k">if</span> clashes <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+    issues = []
+    <span class="k">if</span> cfg[<span class="s">'issues_on'</span>] <span class="k">and</span> have_issues:
+        issues = ask_issues(document, cfg)
+        <span class="k">if</span> issues <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+    script.save_config(cfg)
+    <span class="k">if</span> <span class="k">not</span> views <span class="k">and</span> <span class="k">not</span> clashes <span class="k">and</span> <span class="k">not</span> issues:
+        toast.info(<span class="s">'Nothing matched the choices'</span>, <span class="s">'No viewpoints, clashes or issues were picked.'</span>)
+        <span class="k">return</span>
+    folder = os.path.join(cfg[<span class="s">'folder'</span>], <span class="s">'%s - Images - %s'</span> % (vp_common.file_stem(vp_common.doc_path(document)),
+                                                               dates.format(dates.now(), <span class="s">'%Y-%m-%d %H%M'</span>)))
+    <span class="k">try</span>:
+        paths.ensure_dir(folder)
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not make the folder'</span>, <span class="s">'%s. Choose another folder.'</span> % error)
+        <span class="k">return</span>
+    outcome = progress.run(TITLE, <span class="k">lambda</span> report: capture.run_batch(document, folder, cfg, views, clashes, issues,
+                                                                   report), <span class="s">'Capturing'</span>)
+    <span class="k">if</span> outcome <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    <span class="k">if</span> outcome[<span class="s">'stopped'</span>] <span class="k">and</span> <span class="k">not</span> any(s[1] <span class="k">for</span> s <span class="k">in</span> outcome[<span class="s">'sections'</span>]):
+        <span class="k">return</span>
+    level, message, detail = capture.summary(outcome[<span class="s">'sections'</span>], outcome[<span class="s">'stopped'</span>], outcome[<span class="s">'total'</span>])
+    toast.show(level, message, <span class="s">'%s %s'</span> % (detail, folder))
+    <span class="k">if</span> cfg[<span class="s">'open'</span>] <span class="k">and</span> outcome.get(<span class="s">'index'</span>):
+        <span class="k">try</span>:
+            ui.open_path(outcome[<span class="s">'index'</span>])
+        <span class="k">except</span> Exception:
+            <span class="k">pass</span>
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/capture.py" rel="noopener"><code>namo.capture</code></a><span class="mod-doc">Images in batches: saved viewpoints, clash results and Playground issues, plus the index.html contact sheet that goes with them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/dates.py" rel="noopener"><code>namo.dates</code></a><span class="mod-doc">Dates from anywhere (ISO text, typed dates, Excel serials, .NET DateTime) and the few calculations reports need.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/paths.py" rel="noopener"><code>namo.paths</code></a><span class="mod-doc">Where Playground keeps its files, and how it writes them safely.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/vp_common.py" rel="noopener"><code>namo.vp_common</code></a><span class="mod-doc">Shared helpers for the Views tools (Viewpoints, Capture and Navigate panels).</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Capture.panel/Batch_Image_Export.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Capture.panel/Batch_Image_Export.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Batch\nImages
+tooltip: Saves images of saved viewpoints, clash results (by test and status) and Playground issues in one run, into Viewpoints, Clashes and Issues folders with one index.html contact sheet.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="views-capture-viewpoints-to-images.html"><span class="dir">Previous</span><span class="ttl">Viewpoints to Images</span></a>
 <a class="next" href="views-capture-batch-pdf.html"><span class="dir">Next</span><span class="ttl">Batch PDF</span></a>

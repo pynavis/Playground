@@ -6,6 +6,7 @@
 <title>Search Set Wizard - pyNavis Playground</title>
 <meta name="description" content="Builds a search set step by step: where to search, conditions picked from the model&#x27;s own properties and values, a live count, then name and folder.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Search Set Wizard", "description": "Builds a search set step by step: where to search, conditions picked from the model's own properties and values, a live count, then name and folder.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-find-search-set-wizard.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,71 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Search Set Wizard is on the Model tab, Find panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Search%20Set%20Wizard&amp;tool=Model.tab%2FFind.panel%2FSearch_Set_Wizard.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Find.panel/Search_Set_Wizard.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Find.panel/Search_Set_Wizard.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Builds a search set step by step: scope, conditions from the model's own values, count, save."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+<span class="k">from</span> pynavis._api <span class="k">import</span> Application
+
+<span class="k">from</span> namo <span class="k">import</span> find_sets, items, progress, setwizard
+
+cfg = script.get_config({<span class="s">'model'</span>: <span class="k">None</span>})
+document = Application.ActiveDocument
+
+<span class="k">if</span> document <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> document.Models.Count == 0:
+    toast.info(<span class="s">'Nothing to search'</span>, <span class="s">'Open or append a model first.'</span>)
+<span class="k">else</span>:
+    sample = progress.run(<span class="s">'Reading the model for the wizard'</span>,
+                          <span class="k">lambda</span> report: setwizard.build_sample(document, report=report),
+                          <span class="s">'Sampling elements'</span>)
+    <span class="k">if</span> sample <span class="k">is</span> <span class="k">not</span> progress.CANCELLED:
+        source = setwizard.LiveSource(sample, document)
+        answer = setwizard.dialog(cfg.get(<span class="s">'model'</span>) <span class="k">or</span> setwizard.new_model(), source,
+                                  [m[<span class="s">'name'</span>] <span class="k">for</span> m <span class="k">in</span> items.models(document)],
+                                  setwizard.folder_paths(document))
+        <span class="k">if</span> answer <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            model, counted = answer
+            script.save_config({<span class="s">'model'</span>: model})
+            kinds = sample.kinds()
+            <span class="k">try</span>:
+                names = setwizard.create(model, kinds, document)
+            <span class="k">except</span> ValueError <span class="k">as</span> error:
+                toast.error(<span class="s">'Could not create the search set'</span>, str(error))
+            <span class="k">else</span>:
+                key = setwizard.query_key(setwizard.queries(model, kinds), model)
+                <span class="k">if</span> model[<span class="s">'select_now'</span>] <span class="k">or</span> counted <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> counted[<span class="s">'key'</span>] != key:
+                    found = setwizard.matches(model, kinds, document)
+                    total = found.Count
+                    <span class="k">if</span> model[<span class="s">'select_now'</span>]:
+                        items.select(found, doc=document)
+                <span class="k">else</span>:
+                    total = counted[<span class="s">'union'</span>]
+                where = <span class="s">" in '%s'"</span> % find_sets.plain_folder(model[<span class="s">'folder'</span>]) <span class="k">if</span> model[<span class="s">'folder'</span>] <span class="k">else</span> <span class="s">''</span>
+                count_text = <span class="s">'%s %s'</span> % (<span class="s">'{:,}'</span>.format(total), <span class="s">'item'</span> <span class="k">if</span> total == 1 <span class="k">else</span> <span class="s">'items'</span>)
+                <span class="k">if</span> len(names) == 1:
+                    message = <span class="s">"Created search set '%s' (%s)"</span> % (names[0], count_text)
+                <span class="k">else</span>:
+                    message = <span class="s">'Created %d search sets (%s in all)'</span> % (len(names), count_text)
+                detail = <span class="s">'Saved%s.%s'</span> % (where, <span class="s">' The matches are selected.'</span> <span class="k">if</span> model[<span class="s">'select_now'</span>] <span class="k">else</span> <span class="s">''</span>)
+                <span class="k">if</span> total:
+                    toast.success(message, detail)
+                <span class="k">else</span>:
+                    toast.warning(message, <span class="s">'It finds nothing yet. Check the values, or the Search In scope.'</span>)
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/find_sets.py" rel="noopener"><code>namo.find_sets</code></a><span class="mod-doc">The saved-sets tree, shared by the Find tools: paths, lookups and creating sets.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/setwizard.py" rel="noopener"><code>namo.setwizard</code></a><span class="mod-doc">Search Set Wizard: a guided builder for Navisworks search sets.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Find.panel/Search_Set_Wizard.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Find.panel/Search_Set_Wizard.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Search Set\nWizard
+tooltip: Builds a search set step by step: where to search, conditions picked from the model's own properties and values, a live count, then name and folder.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="model-find-quick-find.html"><span class="dir">Previous</span><span class="ttl">Quick Find</span></a>
 <a class="next" href="model-find-batch-sets.html"><span class="dir">Next</span><span class="ttl">Batch Sets</span></a>

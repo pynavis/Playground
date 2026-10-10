@@ -6,6 +6,7 @@
 <title>Export Viewpoints - pyNavis Playground</title>
 <meta name="description" content="Exports only the saved viewpoints you tick, as a Navisworks viewpoints XML file for Import Viewpoints, or as a Playground package that keeps cameras, sections and comments for Viewpoint Sync.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Export Viewpoints", "description": "Exports only the saved viewpoints you tick, as a Navisworks viewpoints XML file for Import Viewpoints, or as a Playground package that keeps cameras, sections and comments for Viewpoint Sync.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/views-viewpoints-export-viewpoints.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -221,6 +225,91 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Export Viewpoints is on the Views tab, Viewpoints panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Export%20Viewpoints&amp;tool=Views.tab%2FViewpoints.panel%2FExport_Viewpoints.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Viewpoints.panel/Export_Viewpoints.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Viewpoints.panel/Export_Viewpoints.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Exports the saved viewpoints you choose as Navisworks viewpoints XML, a Playground package, or both."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> namo <span class="k">import</span> dates, ui, vp_common, vpexport
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+TITLE = <span class="s">'Export Viewpoints'</span>
+DEFAULTS = {<span class="s">'views'</span>: <span class="k">None</span>, <span class="s">'format'</span>: <span class="s">'xml'</span>, <span class="s">'comments'</span>: <span class="k">True</span>, <span class="s">'clip_xml'</span>: <span class="k">False</span>}
+
+
+<span class="k">def</span> run():
+    document = vp_common.active_doc()
+    rows = vp_common.view_rows(document) <span class="k">if</span> document <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">else</span> []
+    <span class="k">if</span> <span class="k">not</span> rows:
+        toast.info(<span class="s">'No saved viewpoints'</span>, <span class="s">'Save some viewpoints, then run Export Viewpoints again.'</span>)
+        <span class="k">return</span>
+    cfg = script.get_config(DEFAULTS)
+    picked = vp_common.choose_views(<span class="s">'%s: viewpoints'</span> % TITLE, rows, cfg.get(<span class="s">'views'</span>), ok=<span class="s">'Next'</span>)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    chosen, spec = picked
+    <span class="k">if</span> <span class="k">not</span> chosen:
+        toast.info(<span class="s">'No viewpoints chosen'</span>, <span class="s">'Tick at least one viewpoint, then run Export Viewpoints again.'</span>)
+        <span class="k">return</span>
+    values = ui.form(TITLE, vpexport.export_fields(cfg),
+                     intro=<span class="s">'%s chosen. The XML file is what Navisworks imports through Saved Viewpoints, Import '</span>
+                           <span class="s">'Viewpoints; the package is what Viewpoint Sync reads.'</span>
+                           % vp_common.plural(len(chosen), <span class="s">'viewpoint'</span>),
+                     ok=<span class="s">'Export'</span>)
+    <span class="k">if</span> values <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    cfg.update({<span class="s">'views'</span>: spec, <span class="s">'format'</span>: values[<span class="s">'format'</span>], <span class="s">'comments'</span>: values[<span class="s">'comments'</span>],
+                <span class="s">'clip_xml'</span>: values[<span class="s">'clip_xml'</span>]})
+    script.save_config(cfg)
+    stem = <span class="s">'%s - Viewpoints - %s'</span> % (vp_common.file_stem(vp_common.doc_path(document)),
+                                     dates.format(dates.now(), <span class="s">'%Y-%m-%d'</span>))
+    folder = vp_common.default_folder(vp_common.doc_path(document))
+    <span class="k">if</span> values[<span class="s">'format'</span>] == <span class="s">'package'</span>:
+        path = forms.save_file(filter=<span class="s">'Playground viewpoint packages (*.nvp.json)|*.nvp.json'</span>,
+                               default_name=os.path.join(folder, stem + <span class="s">'.nvp.json'</span>), title=TITLE)
+    <span class="k">else</span>:
+        path = forms.save_file(filter=<span class="s">'Navisworks viewpoints XML (*.xml)|*.xml'</span>,
+                               default_name=os.path.join(folder, stem + <span class="s">'.xml'</span>), title=TITLE)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    records = vpexport.records_from(chosen, document, include_clip=<span class="k">True</span>)
+    written = []
+    <span class="k">try</span>:
+        <span class="k">if</span> values[<span class="s">'format'</span>] <span class="k">in</span> (<span class="s">'xml'</span>, <span class="s">'both'</span>):
+            xml_path = path <span class="k">if</span> path.lower().endswith(<span class="s">'.xml'</span>) <span class="k">else</span> path + <span class="s">'.xml'</span>
+            written.append(vpexport.write_exchange(xml_path, records, document, include_clip=values[<span class="s">'clip_xml'</span>],
+                                                   include_comments=values[<span class="s">'comments'</span>]))
+        <span class="k">if</span> values[<span class="s">'format'</span>] <span class="k">in</span> (<span class="s">'package'</span>, <span class="s">'both'</span>):
+            base = path
+            <span class="k">for</span> ext <span class="k">in</span> (<span class="s">'.nvp.json'</span>, <span class="s">'.json'</span>, <span class="s">'.xml'</span>):
+                <span class="k">if</span> base.lower().endswith(ext):
+                    base = base[:-len(ext)]
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="k">not</span> values[<span class="s">'comments'</span>]:
+                records = [dict(r, comments=[]) <span class="k">for</span> r <span class="k">in</span> records]
+            written.append(vpexport.write_package(base + <span class="s">'.nvp.json'</span>, records, document))
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not write the export'</span>, <span class="s">'%s. Check the folder is writable, then try again.'</span> % error)
+        <span class="k">return</span>
+    toast.success(<span class="s">'Exported %s'</span> % vp_common.plural(len(records), <span class="s">'viewpoint'</span>),
+                  <span class="s">' and '</span>.join(os.path.basename(p) <span class="k">for</span> p <span class="k">in</span> written) + <span class="s">' in '</span> + os.path.dirname(written[0]))
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/dates.py" rel="noopener"><code>namo.dates</code></a><span class="mod-doc">Dates from anywhere (ISO text, typed dates, Excel serials, .NET DateTime) and the few calculations reports need.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/vp_common.py" rel="noopener"><code>namo.vp_common</code></a><span class="mod-doc">Shared helpers for the Views tools (Viewpoints, Capture and Navigate panels).</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/vpexport.py" rel="noopener"><code>namo.vpexport</code></a><span class="mod-doc">Saved viewpoints out of Navisworks, as plain records, as Navisworks viewpoint exchange XML, and as a Playground package (.nvp.json) that Viewpoint Sync reads back.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Viewpoints.panel/Export_Viewpoints.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Viewpoints.panel/Export_Viewpoints.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Export\nViewpoints
+tooltip: Exports only the saved viewpoints you tick, as a Navisworks viewpoints XML file for Import Viewpoints, or as a Playground package that keeps cameras, sections and comments for Viewpoint Sync.
+context: viewpoints
+</code></pre></div>
 <div class="pagenav">
 <a href="views-viewpoints-viewpoints-from-excel.html"><span class="dir">Previous</span><span class="ttl">Viewpoints from Excel</span></a>
 <a class="next" href="views-viewpoints-viewpoint-sync.html"><span class="dir">Next</span><span class="ttl">Viewpoint Sync</span></a>

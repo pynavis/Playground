@@ -6,6 +6,7 @@
 <title>Play Macro - pyNavis Playground</title>
 <meta name="description" content="Runs a saved macro, one command after another. Dialogs inside its commands still ask you; click again to stop a playing macro.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Play Macro", "description": "Runs a saved macro, one command after another. Dialogs inside its commands still ask you; click again to stop a playing macro.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/dev-automate-macros-play-macro.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,45 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Play Macro is on the Dev tab, Automate panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Play%20Macro&amp;tool=Dev.tab%2FAutomate.panel%2FMacros.pulldown%2FPlay_Macro.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Dev.tab/Automate.panel/Macros.pulldown/Play_Macro.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Dev.tab/Automate.panel/Macros.pulldown/Play_Macro.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Plays a saved macro, or stops the one that is playing."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> forms, toast
+
+<span class="k">from</span> namo <span class="k">import</span> macros
+
+player = macros.playing()
+<span class="k">if</span> player <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+    <span class="k">if</span> forms.confirm(<span class="s">'Macro %s is playing (step %d of %d). Stop it?'</span>
+                     % (player.name, min(player.index + 1, len(player.steps)), len(player.steps)),
+                     title=<span class="s">'Play Macro'</span>):
+        player.stop()
+<span class="k">else</span>:
+    names = macros.names()
+    <span class="k">if</span> <span class="k">not</span> names:
+        toast.info(<span class="s">'There are no macros yet'</span>, <span class="s">'Click Record Macro, run some commands, then click Stop Recording.'</span>)
+    <span class="k">else</span>:
+        choices = [(<span class="s">'%s  (%s)'</span> % (name, macros.describe(macros.load(name) <span class="k">or</span> {})), name) <span class="k">for</span> name <span class="k">in</span> names]
+        name = forms.select_from_list(choices, title=<span class="s">'Play Macro'</span>,
+                                      prompt=<span class="s">'Pick the macro to play. Dialogs inside its commands still ask you.'</span>)
+        <span class="k">if</span> name <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            config = macros.load(name)
+            <span class="k">if</span> config <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> <span class="k">not</span> config[<span class="s">'steps'</span>]:
+                toast.info(<span class="s">'Macro %s has no steps'</span> % name, <span class="s">'Add steps in Manage Macros.'</span>)
+            <span class="k">else</span>:
+                toast.info(<span class="s">'Playing macro %s'</span> % name, <span class="s">'%s. Click Play Macro again to stop it.'</span> % macros.describe(config))
+                macros.play(name, config)
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/macros.py" rel="noopener"><code>namo.macros</code></a><span class="mod-doc">Macros: record pyNavis commands, play them back in order, manage them.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Dev.tab/Automate.panel/Macros.pulldown/Play_Macro.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Dev.tab/Automate.panel/Macros.pulldown/Play_Macro.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Play Macro
+tooltip: Runs a saved macro, one command after another. Dialogs inside its commands still ask you; click again to stop a playing macro.
+</code></pre></div>
 <div class="pagenav">
 <a href="dev-automate-macro-record.html"><span class="dir">Previous</span><span class="ttl">Record Macro</span></a>
 <a class="next" href="dev-automate-macros-manage-macros.html"><span class="dir">Next</span><span class="ttl">Manage Macros</span></a>

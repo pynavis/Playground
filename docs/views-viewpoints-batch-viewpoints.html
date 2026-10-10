@@ -6,6 +6,7 @@
 <title>Batch Viewpoints - pyNavis Playground</title>
 <meta name="description" content="Saves a viewpoint for every level, grid intersection, selection or search set, or model in one go: plans cut at each level, eye-level views or zoomed sets, named and filed by template. One Ctrl+Z removes the batch.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Batch Viewpoints", "description": "Saves a viewpoint for every level, grid intersection, selection or search set, or model in one go: plans cut at each level, eye-level views or zoomed sets, named and filed by template. One Ctrl+Z removes the batch.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/views-viewpoints-batch-viewpoints.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,195 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Batch Viewpoints is on the Views tab, Viewpoints panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Batch%20Viewpoints&amp;tool=Views.tab%2FViewpoints.panel%2FBatch_Viewpoints.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Viewpoints.panel/Batch_Viewpoints.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Viewpoints.panel/Batch_Viewpoints.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Generates saved viewpoints per level, per grid intersection, per selection or search set, or per model, in one undo step."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> namo <span class="k">import</span> items, levels, progress, ui, vp_common, vpbatch
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+TITLE = <span class="s">'Batch Viewpoints'</span>
+INTROS = {
+    <span class="s">'level'</span>: <span class="s">'One viewpoint per level. A plan looks straight down with the level cut at the '</span>
+             <span class="s">'height below; an eye-level view stands in from the south-west corner of the floor.'</span>,
+    <span class="s">'grid'</span>: <span class="s">'One viewpoint per grid intersection on the level you choose.'</span>,
+    <span class="s">'set'</span>: <span class="s">'One viewpoint per set, zoomed to its items. Each view looks the way the current view looks.'</span>,
+    <span class="s">'model'</span>: <span class="s">'One viewpoint per model, zoomed to it. Each view looks the way the current view looks.'</span>,
+}
+
+
+<span class="k">def</span> load_levels(document):
+    <span class="s">"""Levels (estimated ones read with a progress window), or None when cancelled."""</span>
+    found = levels.cached_or_none(document)
+    <span class="k">if</span> found <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        <span class="k">return</span> found
+    outcome = progress.run(TITLE, <span class="k">lambda</span> report: levels.find(document, report), <span class="s">'Looking for levels'</span>)
+    <span class="k">return</span> <span class="k">None</span> <span class="k">if</span> outcome <span class="k">is</span> progress.CANCELLED <span class="k">else</span> outcome
+
+
+<span class="k">def</span> choose_levels(level_list, units):
+    rows = [{<span class="s">'value'</span>: i, <span class="s">'cells'</span>: [lv[<span class="s">'name'</span>], vp_common.length_text(lv[<span class="s">'elevation'</span>], units),
+                                   <span class="s">'Estimated'</span> <span class="k">if</span> lv.get(<span class="s">'approximate'</span>) <span class="k">else</span> <span class="s">'Grid'</span>]}
+            <span class="k">for</span> i, lv <span class="k">in</span> enumerate(level_list)]
+    picked = ui.choose(<span class="s">'%s: levels'</span> % TITLE, rows, [<span class="s">'Level'</span>, <span class="s">'Elevation'</span>, <span class="s">'Source'</span>],
+                       checked=list(range(len(level_list))), ok=<span class="s">'Save viewpoints'</span>)
+    <span class="k">return</span> <span class="k">None</span> <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span> <span class="k">else</span> [level_list[i] <span class="k">for</span> i <span class="k">in</span> picked]
+
+
+<span class="k">def</span> level_run(document, cfg, level_list):
+    chosen = choose_levels(level_list, str(document.Units))
+    <span class="k">if</span> chosen <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">return</span> vpbatch.level_jobs(document, level_list, chosen, cfg)
+
+
+<span class="k">def</span> grid_run(document, cfg, level_list, values):
+    lv = <span class="k">None</span>
+    <span class="k">for</span> candidate <span class="k">in</span> level_list:
+        <span class="k">if</span> candidate[<span class="s">'name'</span>] == values.get(<span class="s">'grid_level'</span>):
+            lv = candidate
+    grid_level = vpbatch.grid_level_object(document, values.get(<span class="s">'grid_level'</span>))
+    box = levels.model_box(document)
+    <span class="k">if</span> lv <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> grid_level <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> box <span class="k">is</span> <span class="k">None</span>:
+        toast.error(<span class="s">'Could not read that grid level'</span>, <span class="s">'Check the grid system in Grids and Levels.'</span>)
+        <span class="k">return</span> <span class="k">None</span>
+    k = 1.0 / vp_common.to_meters_factor(str(document.Units))
+    outcome = progress.run(TITLE, <span class="k">lambda</span> report: vpbatch.find_intersections(
+        document, grid_level, box, cfg[<span class="s">'grid_spacing_m'</span>] * k, report), <span class="s">'Finding grid intersections'</span>)
+    <span class="k">if</span> outcome <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span> <span class="k">None</span>
+    found, _step = outcome
+    <span class="k">if</span> <span class="k">not</span> found:
+        toast.info(<span class="s">'No grid intersections found'</span>, <span class="s">'The grid lines on %s do not cross inside the model.'</span> % lv[<span class="s">'name'</span>])
+        <span class="k">return</span> <span class="k">None</span>
+    rows = [{<span class="s">'value'</span>: i, <span class="s">'cells'</span>: [r[<span class="s">'name'</span>], r[<span class="s">'line1'</span>], r[<span class="s">'line2'</span>]]} <span class="k">for</span> i, r <span class="k">in</span> enumerate(found)]
+    picked = ui.choose(<span class="s">'%s: intersections on %s'</span> % (TITLE, lv[<span class="s">'name'</span>]), rows, [<span class="s">'Intersection'</span>, <span class="s">'Line'</span>, <span class="s">'Line'</span>],
+                       checked=list(range(len(found))), ok=<span class="s">'Save viewpoints'</span>)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">return</span> vpbatch.grid_jobs(document, level_list, lv, [found[i] <span class="k">for</span> i <span class="k">in</span> picked], cfg), <span class="k">False</span>
+
+
+<span class="k">def</span> set_run(document, cfg, entries):
+    rows = [{<span class="s">'value'</span>: i, <span class="s">'cells'</span>: [vp_common.folder_label(e[<span class="s">'folder'</span>]), e[<span class="s">'name'</span>]]} <span class="k">for</span> i, e <span class="k">in</span> enumerate(entries)]
+    picked = ui.choose(<span class="s">'%s: sets'</span> % TITLE, rows, [<span class="s">'Folder'</span>, <span class="s">'Set'</span>], checked=list(range(len(entries))),
+                       ok=<span class="s">'Save viewpoints'</span>)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+
+    <span class="k">def</span> resolve(report):
+        targets = []
+        <span class="k">for</span> n, i <span class="k">in</span> enumerate(picked):
+            <span class="k">if</span> vp_common.report_step(report, float(n) / len(picked), <span class="s">'Reading %s'</span> % entries[i][<span class="s">'name'</span>]):
+                <span class="k">raise</span> items.Cancelled()
+            found = vpbatch.set_items(document, entries[i])
+            <span class="k">if</span> found:
+                targets.append({<span class="s">'name'</span>: entries[i][<span class="s">'name'</span>], <span class="s">'folder'</span>: entries[i][<span class="s">'folder'</span>], <span class="s">'items'</span>: found})
+        <span class="k">return</span> targets
+    targets = progress.run(TITLE, resolve, <span class="s">'Reading the sets'</span>)
+    <span class="k">if</span> targets <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">if</span> <span class="k">not</span> targets:
+        toast.info(<span class="s">'The chosen sets are empty'</span>, <span class="s">'Nothing in the model matches them.'</span>)
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">return</span> vpbatch.zoom_jobs(document, targets, <span class="s">'set'</span>, cfg), <span class="k">False</span>
+
+
+<span class="k">def</span> model_run(document, cfg):
+    models = items.models(document)
+    rows = [{<span class="s">'value'</span>: m[<span class="s">'index'</span>], <span class="s">'cells'</span>: [m[<span class="s">'name'</span>], m[<span class="s">'file'</span>]]} <span class="k">for</span> m <span class="k">in</span> models]
+    picked = ui.choose(<span class="s">'%s: models'</span> % TITLE, rows, [<span class="s">'Model'</span>, <span class="s">'File'</span>], checked=[m[<span class="s">'index'</span>] <span class="k">for</span> m <span class="k">in</span> models],
+                       ok=<span class="s">'Save viewpoints'</span>)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    targets = [{<span class="s">'name'</span>: os.path.splitext(m[<span class="s">'name'</span>])[0] <span class="k">or</span> m[<span class="s">'name'</span>], <span class="s">'items'</span>: [m[<span class="s">'root'</span>]]}
+               <span class="k">for</span> m <span class="k">in</span> models <span class="k">if</span> m[<span class="s">'index'</span>] <span class="k">in</span> picked]
+    <span class="k">return</span> vpbatch.zoom_jobs(document, targets, <span class="s">'model'</span>, cfg), <span class="k">False</span>
+
+
+<span class="k">def</span> run():
+    document = vp_common.active_doc()
+    <span class="k">if</span> <span class="k">not</span> vp_common.has_models(document):
+        toast.info(<span class="s">'No model open'</span>, <span class="s">'Open or append a model, then run Batch Viewpoints again.'</span>)
+        <span class="k">return</span>
+    cfg = vpbatch.settings(script.get_config(vpbatch.DEFAULTS))
+    labels = [label <span class="k">for</span> _g, label <span class="k">in</span> vpbatch.GENERATORS]
+    picked = forms.ask_options(<span class="k">None</span>, labels, title=TITLE)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    generator = vpbatch.GENERATORS[labels.index(picked)][0]
+    units = str(document.Units)
+    level_list = []
+    entries = []
+    level_options = <span class="k">None</span>
+    <span class="k">if</span> generator <span class="k">in</span> (<span class="s">'level'</span>, <span class="s">'grid'</span>):
+        level_list = load_levels(document)
+        <span class="k">if</span> level_list <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="k">not</span> level_list:
+            toast.info(<span class="s">'No levels found'</span>, <span class="s">'Add a grid system with levels (Grids and Levels), or open a model '</span>
+                                          <span class="s">'whose objects carry a Level property.'</span>)
+            <span class="k">return</span>
+        <span class="k">if</span> generator == <span class="s">'grid'</span>:
+            level_list = [lv <span class="k">for</span> lv <span class="k">in</span> level_list <span class="k">if</span> lv.get(<span class="s">'source'</span>) == <span class="s">'grid'</span>]
+            <span class="k">if</span> <span class="k">not</span> level_list:
+                toast.info(<span class="s">'No grid system'</span>, <span class="s">'Per grid intersection needs grids and levels. Turn them on in '</span>
+                                             <span class="s">'Grids and Levels, then run this again.'</span>)
+                <span class="k">return</span>
+            level_options = [(<span class="s">'%s (%s)'</span> % (lv[<span class="s">'name'</span>], vp_common.length_text(lv[<span class="s">'elevation'</span>], units)), lv[<span class="s">'name'</span>])
+                             <span class="k">for</span> lv <span class="k">in</span> level_list]
+    <span class="k">elif</span> generator == <span class="s">'set'</span>:
+        entries = vpbatch.selection_sets(document)
+        <span class="k">if</span> <span class="k">not</span> entries:
+            toast.info(<span class="s">'No selection or search sets'</span>, <span class="s">'Save some sets in the Sets window, then run this again.'</span>)
+            <span class="k">return</span>
+    values = ui.form(TITLE, vpbatch.fields_for(generator, cfg, units, level_options),
+                     intro=INTROS[generator], ok=<span class="s">'Next'</span>, width=500, units=units)
+    <span class="k">if</span> values <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    cfg = vpbatch.update_settings(cfg, generator, values, units)
+    script.save_config(cfg)
+    <span class="k">if</span> generator == <span class="s">'level'</span>:
+        made = level_run(document, cfg, level_list)
+    <span class="k">elif</span> generator == <span class="s">'grid'</span>:
+        made = grid_run(document, cfg, level_list, values)
+    <span class="k">elif</span> generator == <span class="s">'set'</span>:
+        made = set_run(document, cfg, entries)
+    <span class="k">else</span>:
+        made = model_run(document, cfg)
+    <span class="k">if</span> made <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    jobs, sampled = made
+    <span class="k">if</span> <span class="k">not</span> jobs:
+        toast.info(<span class="s">'Nothing chosen'</span>, <span class="s">'Tick at least one row, then run Batch Viewpoints again.'</span>)
+        <span class="k">return</span>
+    result = progress.run(TITLE, <span class="k">lambda</span> report: vpbatch.run(document, jobs, cfg, report), <span class="s">'Saving viewpoints'</span>)
+    <span class="k">if</span> result <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    level, message, detail = vpbatch.summary(result)
+    <span class="k">if</span> sampled <span class="k">and</span> level == <span class="s">'success'</span>:
+        detail += <span class="s">' Very large model: some level frames were estimated from part of the tree.'</span>
+    toast.show(level, message, detail)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/levels.py" rel="noopener"><code>namo.levels</code></a><span class="mod-doc">Levels of the model, and sectioning the view at one of them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/vp_common.py" rel="noopener"><code>namo.vp_common</code></a><span class="mod-doc">Shared helpers for the Views tools (Viewpoints, Capture and Navigate panels).</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/vpbatch.py" rel="noopener"><code>namo.vpbatch</code></a><span class="mod-doc">Batch Viewpoints: saved viewpoints generated per level, per grid intersection, per selection or search set, or per model.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Viewpoints.panel/Batch_Viewpoints.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Viewpoints.panel/Batch_Viewpoints.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Batch\nViewpoints
+tooltip: Saves a viewpoint for every level, grid intersection, selection or search set, or model in one go: plans cut at each level, eye-level views or zoomed sets, named and filed by template. One Ctrl+Z removes the batch.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="model-look-exit-presentation.html"><span class="dir">Previous</span><span class="ttl">Exit Presentation</span></a>
 <a class="next" href="views-viewpoints-viewpoints-from-excel.html"><span class="dir">Next</span><span class="ttl">Viewpoints from Excel</span></a>

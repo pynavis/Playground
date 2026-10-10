@@ -6,6 +6,7 @@
 <title>Preflight - pyNavis Playground</title>
 <meta name="description" content="Checks the document is ready to share against a profile: saved, models current, clash tests run after the newest models, no stray hidden items, overrides or section. Shift+Click to edit the profiles.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Preflight", "description": "Checks the document is ready to share against a profile: saved, models current, clash tests run after the newest models, no stray hidden items, overrides or section. Shift+Click to edit the profiles.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/project-quality-preflight.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -220,6 +224,108 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Preflight is on the Project tab, Quality panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Preflight&amp;tool=Project.tab%2FQuality.panel%2FPreflight.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Quality.panel/Preflight.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Quality.panel/Preflight.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Checks the document against a preflight profile and lists every check as pass, warning or fail."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> forms, output, script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> preflight, progress
+
+
+<span class="k">def</span> run():
+    config = script.get_config({<span class="s">'profile'</span>: preflight.DEFAULT_NAME})
+    names = preflight.profile_names()
+    name = names[0]
+    <span class="k">if</span> len(names) &gt; 1:
+        last = config.get(<span class="s">'profile'</span>) <span class="k">if</span> config.get(<span class="s">'profile'</span>) <span class="k">in</span> names <span class="k">else</span> names[0]
+        name = forms.select_from_list(names, title=<span class="s">'Preflight'</span>,
+                                      prompt=<span class="s">'Check the document against which profile?'</span>,
+                                      checked=[last])
+        <span class="k">if</span> name <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+    profile = preflight.load_profile(name)
+    <span class="k">if</span> profile <span class="k">is</span> <span class="k">None</span>:
+        toast.error(<span class="s">'Profile %s is gone'</span> % name, <span class="s">'Pick another profile, or save one with Shift+Click.'</span>)
+        <span class="k">return</span>
+    checks = progress.run(<span class="s">'Preflight'</span>, <span class="k">lambda</span> report: preflight.run_profile(profile, progress=report),
+                          <span class="s">'Reading the models'</span>)
+    <span class="k">if</span> checks <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    script.save_config({<span class="s">'profile'</span>: name})
+    output.print_html(preflight.output_html(checks, profile[<span class="s">'name'</span>], preflight.document_name()))
+    level, message, detail = preflight.toast_text(checks)
+    toast.show(level, message, detail)
+
+
+run()
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Quality.panel/Preflight.pushbutton/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Quality.panel/Preflight.pushbutton/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Edits, creates and deletes preflight profiles (shared with the team when Playground uses a shared folder)."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> forms, toast
+
+<span class="k">from</span> namo <span class="k">import</span> preflight, ui
+
+NEW = <span class="s">'__new_profile__'</span>
+
+
+<span class="k">def</span> run():
+    items = []
+    <span class="k">for</span> name <span class="k">in</span> preflight.profile_names():
+        built_in = name == preflight.DEFAULT_NAME <span class="k">and</span> <span class="k">not</span> preflight.is_saved(name)
+        items.append((<span class="s">'%s (built in)'</span> % name <span class="k">if</span> built_in <span class="k">else</span> name, name))
+    items.append((<span class="s">'New profile'</span>, NEW))
+    picked = forms.select_from_list(items, title=<span class="s">'Preflight profiles'</span>,
+                                    prompt=<span class="s">'Pick a profile to edit, or start a new one.'</span>)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">if</span> picked == NEW:
+        base = preflight.normalize_profile(preflight.DEFAULT_PROFILE)
+        base[<span class="s">'name'</span>] = <span class="s">'New profile'</span>
+        existing = <span class="k">False</span>
+    <span class="k">else</span>:
+        base = preflight.load_profile(picked) <span class="k">or</span> preflight.normalize_profile(preflight.DEFAULT_PROFILE)
+        existing = preflight.is_saved(picked)
+    label = (<span class="s">'Go back to the built-in Standard profile'</span> <span class="k">if</span> picked == preflight.DEFAULT_NAME
+             <span class="k">else</span> <span class="s">'Delete this profile'</span>)
+    values = ui.form(<span class="s">'Preflight profile'</span>, preflight.profile_form_fields(base, existing, label),
+                     ok=<span class="s">'Save'</span>, width=520)
+    <span class="k">if</span> values <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">if</span> values.get(<span class="s">'delete'</span>):
+        preflight.delete_profile(picked)
+        <span class="k">if</span> picked == preflight.DEFAULT_NAME:
+            toast.success(<span class="s">'Standard is back to the built-in checks'</span>)
+        <span class="k">else</span>:
+            toast.success(<span class="s">'Deleted profile %s'</span> % picked)
+        <span class="k">return</span>
+    profile = preflight.profile_from_form(values, base)
+    <span class="k">try</span>:
+        stored = preflight.save_profile(profile)
+    <span class="k">except</span> (IOError, OSError, ValueError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not save the profile'</span>, str(error))
+        <span class="k">return</span>
+    detail = <span class="s">'%s.'</span> % preflight.describe_profile(profile)
+    <span class="k">if</span> existing <span class="k">and</span> stored.lower() != str(picked).lower():
+        detail += <span class="s">' %s is still there under its old name.'</span> % picked
+    toast.success(<span class="s">'Saved profile %s'</span> % stored, detail)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/preflight.py" rel="noopener"><code>namo.preflight</code></a><span class="mod-doc">Preflight: is this document ready to share? A profile of checks, each pass, warn or fail.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Quality.panel/Preflight.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Quality.panel/Preflight.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Preflight
+tooltip: Checks the document is ready to share against a profile: saved, models current, clash tests run after the newest models, no stray hidden items, overrides or section. Shift+Click to edit the profiles.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="project-quality-model-compare.html"><span class="dir">Previous</span><span class="ttl">Model Compare</span></a>
 <a class="next" href="project-quality-session-stats.html"><span class="dir">Next</span><span class="ttl">Session Stats</span></a>

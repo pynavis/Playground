@@ -6,6 +6,7 @@
 <title>Scan vs Model - pyNavis Playground</title>
 <meta name="description" content="Runs a clearance test between laser scans (points) and the design, then colours each design element by how close the scan comes and lists the closest ones.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Scan vs Model", "description": "Runs a clearance test between laser scans (points) and the design, then colours each design element by how close the scan comes and lists the closest ones.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/coordinate-clash-setup-scan-vs-model.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,215 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Scan vs Model is on the Coordinate tab, Clash Setup panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Scan%20vs%20Model&amp;tool=Coordinate.tab%2FClash_Setup.panel%2FScan_vs_Model.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Setup.panel/Scan_vs_Model.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Setup.panel/Scan_vs_Model.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Checks the design against laser scans with a point clearance test, colouring elements by how close the scan comes."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> output, script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> progress, ui
+<span class="k">from</span> namo <span class="k">import</span> clashset_common <span class="k">as</span> common
+<span class="k">from</span> namo <span class="k">import</span> clashset_tests <span class="k">as</span> defs
+<span class="k">from</span> namo <span class="k">import</span> scanvsmodel <span class="k">as</span> svm
+<span class="k">from</span> namo.htmlreport <span class="k">import</span> escape
+
+DEFAULTS = {<span class="s">'scans'</span>: [], <span class="s">'design'</span>: <span class="s">'others'</span>, <span class="s">'design_models'</span>: [], <span class="s">'design_set'</span>: <span class="s">''</span>, <span class="s">'bands'</span>: <span class="s">''</span>,
+            <span class="s">'name'</span>: svm.DEFAULT_TEST_NAME, <span class="s">'paint'</span>: <span class="k">True</span>, <span class="s">'ghost'</span>: <span class="k">False</span>}
+TITLE = <span class="s">'Scan vs Model'</span>
+TOP = 25
+
+
+<span class="k">def</span> set_paths(doc):
+    <span class="k">from</span> pynavis <span class="k">import</span> sets
+    rows = sets.snapshot(doc)
+    names = dict((row[<span class="s">'key'</span>], row[<span class="s">'name'</span>]) <span class="k">for</span> row <span class="k">in</span> rows)
+    out = []
+    <span class="k">for</span> row <span class="k">in</span> rows:
+        <span class="k">if</span> row[<span class="s">'is_folder'</span>]:
+            <span class="k">continue</span>
+        chain = []
+        key = row[<span class="s">'key'</span>]
+        <span class="k">while</span> key:
+            chain.append(names.get(key, <span class="s">''</span>))
+            key = key.rpartition(<span class="s">'/'</span>)[0]
+        chain.reverse()
+        out.append(defs.join_set_path(chain))
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> ask(models, set_options, values, doc_units):
+    names = [m[<span class="s">'name'</span>] <span class="k">for</span> m <span class="k">in</span> models]
+    suggested = [m[<span class="s">'name'</span>] <span class="k">for</span> m <span class="k">in</span> models <span class="k">if</span> m[<span class="s">'points'</span>]]
+    scans = [n <span class="k">for</span> n <span class="k">in</span> values[<span class="s">'scans'</span>] <span class="k">if</span> n <span class="k">in</span> names] <span class="k">or</span> suggested
+    design_models = [n <span class="k">for</span> n <span class="k">in</span> values[<span class="s">'design_models'</span>] <span class="k">if</span> n <span class="k">in</span> names]
+    design_choices = [(<span class="s">'Every other model'</span>, <span class="s">'others'</span>), (<span class="s">'Models I choose'</span>, <span class="s">'models'</span>)]
+    <span class="k">if</span> set_options:
+        design_choices.append((<span class="s">'A selection set'</span>, <span class="s">'set'</span>))
+    design = values[<span class="s">'design'</span>] <span class="k">if</span> values[<span class="s">'design'</span>] <span class="k">in</span> [v <span class="k">for</span> _l, v <span class="k">in</span> design_choices] <span class="k">else</span> <span class="s">'others'</span>
+    fields = [
+        {<span class="s">'kind'</span>: <span class="s">'multi'</span>, <span class="s">'key'</span>: <span class="s">'scans'</span>, <span class="s">'label'</span>: <span class="s">'Scan models'</span>, <span class="s">'default'</span>: scans,
+         <span class="s">'options'</span>: [(m[<span class="s">'name'</span>] + (<span class="s">'  (points)'</span> <span class="k">if</span> m[<span class="s">'points'</span>] <span class="k">else</span> <span class="s">''</span>), m[<span class="s">'name'</span>]) <span class="k">for</span> m <span class="k">in</span> models],
+         <span class="s">'hint'</span>: <span class="s">'Models drawn with points or saved as .rcp, .rcs, .e57 are suggested.'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'radio'</span>, <span class="s">'key'</span>: <span class="s">'design'</span>, <span class="s">'label'</span>: <span class="s">'Design to check'</span>, <span class="s">'default'</span>: design, <span class="s">'fallback'</span>: <span class="k">None</span>,
+         <span class="s">'options'</span>: design_choices},
+        {<span class="s">'kind'</span>: <span class="s">'multi'</span>, <span class="s">'key'</span>: <span class="s">'design_models'</span>, <span class="s">'label'</span>: <span class="s">'Design models'</span>, <span class="s">'default'</span>: design_models,
+         <span class="s">'options'</span>: [(n, n) <span class="k">for</span> n <span class="k">in</span> names], <span class="s">'enabled_if'</span>: (<span class="s">'design'</span>, <span class="s">'models'</span>)},
+    ]
+    <span class="k">if</span> set_options:
+        fields.append({<span class="s">'kind'</span>: <span class="s">'choice'</span>, <span class="s">'key'</span>: <span class="s">'design_set'</span>, <span class="s">'label'</span>: <span class="s">'Selection set'</span>,
+                       <span class="s">'options'</span>: [(p, p) <span class="k">for</span> p <span class="k">in</span> set_options],
+                       <span class="s">'default'</span>: values[<span class="s">'design_set'</span>] <span class="k">if</span> values[<span class="s">'design_set'</span>] <span class="k">in</span> set_options <span class="k">else</span> set_options[0],
+                       <span class="s">'enabled_if'</span>: (<span class="s">'design'</span>, <span class="s">'set'</span>)})
+    fields.extend([
+        {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'bands'</span>, <span class="s">'label'</span>: <span class="s">'Deviation bands'</span>,
+         <span class="s">'default'</span>: values[<span class="s">'bands'</span>] <span class="k">or</span> svm.default_bands_text(doc_units),
+         <span class="s">'hint'</span>: <span class="s">'Smallest first, like 25, 50, 100 mm. The largest is the test tolerance.'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'name'</span>, <span class="s">'label'</span>: <span class="s">'Clash test name'</span>, <span class="s">'default'</span>: values[<span class="s">'name'</span>]},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'paint'</span>, <span class="s">'label'</span>: <span class="s">'Colour design elements by band'</span>,
+         <span class="s">'default'</span>: values[<span class="s">'paint'</span>]},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'ghost'</span>, <span class="s">'label'</span>: <span class="s">'Ghost everything else'</span>, <span class="s">'default'</span>: values[<span class="s">'ghost'</span>],
+         <span class="s">'enabled_if'</span>: (<span class="s">'paint'</span>, <span class="k">True</span>)},
+    ])
+
+    <span class="k">def</span> validate(answers):
+        errors = {}
+        problem = svm.validate_choice(answers[<span class="s">'scans'</span>], answers[<span class="s">'design_models'</span>]
+                                      <span class="k">if</span> answers[<span class="s">'design'</span>] == <span class="s">'models'</span> <span class="k">else</span> [])
+        <span class="k">if</span> problem:
+            errors[<span class="s">'scans'</span>] = problem
+        <span class="k">if</span> answers[<span class="s">'design'</span>] == <span class="s">'models'</span> <span class="k">and</span> <span class="k">not</span> answers[<span class="s">'design_models'</span>]:
+            errors[<span class="s">'design_models'</span>] = <span class="s">'Choose at least one design model.'</span>
+        <span class="k">if</span> answers[<span class="s">'design'</span>] == <span class="s">'others'</span> <span class="k">and</span> <span class="k">not</span> [n <span class="k">for</span> n <span class="k">in</span> names <span class="k">if</span> n <span class="k">not</span> <span class="k">in</span> answers[<span class="s">'scans'</span>]]:
+            errors[<span class="s">'design'</span>] = <span class="s">'Every model is a scan; keep at least one model for the design.'</span>
+        <span class="k">try</span>:
+            svm.parse_bands(answers[<span class="s">'bands'</span>], doc_units)
+        <span class="k">except</span> ValueError <span class="k">as</span> error:
+            errors[<span class="s">'bands'</span>] = str(error)
+        <span class="k">if</span> <span class="k">not</span> answers[<span class="s">'name'</span>].strip():
+            errors[<span class="s">'name'</span>] = <span class="s">'Name the clash test.'</span>
+        <span class="k">return</span> errors <span class="k">or</span> <span class="k">None</span>
+
+    <span class="k">return</span> ui.form(TITLE, fields, ok=<span class="s">'Run test'</span>, validate=validate, width=520,
+                   intro=<span class="s">'One clearance test with points switched on for the scans; every design '</span>
+                         <span class="s">'element is then coloured by the band its closest scan points fall in.'</span>)
+
+
+<span class="k">def</span> report(test_name, summary, elements, bands, doc_units):
+    labels = svm.band_labels(bands, doc_units)
+    palette = svm.band_colors(len(bands))
+    output.set_title(TITLE)
+    output.print_md(<span class="s">'# %s'</span> % TITLE)
+    output.print_md(<span class="s">'Clash test "%s". Each design element counts once, in the band of its closest '</span>
+                    <span class="s">'scan points.'</span> % test_name)
+    lines = [<span class="s">'&lt;table class="pynavis"&gt;&lt;tr&gt;&lt;th&gt;Band&lt;/th&gt;&lt;th&gt;&lt;/th&gt;&lt;th class="num"&gt;Elements&lt;/th&gt;&lt;/tr&gt;'</span>]
+    <span class="k">for</span> index, label <span class="k">in</span> enumerate(labels):
+        lines.append(<span class="s">'&lt;tr&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;&lt;span style="display:inline-block;width:28px;height:12px;'</span>
+                     <span class="s">'background:#%s;border:1px solid var(--line)"&gt;&lt;/span&gt;&lt;/td&gt;&lt;td class="num"&gt;%s&lt;/td&gt;&lt;/tr&gt;'</span>
+                     % (escape(label), palette[index], <span class="s">'{:,}'</span>.format(summary[<span class="s">'counts'</span>][index])))
+    lines.append(<span class="s">'&lt;/table&gt;'</span>)
+    output.print_html(<span class="s">''</span>.join(lines))
+    output.print_md(<span class="s">'## Closest elements'</span>)
+    rows = [<span class="s">'&lt;table class="pynavis"&gt;&lt;tr&gt;&lt;th&gt;Element&lt;/th&gt;&lt;th class="num"&gt;Closest&lt;/th&gt;'</span>
+            <span class="s">'&lt;th class="num"&gt;Results&lt;/th&gt;&lt;th&gt;Band&lt;/th&gt;&lt;th&gt;&lt;/th&gt;&lt;/tr&gt;'</span>]
+    <span class="k">for</span> entry <span class="k">in</span> summary[<span class="s">'elements'</span>][:TOP]:
+        band = labels[entry[<span class="s">'band'</span>]] <span class="k">if</span> entry[<span class="s">'band'</span>] <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">else</span> <span class="s">'Beyond the bands'</span>
+        rows.append(<span class="s">'&lt;tr&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td class="num"&gt;%s&lt;/td&gt;&lt;td class="num"&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;'</span>
+                    <span class="s">'&lt;td&gt;%s&lt;/td&gt;&lt;/tr&gt;'</span> % (escape(entry[<span class="s">'name'</span>]),
+                                          escape(defs.length_text(entry[<span class="s">'distance'</span>], doc_units)),
+                                          <span class="s">'{:,}'</span>.format(entry[<span class="s">'hits'</span>]), escape(band),
+                                          output.element_link(elements[entry[<span class="s">'key'</span>]], <span class="s">'Show'</span>)))
+    rows.append(<span class="s">'&lt;/table&gt;'</span>)
+    output.print_html(<span class="s">''</span>.join(rows))
+    <span class="k">if</span> len(summary[<span class="s">'elements'</span>]) &gt; TOP:
+        output.print_md(<span class="s">'The %d closest of %s are listed.'</span> % (
+            TOP, common.plural(len(summary[<span class="s">'elements'</span>]), <span class="s">'element'</span>)))
+
+
+<span class="k">def</span> run():
+    <span class="k">from</span> pynavis <span class="k">import</span> doc <span class="k">as</span> pdoc
+    doc = pdoc.get_doc()
+    <span class="k">if</span> <span class="k">not</span> defs.available(doc):
+        toast.error(<span class="s">'Clash Detective is not available'</span>, <span class="s">'Scan vs Model needs Navisworks Manage.'</span>)
+        <span class="k">return</span>
+    models = svm.models_info(doc)
+    <span class="k">if</span> len(models) &lt; 2:
+        toast.info(<span class="s">'Append a scan and a design model first'</span>, <span class="s">'Scan vs Model compares two or more models.'</span>)
+        <span class="k">return</span>
+    doc_units = defs.doc_units(doc)
+    values = script.get_config(DEFAULTS)
+    answers = ask(models, set_paths(doc), values, doc_units)
+    <span class="k">if</span> answers <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    values.update(answers)
+    script.save_config(values)
+    bands = svm.parse_bands(answers[<span class="s">'bands'</span>], doc_units)
+    scans = answers[<span class="s">'scans'</span>]
+    <span class="k">if</span> answers[<span class="s">'design'</span>] == <span class="s">'set'</span>:
+        design = defs.new_side([{<span class="s">'kind'</span>: <span class="s">'set'</span>, <span class="s">'path'</span>: answers[<span class="s">'design_set'</span>]}])
+    <span class="k">else</span>:
+        chosen = answers[<span class="s">'design_models'</span>] <span class="k">if</span> answers[<span class="s">'design'</span>] == <span class="s">'models'</span> <span class="k">else</span> \
+            [m[<span class="s">'name'</span>] <span class="k">for</span> m <span class="k">in</span> models <span class="k">if</span> m[<span class="s">'name'</span>] <span class="k">not</span> <span class="k">in</span> scans]
+        design = defs.new_side([{<span class="s">'kind'</span>: <span class="s">'model'</span>, <span class="s">'name'</span>: n} <span class="k">for</span> n <span class="k">in</span> chosen])
+    definition = svm.definition(answers[<span class="s">'name'</span>].strip(), scans, design, bands, doc_units)
+
+    <span class="k">def</span> build(report_to):
+        report_to(0.05, <span class="s">'Running %s; a large scan takes a while'</span> % definition[<span class="s">'name'</span>])
+        <span class="k">return</span> svm.build_and_run(definition, doc)
+
+    <span class="k">try</span>:
+        test, _outcome = common.write_progress(TITLE, build)
+    <span class="k">except</span> ValueError <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not build the scan test'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">except</span> Exception <span class="k">as</span> error:
+        <span class="c"># A point clearance test through the API is the one thing here nobody has seen</span>
+        <span class="c"># run: whatever Navisworks answers, say it plainly instead of a traceback.</span>
+        script.get_logger().error(<span class="s">'Scan vs Model: %s'</span> % error)
+        toast.error(<span class="s">'Navisworks could not run the scan test'</span>,
+                    <span class="s">'Open "%s" in Clash Detective and run it there. (%s)'</span> % (definition[<span class="s">'name'</span>], error))
+        <span class="k">return</span>
+    read = progress.run(<span class="s">'Reading the results'</span>, <span class="k">lambda</span> report_to: svm.collect(test, doc, report_to))
+    <span class="k">if</span> read <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    hits, elements = read
+    widest = defs.length_text(bands[-1], doc_units)
+    <span class="k">if</span> <span class="k">not</span> hits:
+        toast.info(<span class="s">'No scan points within %s of the design'</span> % widest,
+                   <span class="s">'The test "%s" found nothing; widen the bands to look further.'</span> % definition[<span class="s">'name'</span>])
+        <span class="k">return</span>
+    summary = svm.summarize(hits, bands)
+    coloured = 0
+    <span class="k">if</span> answers[<span class="s">'paint'</span>]:
+        coloured = common.write_progress(TITLE, <span class="k">lambda</span> report_to: svm.paint(summary, elements,
+                                                                          answers[<span class="s">'ghost'</span>], doc))
+    report(definition[<span class="s">'name'</span>], summary, elements, bands, doc_units)
+    labels = svm.band_labels(bands, doc_units)
+    parts = [<span class="s">'%s %s'</span> % (labels[i], <span class="s">'{:,}'</span>.format(n)) <span class="k">for</span> i, n <span class="k">in</span> enumerate(summary[<span class="s">'counts'</span>]) <span class="k">if</span> n]
+    headline = <span class="s">'Checked %s against the scan'</span> % common.plural(len(summary[<span class="s">'elements'</span>]), <span class="s">'design element'</span>)
+    <span class="k">if</span> coloured:
+        headline = <span class="s">'Coloured %s by scan distance'</span> % common.plural(coloured, <span class="s">'design element'</span>)
+    toast.success(headline, <span class="s">', '</span>.join(parts))
+
+
+<span class="k">if</span> globals().get(<span class="s">'__runner__'</span>):
+    toast.warning(*common.RUNNER_MESSAGE)
+<span class="k">else</span>:
+    run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashset_common.py" rel="noopener"><code>namo.clashset_common</code></a><span class="mod-doc">Small things every Clash Setup and Clash Results tool shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashset_tests.py" rel="noopener"><code>namo.clashset_tests</code></a><span class="mod-doc">Clash test definitions as plain data, and the one place Playground builds tests from them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/htmlreport.py" rel="noopener"><code>namo.htmlreport</code></a><span class="mod-doc">Standalone HTML reports: one self-contained .html file (inline CSS, JS, SVG charts and base64 images) that opens in any browser, offline, in light or dark theme.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/scanvsmodel.py" rel="noopener"><code>namo.scanvsmodel</code></a><span class="mod-doc">Scan vs Model: how close the scanned existing conditions come to the design.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Setup.panel/Scan_vs_Model.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Setup.panel/Scan_vs_Model.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Scan vs\nModel
+tooltip: Runs a clearance test between laser scans (points) and the design, then colours each design element by how close the scan comes and lists the closest ones.
+context: multi-model
+</code></pre></div>
 <div class="pagenav">
 <a href="coordinate-clash-setup-clash-templates.html"><span class="dir">Previous</span><span class="ttl">Clash Templates</span></a>
 <a class="next" href="coordinate-clash-results-clash-namer.html"><span class="dir">Next</span><span class="ttl">Clash Namer</span></a>

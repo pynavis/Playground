@@ -6,6 +6,7 @@
 <title>Snapshot - pyNavis Playground</title>
 <meta name="description" content="Records the current results of the chosen clash tests as a snapshot that Clash Delta and Clash Trends compare with. Shift+Click to snapshot automatically on save, or to delete old snapshots.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Snapshot", "description": "Records the current results of the chosen clash tests as a snapshot that Clash Delta and Clash Trends compare with. Shift+Click to snapshot automatically on save, or to delete old snapshots.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/coordinate-clash-reports-history-snapshot-clashes.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -222,6 +226,182 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Snapshot is on the Coordinate tab, Clash Reports panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Snapshot&amp;tool=Coordinate.tab%2FClash_Reports.panel%2FHistory.stack%2FSnapshot_Clashes.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Reports.panel/History.stack/Snapshot_Clashes.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Reports.panel/History.stack/Snapshot_Clashes.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Records the current results of the chosen clash tests as a snapshot for Clash Delta and Clash Trends."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> clashrep_forms <span class="k">as</span> cf
+<span class="k">from</span> namo <span class="k">import</span> clashrep_history <span class="k">as</span> hist
+<span class="k">from</span> namo <span class="k">import</span> clashreport <span class="k">as</span> cr
+<span class="k">from</span> namo <span class="k">import</span> progress
+
+TITLE = <span class="s">'Clash Snapshot'</span>
+DEFAULTS = {<span class="s">'tests'</span>: []}
+
+
+<span class="k">def</span> run():
+    values = script.get_config(DEFAULTS)
+    doc = cr.active_doc()
+    problem = cf.start(doc)
+    <span class="k">if</span> problem:
+        toast.show(*problem)
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> cr.file_info(doc)[0]:
+        toast.info(<span class="s">'Save the model first'</span>, <span class="s">'Clash snapshots are kept per model file.'</span>)
+        <span class="k">return</span>
+    <span class="k">if</span> cf.runner_active():
+        tests, _missing = cr.resolve_tests(values[<span class="s">'tests'</span>], doc)
+        label = <span class="s">''</span>
+    <span class="k">else</span>:
+        tests = cf.pick_tests(TITLE, <span class="s">'Tick the tests to record.'</span>, values[<span class="s">'tests'</span>], doc)
+        <span class="k">if</span> tests <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="k">not</span> tests:
+            toast.info(<span class="s">'No clash results yet'</span>, <span class="s">'Run your clash tests in Clash Detective first.'</span>)
+            <span class="k">return</span>
+        label = forms.ask_string(<span class="s">'Label for this snapshot (optional, for example "Before the 12 Oct meeting"):'</span>,
+                                 <span class="s">''</span>, TITLE)
+        <span class="k">if</span> label <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+        values[<span class="s">'tests'</span>] = cf.test_paths(tests)
+        script.save_config(values)
+    <span class="k">if</span> <span class="k">not</span> tests:
+        toast.info(<span class="s">'No clash results yet'</span>, <span class="s">'Run your clash tests in Clash Detective first.'</span>)
+        <span class="k">return</span>
+    <span class="k">try</span>:
+        outcome = progress.run(<span class="s">'Recording clashes'</span>, <span class="k">lambda</span> report: cr.record_snapshot(tests, label, doc, report))
+    <span class="k">except</span> RuntimeError <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not read the clashes'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not save the snapshot'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">if</span> outcome <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    entry, where = outcome
+    toast.success(*hist.snapshot_message(entry, where))
+
+
+run()
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Reports.panel/History.stack/Snapshot_Clashes.pushbutton/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Reports.panel/History.stack/Snapshot_Clashes.pushbutton/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Options for clash snapshots: take one automatically on save, or delete old ones."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> forms, settings, toast
+
+<span class="k">from</span> namo <span class="k">import</span> clashrep_forms <span class="k">as</span> cf
+<span class="k">from</span> namo <span class="k">import</span> clashrep_history <span class="k">as</span> hist
+<span class="k">from</span> namo <span class="k">import</span> clashreport <span class="k">as</span> cr
+<span class="k">from</span> namo <span class="k">import</span> config <span class="k">as</span> namo_config
+<span class="k">from</span> namo <span class="k">import</span> hk_clashhistory <span class="k">as</span> auto
+<span class="k">from</span> namo <span class="k">import</span> ui
+
+TITLE = <span class="s">'Clash snapshots'</span>
+AUTOMATIC = <span class="s">'Snapshot automatically when the model is saved'</span>
+REVIEW = <span class="s">'Review and delete snapshots of this model'</span>
+
+
+<span class="k">def</span> automatic():
+    values = auto.load_config()
+    names = []
+    <span class="k">try</span>:
+        <span class="k">from</span> namo <span class="k">import</span> clashdata
+        names = clashdata.unique_names([t.DisplayName <span class="k">for</span> t <span class="k">in</span> cr.tests_with_results()])
+    <span class="k">except</span> Exception:
+        names = []
+    fields = cf.snapshot_settings_fields(values, names, namo_config.get(<span class="s">'data_mode'</span>))
+    answers = ui.form(TITLE, fields, ok=<span class="s">'Save'</span>, width=540)
+    <span class="k">if</span> answers <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    values[<span class="s">'auto_on_save'</span>] = bool(answers[<span class="s">'auto_on_save'</span>])
+    <span class="k">if</span> answers.get(<span class="s">'min_hours'</span>) <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        values[<span class="s">'min_hours'</span>] = float(answers[<span class="s">'min_hours'</span>])
+    <span class="k">if</span> answers.get(<span class="s">'max_results'</span>) <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        values[<span class="s">'max_results'</span>] = int(answers[<span class="s">'max_results'</span>])
+    <span class="k">if</span> <span class="s">'tests'</span> <span class="k">in</span> answers:
+        values[<span class="s">'tests'</span>] = list(answers[<span class="s">'tests'</span>] <span class="k">or</span> [])
+    <span class="k">try</span>:
+        settings.save(auto.TOOL, values)
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not save the snapshot options'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">if</span> values[<span class="s">'auto_on_save'</span>]:
+        toast.success(<span class="s">'Automatic clash snapshots are on'</span>,
+                      <span class="s">'At most one every %s hours, when the clash counts changed, up to %s results.'</span>
+                      % (<span class="s">'%g'</span> % values[<span class="s">'min_hours'</span>], <span class="s">'{:,}'</span>.format(values[<span class="s">'max_results'</span>])))
+    <span class="k">else</span>:
+        toast.success(<span class="s">'Automatic clash snapshots are off'</span>, <span class="s">'Use Snapshot to record one by hand.'</span>)
+
+
+<span class="k">def</span> review():
+    <span class="k">from</span> namo <span class="k">import</span> clashdata
+    doc_path = cr.file_info()[0]
+    <span class="k">if</span> <span class="k">not</span> doc_path:
+        toast.info(<span class="s">'Save the model first'</span>, <span class="s">'Clash snapshots are kept per model file.'</span>)
+        <span class="k">return</span>
+    entries = sorted(clashdata.list_history(doc_path), key=<span class="k">lambda</span> e: (e.get(<span class="s">'time'</span>) <span class="k">or</span> <span class="s">''</span>, e.get(<span class="s">'id'</span>) <span class="k">or</span> <span class="s">''</span>),
+                     reverse=<span class="k">True</span>)
+    <span class="k">if</span> <span class="k">not</span> entries:
+        toast.info(<span class="s">'No clash snapshots yet'</span>, <span class="s">'Use Snapshot to record one.'</span>)
+        <span class="k">return</span>
+    rows = []
+    <span class="k">for</span> entry <span class="k">in</span> entries:
+        when = hist.entry_time(entry)
+        totals = hist.entry_totals(entry)
+        rows.append({<span class="s">'value'</span>: entry[<span class="s">'id'</span>], <span class="s">'cells'</span>: [when.strftime(<span class="s">'%Y-%m-%d %H:%M'</span>) <span class="k">if</span> when <span class="k">else</span> <span class="s">''</span>,
+                                                     entry.get(<span class="s">'label'</span>) <span class="k">or</span> <span class="s">''</span>, totals[<span class="s">'tests'</span>], totals[<span class="s">'total'</span>],
+                                                     totals[<span class="s">'open'</span>]]})
+    picked = ui.choose(TITLE, rows, [<span class="s">'Taken'</span>, <span class="s">'Label'</span>, <span class="s">'Tests'</span>, <span class="s">'Clashes'</span>, <span class="s">'Open'</span>], multiselect=<span class="k">True</span>,
+                       prompt=<span class="s">'Tick the snapshots to delete. Clash Delta and Clash Trends will no longer see them.'</span>,
+                       ok=<span class="s">'Delete'</span>, width=720)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> picked:
+        toast.info(<span class="s">'No snapshots ticked'</span>, <span class="s">'Nothing was deleted.'</span>)
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> forms.confirm(<span class="s">'Delete %s? This cannot be undone.'</span> % cr.plural(len(picked), <span class="s">'snapshot'</span>), TITLE):
+        <span class="k">return</span>
+    deleted = 0
+    <span class="k">try</span>:
+        <span class="k">for</span> history_id <span class="k">in</span> picked:
+            <span class="k">if</span> clashdata.delete_history(doc_path, history_id):
+                deleted += 1
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not delete every snapshot'</span>, str(error))
+        <span class="k">return</span>
+    toast.success(<span class="s">'Deleted %s'</span> % cr.plural(deleted, <span class="s">'snapshot'</span>),
+                  <span class="s">'%s left for this model.'</span> % <span class="s">'{:,}'</span>.format(len(entries) - deleted))
+
+
+<span class="k">if</span> cf.runner_active():
+    toast.warning(<span class="s">'These options need a window, so they cannot run under pynavis run'</span>,
+                  <span class="s">'Shift+Click Snapshot on the ribbon instead.'</span>)
+<span class="k">else</span>:
+    choice = forms.ask_options(<span class="s">'What do you want to change?'</span>, [AUTOMATIC, REVIEW], TITLE)
+    <span class="k">if</span> choice == AUTOMATIC:
+        automatic()
+    <span class="k">elif</span> choice == REVIEW:
+        review()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashdata.py" rel="noopener"><code>namo.clashdata</code></a><span class="mod-doc">One reader for every clash tool: snapshots, groups, run-to-run comparison, history, images, and the per-result edits that are safe at scale.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashrep_forms.py" rel="noopener"><code>namo.clashrep_forms</code></a><span class="mod-doc">The questions the Clash Reports buttons ask, in one place.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashrep_history.py" rel="noopener"><code>namo.clashrep_history</code></a><span class="mod-doc">Clash history maths for Clash Delta, Clash Trends and the automatic snapshot: which snapshot to compare with, what changed since, and the series over time. Pure.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashreport.py" rel="noopener"><code>namo.clashreport</code></a><span class="mod-doc">Clash reports: the row shaping, summaries and tallies every Clash Reports tool shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/config.py" rel="noopener"><code>namo.config</code></a><span class="mod-doc">Playground-wide settings: one JSON file shared by every Playground tool.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/hk_clashhistory.py" rel="noopener"><code>namo.hk_clashhistory</code></a><span class="mod-doc">Automatic clash snapshot on save (registered for &#x27;doc-saved&#x27; in namo.hooks).</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Reports.panel/History.stack/Snapshot_Clashes.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Reports.panel/History.stack/Snapshot_Clashes.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Snapshot
+tooltip: Records the current results of the chosen clash tests as a snapshot that Clash Delta and Clash Trends compare with. Shift+Click to snapshot automatically on save, or to delete old snapshots.
+context: clash-tests
+</code></pre></div>
 <div class="pagenav">
 <a href="coordinate-clash-reports-clash-count-matrix.html"><span class="dir">Previous</span><span class="ttl">Count Matrix</span></a>
 <a class="next" href="coordinate-clash-reports-history-clash-delta.html"><span class="dir">Next</span><span class="ttl">Clash Delta</span></a>

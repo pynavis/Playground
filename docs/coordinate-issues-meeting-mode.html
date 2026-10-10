@@ -6,6 +6,7 @@
 <title>Meeting Mode - pyNavis Playground</title>
 <meta name="description" content="Runs a coordination meeting through the issues you choose, one at a time, going to each in the view; change status, record decisions, reassign and set due dates as you go, then write the minutes as HTML and Excel.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Meeting Mode", "description": "Runs a coordination meeting through the issues you choose, one at a time, going to each in the view; change status, record decisions, reassign and set due dates as you go, then write the minutes as HTML and Excel.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/coordinate-issues-meeting-mode.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -219,6 +223,68 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Meeting Mode is on the Coordinate tab, Issues panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Meeting%20Mode&amp;tool=Coordinate.tab%2FIssues.panel%2FMeeting_Mode.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Issues.panel/Meeting_Mode.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Issues.panel/Meeting_Mode.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Runs a coordination meeting through the chosen issues, one at a time, and writes the minutes."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> config, issue_meeting, issueapi, issuestore, ui
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> ui.is_runner():
+        toast.info(<span class="s">'Meeting mode needs the Navisworks window'</span>, <span class="s">'It cannot run under pynavis run.'</span>)
+        <span class="k">return</span>
+    <span class="k">if</span> issue_meeting.activate_open():
+        toast.info(<span class="s">'A meeting is already running'</span>, <span class="s">'End it in the Meeting mode window before '</span>
+                   <span class="s">'starting another.'</span>)
+        <span class="k">return</span>
+    doc = issuestore.active_doc()
+    <span class="k">if</span> doc <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> <span class="k">not</span> issueapi.has_model(doc):
+        toast.info(<span class="s">'No model open'</span>, <span class="s">'Open the model the issues belong to, then start the meeting.'</span>)
+        <span class="k">return</span>
+    store = issuestore.for_doc(doc)
+    <span class="k">if</span> <span class="k">not</span> store.saved:
+        toast.info(<span class="s">'Save the model first'</span>, issuestore.NOT_SAVED)
+        <span class="k">return</span>
+    rows = store.list()
+    <span class="k">if</span> <span class="k">not</span> rows:
+        toast.info(<span class="s">'No issues yet'</span>, <span class="s">'Raise issues in the Issues panel, with Issue Stamps or Clash '</span>
+                   <span class="s">'to Issues, then run the meeting.'</span>)
+        <span class="k">return</span>
+    me = script.bind()
+    saved = me.get_config(dict(issue_meeting.DEFAULTS))
+    answers = ui.form(<span class="s">'Meeting mode'</span>, issue_meeting.filter_fields(rows, saved),
+                      intro=<span class="s">'Which issues go on the agenda?'</span>, ok=<span class="s">'Start meeting'</span>, width=520)
+    <span class="k">if</span> answers <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    saved.update(answers)
+    me.save_config(saved)
+    chosen = issue_meeting.choose(rows, answers)
+    <span class="k">if</span> <span class="k">not</span> chosen:
+        toast.info(<span class="s">'No issues match'</span>, <span class="s">'Tick more statuses, trades or priorities, or allow any due date.'</span>)
+        <span class="k">return</span>
+    issue_meeting.open_window([i[<span class="s">'id'</span>] <span class="k">for</span> i <span class="k">in</span> chosen], store, doc, me, script.get_logger(),
+                              follow=bool(answers[<span class="s">'follow'</span>]), user=config.user_name())
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/config.py" rel="noopener"><code>namo.config</code></a><span class="mod-doc">Playground-wide settings: one JSON file shared by every Playground tool.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/issue_meeting.py" rel="noopener"><code>namo.issue_meeting</code></a><span class="mod-doc">Meeting Mode: walk a coordination meeting through the chosen issues and write minutes.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/issueapi.py" rel="noopener"><code>namo.issueapi</code></a><span class="mod-doc">The Navisworks half of the issue tools: capture a view as issue material, go back to it, draw issue pins, pick stamp points, and find BCF components in the model.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/issuestore.py" rel="noopener"><code>namo.issuestore</code></a><span class="mod-doc">Where Playground issues live: one record per issue, per model file, in the data mode namo.config chooses, plus the session events every issue view listens to.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Issues.panel/Meeting_Mode.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Issues.panel/Meeting_Mode.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Meeting\nMode
+tooltip: Runs a coordination meeting through the issues you choose, one at a time, going to each in the view; change status, record decisions, reassign and set due dates as you go, then write the minutes as HTML and Excel.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="coordinate-issues-issue-pins.html"><span class="dir">Previous</span><span class="ttl">Issue Pins</span></a>
 <a class="next" href="coordinate-issues-issue-tools-issue-templates.html"><span class="dir">Next</span><span class="ttl">Issue Templates</span></a>

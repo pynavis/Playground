@@ -6,6 +6,7 @@
 <title>Team Sync - pyNavis Playground</title>
 <meta name="description" content="Pulls the team&#x27;s templates, presets, rules, shortcuts and project settings from the team folder, or pushes yours to it.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Team Sync", "description": "Pulls the team's templates, presets, rules, shortcuts and project settings from the team folder, or pushes yours to it.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/dev-team-team-sync.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,83 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Team Sync is on the Dev tab, Team panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Team%20Sync&amp;tool=Dev.tab%2FTeam.panel%2FTeam_Sync.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Dev.tab/Team.panel/Team_Sync.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Dev.tab/Team.panel/Team_Sync.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Pulls shared Playground settings from the team folder, or pushes this computer's to it."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> forms, toast
+
+<span class="k">from</span> namo <span class="k">import</span> ribbon, teamsync, ui
+
+
+<span class="k">def</span> pick(initial):
+    <span class="k">return</span> forms.pick_folder(title=<span class="s">'Team folder (the one that holds or will hold playground-team)'</span>,
+                             initial=initial <span class="k">or</span> <span class="k">None</span>)
+
+
+<span class="k">if</span> globals().get(<span class="s">'__runner__'</span>):
+    toast.info(<span class="s">'Team Sync needs the Navisworks window'</span>, <span class="s">'It cannot open under pynavis run.'</span>)
+<span class="k">else</span>:
+    state = teamsync.load_state()
+    folder = teamsync.team_folder(state)
+    <span class="k">if</span> <span class="k">not</span> folder:
+        folder = pick(<span class="s">''</span>)
+        <span class="k">if</span> folder <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+            state[<span class="s">'team_folder'</span>] = folder
+            teamsync.save_state(state)
+    <span class="k">while</span> folder:
+        found = teamsync.preview(folder)
+        win = teamsync.build_window(folder, found, state)
+        ui.show_modal(win)
+        action = win.Tag.action
+        <span class="k">if</span> win.Tag.auto_pull != state.get(<span class="s">'auto_pull'</span>):
+            state[<span class="s">'auto_pull'</span>] = win.Tag.auto_pull
+            teamsync.save_state(state)
+            <span class="k">if</span> action <span class="k">is</span> <span class="k">None</span>:
+                toast.info(<span class="s">'Pull at startup is %s'</span> % (<span class="s">'on'</span> <span class="k">if</span> state[<span class="s">'auto_pull'</span>] <span class="k">else</span> <span class="s">'off'</span>))
+        <span class="k">if</span> action == <span class="s">'folder'</span>:
+            chosen = pick(folder)
+            <span class="k">if</span> chosen <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                folder = chosen
+                state[<span class="s">'team_folder'</span>] = chosen
+                teamsync.save_state(state)
+            <span class="k">continue</span>
+        <span class="k">if</span> action == <span class="s">'pull'</span>:
+            <span class="k">try</span>:
+                result = teamsync.pull(folder)
+            <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+                toast.error(<span class="s">'Could not pull the team settings'</span>, str(error))
+            <span class="k">else</span>:
+                level, message, detail = teamsync.result_toast(result)
+                <span class="k">if</span> result.get(<span class="s">'needs_reload'</span>):
+                    ribbon.reload()
+                    detail = detail.replace(<span class="s">'Reload pyNavis to apply them.'</span>, <span class="s">'pyNavis reloaded to apply them.'</span>)
+                toast.show(level, message, detail)
+        <span class="k">elif</span> action == <span class="s">'push'</span>:
+            <span class="k">if</span> forms.confirm(<span class="s">'Write this computer\'s templates, presets, libraries, rules, project settings, '</span>
+                             <span class="s">'shortcuts and extension folders to %s? Team files it replaces are backed up '</span>
+                             <span class="s">'in playground-team\\.backup.'</span> % folder, title=<span class="s">'Team Sync'</span>):
+                <span class="k">try</span>:
+                    result = teamsync.push(folder)
+                <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+                    toast.error(<span class="s">'Could not push to the team folder'</span>, str(error))
+                <span class="k">else</span>:
+                    toast.success(<span class="s">'Pushed to the team folder'</span>,
+                                  <span class="s">'%d file%s updated, version %s.'</span> % (result[<span class="s">'files'</span>], <span class="s">''</span> <span class="k">if</span> result[<span class="s">'files'</span>] == 1 <span class="k">else</span> <span class="s">'s'</span>,
+                                                                     result[<span class="s">'stamp'</span>].replace(<span class="s">'T'</span>, <span class="s">' '</span>)))
+        <span class="k">break</span>
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ribbon.py" rel="noopener"><code>namo.ribbon</code></a><span class="mod-doc">The ribbon as data: every pyNavis button and every native Navisworks command, and safe ways to run them from code. Shared by the Command Palette, macros, the Hotkey Manager, usage analytics and the Environment Doctor.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/teamsync.py" rel="noopener"><code>namo.teamsync</code></a><span class="mod-doc">Team Sync: share Playground settings through a team folder (a UNC share or a synced or cloned folder) laid out as &lt;team folder&gt;\playground-team\:</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Dev.tab/Team.panel/Team_Sync.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Dev.tab/Team.panel/Team_Sync.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Team\nSync
+tooltip: Pulls the team's templates, presets, rules, shortcuts and project settings from the team folder, or pushes yours to it.
+</code></pre></div>
 <div class="pagenav">
 <a href="dev-team-extension-manager.html"><span class="dir">Previous</span><span class="ttl">Extension Manager</span></a>
 <a class="next" href="dev-team-usage-analytics.html"><span class="dir">Next</span><span class="ttl">Usage Analytics</span></a>

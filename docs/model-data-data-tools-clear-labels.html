@@ -6,6 +6,7 @@
 <title>Clear Labels - pyNavis Playground</title>
 <meta name="description" content="Removes the value labels Property Labels drew in the view.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Clear Labels", "description": "Removes the value labels Property Labels drew in the view.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-data-data-tools-clear-labels.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -221,6 +225,34 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Clear Labels is on the Model tab, Data panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Clear%20Labels&amp;tool=Model.tab%2FData.panel%2FData_Tools.stack%2FClear_Labels.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Data.panel/Data_Tools.stack/Clear_Labels.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Data.panel/Data_Tools.stack/Clear_Labels.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Removes the labels Property Labels drew in the view."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> toast
+
+<span class="k">from</span> namo <span class="k">import</span> data_labels
+
+
+<span class="k">def</span> run():
+    removed = data_labels.clear()
+    <span class="k">if</span> <span class="k">not</span> removed:
+        toast.info(<span class="s">'No labels to clear'</span>, <span class="s">'Property Labels draws them.'</span>)
+        <span class="k">return</span>
+    toast.success(<span class="s">'Cleared %s %s'</span> % (<span class="s">'{:,}'</span>.format(removed), <span class="s">'label'</span> <span class="k">if</span> removed == 1 <span class="k">else</span> <span class="s">'labels'</span>))
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/data_labels.py" rel="noopener"><code>namo.data_labels</code></a><span class="mod-doc">Property Labels: a property&#x27;s value drawn above each selected object in the 3D view through pynavis.overlay, with a short leader from the object&#x27;s top-centre.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Data.panel/Data_Tools.stack/Clear_Labels.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Data.panel/Data_Tools.stack/Clear_Labels.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Clear Labels
+tooltip: Removes the value labels Property Labels drew in the view.
+</code></pre></div>
 <div class="pagenav">
 <a href="model-data-data-tools-model-tree-export.html"><span class="dir">Previous</span><span class="ttl">Model Tree Export</span></a>
 <a class="next" href="model-data-property-labels.html"><span class="dir">Next</span><span class="ttl">Property Labels</span></a>

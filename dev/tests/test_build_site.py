@@ -2,10 +2,12 @@
 """tools/build_site.py: the public catalog site in docs/. CPython only (the tools are
 dev-time CPython 3.11)."""
 import copy
+import io
 import json
 import os
 import re
 import sys
+from urllib.parse import unquote
 
 import _compat
 from _compat import raises
@@ -184,3 +186,123 @@ def test_docs_folder_is_current():
     """The committed docs/ matches catalog.json (dev/verify.py runs --check too)."""
     changed, extra = bs.diff(built())
     assert not changed and not extra, (changed[:5], extra[:5])
+
+
+# ---- the source section ----------------------------------------------------------------------
+
+BLOB = re.compile(r'href="(https://github\.com/pynavis/Playground/blob/main/([^"]+))"')
+CODE = re.compile(r'<pre><code class="language-(\w+)">(.*?)</code></pre>', re.S)
+SAMPLES = ('Model.tab/Select.panel/Select_Similar.pushbutton',      # script.py only
+           'Model.tab/Select.panel/Quick.stack/Invert.pushbutton',   # with config.py
+           'Coordinate.tab/Issues.panel/Issues.dockpane')            # with pane.xaml
+
+
+def ext_text(rel):
+    with io.open(os.path.join(_compat.ROOT, catalog()['extension'], rel.replace('/', os.sep)),
+                 encoding='utf-8') as handle:
+        return handle.read()
+
+
+def strip_tags(text):
+    return re.sub(r'<[^>]+>', '', text)
+
+
+def test_sample_pages_show_their_files_verbatim():
+    c = catalog()
+    for tool_id in SAMPLES:
+        tool = [t for t in c['tools'] if t['id'] == tool_id][0]
+        text = pages()[bs.slug_of(tool_id) + '.html']
+        blocks = [strip_tags(body) for _lang, body in CODE.findall(text)]
+        for name in ('script.py', 'config.py', 'pane.xaml', 'bundle.yaml'):
+            rel = tool_id + '/' + name
+            if rel not in tool['files']:
+                assert '<code>%s</code>' % rel not in text
+                continue
+            assert bs.esc_code(ext_text(rel)) in blocks, rel
+            assert 'href="%s"' % bs.blob_url(c, rel) in text
+    assert 'id="src-config-py"' in pages()[bs.slug_of(SAMPLES[1]) + '.html']
+    assert 'id="src-pane-xaml"' in pages()[bs.slug_of(SAMPLES[2]) + '.html']
+
+
+def test_every_tool_page_carries_its_script():
+    for tool in catalog()['tools']:
+        text = pages()[bs.slug_of(tool['id']) + '.html']
+        rel = tool['id'] + '/script.py'
+        if rel in tool['files']:
+            assert bs.esc_code(ext_text(rel)) in strip_tags(text), rel
+        assert '<h2 id="source">Source</h2>' in text
+        assert text.index('id="source"') < text.index('class="pagenav"')
+
+
+def test_the_tokenizer_never_changes_the_text():
+    samples = ['@deco.x\ndef f(a=r"x\\"y", b=\'\'\'q\n\'\'\'):  # hi <b>&\n    return a @ b\n',
+               'x = "unterminated\ny = \'\'\'never closed', '']
+    for tool in catalog()['tools']:
+        samples.extend(ext_text(f) for f in tool['files'] if f.endswith('.py'))
+    for src in samples:
+        out = bs.highlight_python(src)
+        assert strip_tags(out) == bs.esc_code(src)
+        assert set(re.findall(r'<span class="(\w+)">', out)) <= {'k', 's', 'c', 'd'}
+    out = bs.highlight_python('@property\ndef x(self):  # c\n    return "s"\n')
+    for want in ('<span class="d">@property</span>', '<span class="k">def</span>',
+                 '<span class="c"># c</span>', '<span class="s">"s"</span>'):
+        assert want in out, want
+
+
+def test_python_blocks_are_coloured_and_others_are_plain():
+    text = pages()[bs.slug_of(SAMPLES[2]) + '.html']
+    for lang, body in CODE.findall(text):
+        assert lang in ('python', 'xml', 'yaml')
+        if lang != 'python':
+            assert '<span' not in body
+
+
+def test_every_github_link_names_a_real_file():
+    root = _compat.ROOT
+    seen = 0
+    for rel, text in pages().items():
+        for _url, path in BLOB.findall(text):
+            path = unquote(path)
+            assert os.path.isfile(os.path.join(root, path.replace('/', os.sep))), (rel, path)
+            seen += 1
+    assert seen >= 3 * len(catalog()['tools'])
+
+
+def test_library_modules_are_the_imported_ones_with_their_docstrings():
+    c = catalog()
+    tool = [t for t in c['tools'] if t['id'] == SAMPLES[2]][0]
+    text = pages()[bs.slug_of(tool['id']) + '.html']
+    names = set()
+    for f in tool['files']:
+        if f.endswith('.py'):
+            names.update(bs.namo_imports(ext_text(f), f))
+    assert names
+    for name in names:
+        rel = 'lib/namo/%s.py' % name
+        assert 'href="%s"' % bs.blob_url(c, rel) in text
+        assert '<code>namo.%s</code>' % name in text
+        assert bs.esc(bs.doc_summary(ext_text(rel))) in text
+    assert bs.namo_imports('from namo import a, b as c\nimport namo.d\nfrom namo.e import f\n'
+                           'import os\nfrom namox import g\n', 'x') == ['a', 'b', 'd', 'e']
+
+
+def test_every_tool_page_declares_software_source_code():
+    for tool in catalog()['tools']:
+        text = pages()[bs.slug_of(tool['id']) + '.html']
+        found = re.findall(r'<script type="application/ld\+json">(.*?)</script>', text, re.S)
+        assert len(found) == 1
+        data = json.loads(found[0])
+        assert data['@type'] == 'SoftwareSourceCode'
+        assert data['name'] == tool['title'] and data['description'] == tool['summary']
+        assert data['programmingLanguage'] == 'Python'
+        assert data['codeRepository'] == catalog()['repo']
+        assert 'Apache-2.0' in data['license'] or 'LICENSE-2.0' in data['license']
+        assert data['url'] == bs.SITE_URL + bs.slug_of(tool['id']) + '.html'
+
+
+def test_the_sidebar_links_the_pynavis_family():
+    text = pages()['index.html']
+    order = [text.index('href="%s"' % u) for u in (
+        'https://pynavis.com/', 'https://docs.pynavis.com/', 'https://tools.pynavis.com/',
+        catalog()['repo'])]
+    assert order == sorted(order)

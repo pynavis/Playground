@@ -6,6 +6,7 @@
 <title>KPI Export - pyNavis Playground</title>
 <meta name="description" content="Exports issues, comments, clash results, clash tests and clash history as CSV and JSON tables for Power BI, with a README describing every column. Shift+Click to set a fixed folder for scheduled refreshes.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "KPI Export", "description": "Exports issues, comments, clash results, clash tests and clash history as CSV and JSON tables for Power BI, with a README describing every column. Shift+Click to set a fixed folder for scheduled refreshes.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/coordinate-issues-kpi-export.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,108 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. KPI Export is on the Coordinate tab, Issues panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20KPI%20Export&amp;tool=Coordinate.tab%2FIssues.panel%2FKPI_Export.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Issues.panel/KPI_Export.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Issues.panel/KPI_Export.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Exports the issue and clash KPI tables (CSV and JSON) for Power BI into a folder."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> issuestore, progress, rep_kpi_export, reports, ui
+
+DEFAULTS = dict(rep_kpi_export.default_config(), fixed_folder=<span class="s">''</span>, last_folder=<span class="s">''</span>)
+
+
+<span class="k">def</span> run():
+    me = script.bind()
+    values = me.get_config(dict(DEFAULTS))
+    doc = issuestore.active_doc()
+    store = issuestore.for_doc(doc) <span class="k">if</span> doc <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">else</span> <span class="k">None</span>
+    <span class="k">if</span> store <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> <span class="k">not</span> store.saved:
+        toast.info(<span class="s">'Save the model first'</span>, <span class="s">'The export is keyed by the model file; save it, then export.'</span>)
+        <span class="k">return</span>
+    folder = str(values.get(<span class="s">'fixed_folder'</span>) <span class="k">or</span> <span class="s">''</span>).strip()
+    <span class="k">if</span> <span class="k">not</span> folder:
+        start = values.get(<span class="s">'last_folder'</span>) <span class="k">or</span> os.path.dirname(store.doc_path)
+        folder = forms.pick_folder(<span class="s">'Folder for the KPI tables'</span>, start <span class="k">if</span> os.path.isdir(start) <span class="k">else</span> <span class="k">None</span>)
+        <span class="k">if</span> folder <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+        values[<span class="s">'last_folder'</span>] = folder
+        me.save_config(values)
+    config = dict(values)
+    config[<span class="s">'folder'</span>] = folder
+    result = progress.run(<span class="s">'KPI export'</span>, <span class="k">lambda</span> report: reports.run(
+        <span class="s">'kpi_export'</span>, config, doc=doc, interactive=<span class="k">True</span>, progress=report))
+    <span class="k">if</span> result <span class="k">is</span> progress.CANCELLED <span class="k">or</span> result.get(<span class="s">'cancelled'</span>):
+        <span class="k">return</span>
+    toast.show(result[<span class="s">'level'</span>], result[<span class="s">'message'</span>], result[<span class="s">'detail'</span>])
+    <span class="k">if</span> result[<span class="s">'level'</span>] <span class="k">in</span> (<span class="s">'success'</span>, <span class="s">'warning'</span>) <span class="k">and</span> result[<span class="s">'paths'</span>]:
+        <span class="k">try</span>:
+            ui.show_in_explorer(result[<span class="s">'paths'</span>][0])
+        <span class="k">except</span> Exception:
+            <span class="k">pass</span>
+
+
+run()
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Issues.panel/KPI_Export.pushbutton/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Issues.panel/KPI_Export.pushbutton/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Options for KPI Export: a fixed folder for scheduled refreshes, the tables and formats."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> rep_kpi_export, ui
+
+DEFAULTS = dict(rep_kpi_export.default_config(), fixed_folder=<span class="s">''</span>, last_folder=<span class="s">''</span>)
+
+values = script.get_config(dict(DEFAULTS))
+fields = [
+    {<span class="s">'kind'</span>: <span class="s">'folder'</span>, <span class="s">'key'</span>: <span class="s">'fixed_folder'</span>, <span class="s">'label'</span>: <span class="s">'Always export to'</span>,
+     <span class="s">'default'</span>: values.get(<span class="s">'fixed_folder'</span>) <span class="k">or</span> <span class="s">''</span>,
+     <span class="s">'hint'</span>: <span class="s">'Blank: ask for a folder each time. Point Power BI at this folder for scheduled refresh.'</span>},
+    {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'name_template'</span>, <span class="s">'label'</span>: <span class="s">'Subfolder'</span>,
+     <span class="s">'default'</span>: values.get(<span class="s">'name_template'</span>) <span class="k">or</span> <span class="s">''</span>,
+     <span class="s">'hint'</span>: <span class="s">'{file} KPI keeps one subfolder per model; blank writes straight into the folder.'</span>},
+    {<span class="s">'kind'</span>: <span class="s">'multi'</span>, <span class="s">'key'</span>: <span class="s">'tables'</span>, <span class="s">'label'</span>: <span class="s">'Tables'</span>,
+     <span class="s">'options'</span>: [(name.replace(<span class="s">'_'</span>, <span class="s">' '</span>).capitalize(), name) <span class="k">for</span> name <span class="k">in</span> rep_kpi_export.TABLE_NAMES],
+     <span class="s">'default'</span>: values.get(<span class="s">'tables'</span>) <span class="k">or</span> list(rep_kpi_export.TABLE_NAMES)},
+    {<span class="s">'kind'</span>: <span class="s">'multi'</span>, <span class="s">'key'</span>: <span class="s">'formats'</span>, <span class="s">'label'</span>: <span class="s">'Formats'</span>,
+     <span class="s">'options'</span>: [(<span class="s">'CSV (UTF-8 with BOM)'</span>, <span class="s">'csv'</span>), (<span class="s">'JSON'</span>, <span class="s">'json'</span>)],
+     <span class="s">'default'</span>: values.get(<span class="s">'formats'</span>) <span class="k">or</span> [<span class="s">'csv'</span>, <span class="s">'json'</span>]},
+    {<span class="s">'kind'</span>: <span class="s">'int'</span>, <span class="s">'key'</span>: <span class="s">'max_clash_rows'</span>, <span class="s">'label'</span>: <span class="s">'Clash results, at most'</span>, <span class="s">'min'</span>: 1000,
+     <span class="s">'max'</span>: 5000000, <span class="s">'default'</span>: values.get(<span class="s">'max_clash_rows'</span>)},
+]
+
+
+<span class="k">def</span> check(answers):
+    <span class="k">if</span> <span class="k">not</span> answers[<span class="s">'tables'</span>]:
+        <span class="k">return</span> {<span class="s">'tables'</span>: <span class="s">'Tick at least one table.'</span>}
+    <span class="k">if</span> <span class="k">not</span> answers[<span class="s">'formats'</span>]:
+        <span class="k">return</span> {<span class="s">'formats'</span>: <span class="s">'Tick at least one format.'</span>}
+    <span class="k">return</span> <span class="k">None</span>
+
+
+answers = ui.form(<span class="s">'KPI Export options'</span>, fields, ok=<span class="s">'Save'</span>, width=540, validate=check)
+<span class="k">if</span> answers <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+    values.update(answers)
+    script.save_config(values)
+    where = values[<span class="s">'fixed_folder'</span>] <span class="k">or</span> <span class="s">'a folder you choose each time'</span>
+    toast.success(<span class="s">'Saved KPI Export options'</span>, <span class="s">'Tables go to %s.'</span> % where)
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/issuestore.py" rel="noopener"><code>namo.issuestore</code></a><span class="mod-doc">Where Playground issues live: one record per issue, per model file, in the data mode namo.config chooses, plus the session events every issue view listens to.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/rep_kpi_export.py" rel="noopener"><code>namo.rep_kpi_export</code></a><span class="mod-doc">KPI Export: flat tables for Power BI (or any BI tool) from the issue register and Clash Detective, written as CSV (UTF-8 with BOM, which Excel and Power BI read without asking) and JSON into one folder, with a README.txt describing every column.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/reports.py" rel="noopener"><code>namo.reports</code></a><span class="mod-doc">The registry of automation-ready reports, and the helpers every report shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Issues.panel/KPI_Export.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Issues.panel/KPI_Export.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: KPI\nExport
+tooltip: Exports issues, comments, clash results, clash tests and clash history as CSV and JSON tables for Power BI, with a README describing every column. Shift+Click to set a fixed folder for scheduled refreshes.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="coordinate-issues-coordination-report.html"><span class="dir">Previous</span><span class="ttl">Coordination Report</span></a>
 <a class="next" href="coordinate-bcf-bcf-export.html"><span class="dir">Next</span><span class="ttl">BCF Export</span></a>

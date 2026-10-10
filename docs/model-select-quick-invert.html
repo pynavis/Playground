@@ -6,6 +6,7 @@
 <title>Invert - pyNavis Playground</title>
 <meta name="description" content="Selects everything the current selection leaves out, leaving hidden items out. With nothing selected it selects everything visible. Shift+Click for settings.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Invert", "description": "Selects everything the current selection leaves out, leaving hidden items out. With nothing selected it selects everything visible. Shift+Click for settings.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-select-quick-invert.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -227,6 +231,62 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Invert is on the Model tab, Select panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Invert&amp;tool=Model.tab%2FSelect.panel%2FQuick.stack%2FInvert.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Select.panel/Quick.stack/Invert.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Select.panel/Quick.stack/Invert.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Selects everything the current selection leaves out, leaving hidden items out."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> items, selecttools
+
+cfg = script.get_config(selecttools.INVERT_DEFAULTS)
+had_selection = bool(items.selected())
+kept, note = selecttools.invert(include_hidden=cfg[<span class="s">'include_hidden'</span>])
+
+<span class="k">if</span> <span class="k">not</span> kept:
+    <span class="k">if</span> had_selection:
+        toast.info(<span class="s">'Nothing left to select'</span>, <span class="s">'Everything visible is already selected.'</span>)
+    <span class="k">else</span>:
+        toast.info(<span class="s">'Nothing to select'</span>, <span class="s">'The model has no visible items.'</span>)
+<span class="k">else</span>:
+    items.select(kept)
+    message = <span class="s">'Inverted the selection'</span> <span class="k">if</span> had_selection <span class="k">else</span> <span class="s">'Selected everything visible'</span>
+    detail = <span class="s">'%s %s in the selection tree; hidden items %s.'</span> % (
+        <span class="s">'{:,}'</span>.format(len(kept)), <span class="s">'item'</span> <span class="k">if</span> len(kept) == 1 <span class="k">else</span> <span class="s">'items'</span>,
+        <span class="s">'included'</span> <span class="k">if</span> cfg[<span class="s">'include_hidden'</span>] <span class="k">else</span> <span class="s">'left out'</span>)
+    <span class="k">if</span> note:
+        toast.warning(message, <span class="s">'%s %s'</span> % (detail, note))
+    <span class="k">else</span>:
+        toast.success(message, detail)
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Select.panel/Quick.stack/Invert.pushbutton/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Select.panel/Quick.stack/Invert.pushbutton/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Options for Invert: leave hidden items out of the inverted selection, or include them."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> selecttools
+
+cfg = script.get_config(selecttools.INVERT_DEFAULTS)
+current = <span class="s">'Include hidden items'</span> <span class="k">if</span> cfg[<span class="s">'include_hidden'</span>] <span class="k">else</span> <span class="s">'Leave hidden items out'</span>
+choice = forms.ask_options(<span class="s">'When inverting the selection (now: %s):'</span> % current.lower(),
+                           [<span class="s">'Leave hidden items out'</span>, <span class="s">'Include hidden items'</span>], title=<span class="s">'Invert'</span>)
+<span class="k">if</span> choice <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+    cfg[<span class="s">'include_hidden'</span>] = choice == <span class="s">'Include hidden items'</span>
+    script.save_config(cfg)
+    toast.success(<span class="s">'Saved'</span>, <span class="s">'Invert now %s.'</span> % (<span class="s">'includes hidden items'</span> <span class="k">if</span> cfg[<span class="s">'include_hidden'</span>]
+                                               <span class="k">else</span> <span class="s">'leaves hidden items out'</span>))
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/selecttools.py" rel="noopener"><code>namo.selecttools</code></a><span class="mod-doc">Select panel logic: Select Similar, Filter Selection, Invert, Select by File, Save as Set.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Select.panel/Quick.stack/Invert.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Select.panel/Quick.stack/Invert.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Invert
+tooltip: Selects everything the current selection leaves out, leaving hidden items out. With nothing selected it selects everything visible. Shift+Click for settings.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="model-select-filter-selection.html"><span class="dir">Previous</span><span class="ttl">Filter Selection</span></a>
 <a class="next" href="model-select-quick-select-by-file.html"><span class="dir">Next</span><span class="ttl">Select by File</span></a>

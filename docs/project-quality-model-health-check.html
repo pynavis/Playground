@@ -6,6 +6,7 @@
 <title>Health Check - pyNavis Playground</title>
 <meta name="description" content="Scores every appended model from 0 to 100 on units, distance from the origin, far-away objects, element IDs, duplicate appends, transforms and file age, with an HTML and Excel report. Shift+Click to set the thresholds and report formats.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Health Check", "description": "Scores every appended model from 0 to 100 on units, distance from the origin, far-away objects, element IDs, duplicate appends, transforms and file age, with an HTML and Excel report. Shift+Click to set the thresholds and report formats.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/project-quality-model-health-check.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -220,6 +224,139 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Health Check is on the Project tab, Quality panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Health%20Check&amp;tool=Project.tab%2FQuality.panel%2FModel_Health_Check.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Quality.panel/Model_Health_Check.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Quality.panel/Model_Health_Check.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Scores every appended model for units, origin distance, stray objects, element IDs, duplicates, transforms and file age."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> pynavis <span class="k">import</span> doc <span class="k">as</span> nwdoc
+<span class="k">from</span> pynavis <span class="k">import</span> output, script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> health, mdl_output, progress, reports, rep_health_check, ui
+
+
+<span class="k">def</span> report_config(values, document):
+    <span class="s">"""The report config from this button's settings: the document's folder when it
+    is saved and no folder was chosen."""</span>
+    config = rep_health_check.default_config()
+    config.update(health.settings(values))
+    <span class="k">if</span> <span class="k">not</span> config.get(<span class="s">'folder'</span>):
+        filename = nwdoc.get_filename(document) <span class="k">or</span> <span class="s">''</span>
+        <span class="k">if</span> filename <span class="k">and</span> os.path.isdir(os.path.dirname(filename)):
+            config[<span class="s">'folder'</span>] = os.path.dirname(filename)
+    <span class="k">return</span> config
+
+
+<span class="k">def</span> link_for(model, outlier_items):
+    found = outlier_items.get(model[<span class="s">'index'</span>]) <span class="k">or</span> []
+    outliers = model.get(<span class="s">'outliers'</span>) <span class="k">or</span> []
+
+    <span class="k">def</span> link(i):
+        <span class="k">if</span> i &lt; len(found) <span class="k">and</span> i &lt; len(outliers):
+            <span class="k">return</span> output.element_link(found[i], outliers[i].get(<span class="s">'name'</span>) <span class="k">or</span> <span class="s">'Object'</span>)
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">return</span> link
+
+
+<span class="k">def</span> run():
+    document = nwdoc.get_doc()
+    values = health.settings(script.get_config(health.DEFAULTS))
+    config = report_config(values, document)
+    result = progress.run(<span class="s">'Health check'</span>, <span class="k">lambda</span> report: reports.run(
+        <span class="s">'health_check'</span>, config, doc=document, interactive=<span class="k">True</span>, progress=report))
+    <span class="k">if</span> result <span class="k">is</span> progress.CANCELLED <span class="k">or</span> result.get(<span class="s">'cancelled'</span>):
+        <span class="k">return</span>
+    models = result.get(<span class="s">'models'</span>) <span class="k">or</span> []
+    <span class="k">if</span> <span class="k">not</span> models:
+        toast.show(result[<span class="s">'level'</span>], result[<span class="s">'message'</span>], result[<span class="s">'detail'</span>] <span class="k">or</span> <span class="k">None</span>)
+        <span class="k">return</span>
+    outlier_items = result.get(<span class="s">'outlier_items'</span>) <span class="k">or</span> {}
+    output.set_title(<span class="s">'Model health check'</span>)
+    output.print_html(mdl_output.heading(<span class="s">'Model health check'</span>, 1) + health.overview_html(models))
+    ordered = sorted(models, key=<span class="k">lambda</span> m: (m[<span class="s">'score'</span>], m[<span class="s">'index'</span>]))
+    <span class="k">for</span> model <span class="k">in</span> ordered:
+        output.print_html(health.card_html(model, link_for(model, outlier_items)))
+    paths = result.get(<span class="s">'paths'</span>) <span class="k">or</span> []
+    <span class="k">for</span> path <span class="k">in</span> paths:
+        output.print_html(mdl_output.path_line(<span class="s">'Saved:'</span>, path))
+    <span class="k">if</span> result[<span class="s">'level'</span>] == <span class="s">'error'</span>:
+        toast.error(result[<span class="s">'message'</span>], result[<span class="s">'detail'</span>] <span class="k">or</span> <span class="k">None</span>)
+        <span class="k">return</span>
+    level, message, detail = health.summary(models)
+    toast.show(level, message, detail)
+    html = [p <span class="k">for</span> p <span class="k">in</span> paths <span class="k">if</span> p.lower().endswith(<span class="s">'.html'</span>)]
+    <span class="k">if</span> values[<span class="s">'open_report'</span>] <span class="k">and</span> html:
+        ui.open_path(html[0])
+
+
+run()
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Quality.panel/Model_Health_Check.pushbutton/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Quality.panel/Model_Health_Check.pushbutton/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Settings for Model Health Check: thresholds, report formats and where the reports go."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> health, ui
+
+
+<span class="k">def</span> run():
+    values = health.settings(script.get_config(health.DEFAULTS))
+    fields = [
+        {<span class="s">'kind'</span>: <span class="s">'label'</span>, <span class="s">'text'</span>: <span class="s">'Distance of a model centre from 0,0,0'</span>, <span class="s">'muted'</span>: <span class="k">True</span>},
+        {<span class="s">'kind'</span>: <span class="s">'number'</span>, <span class="s">'key'</span>: <span class="s">'warn_km'</span>, <span class="s">'label'</span>: <span class="s">'Warn beyond'</span>, <span class="s">'default'</span>: values[<span class="s">'warn_km'</span>],
+         <span class="s">'min'</span>: 0.001, <span class="s">'suffix'</span>: <span class="s">'km'</span>, <span class="s">'required'</span>: <span class="k">True</span>},
+        {<span class="s">'kind'</span>: <span class="s">'number'</span>, <span class="s">'key'</span>: <span class="s">'fail_km'</span>, <span class="s">'label'</span>: <span class="s">'Fail beyond'</span>, <span class="s">'default'</span>: values[<span class="s">'fail_km'</span>],
+         <span class="s">'min'</span>: 0.001, <span class="s">'suffix'</span>: <span class="s">'km'</span>, <span class="s">'required'</span>: <span class="k">True</span>},
+        {<span class="s">'kind'</span>: <span class="s">'number'</span>, <span class="s">'key'</span>: <span class="s">'outlier_factor'</span>, <span class="s">'label'</span>: <span class="s">'Far-away object'</span>, <span class="s">'default'</span>: values[<span class="s">'outlier_factor'</span>],
+         <span class="s">'min'</span>: 2, <span class="s">'max'</span>: 1000, <span class="s">'suffix'</span>: <span class="s">'x typical distance'</span>, <span class="s">'required'</span>: <span class="k">True</span>,
+         <span class="s">'hint'</span>: <span class="s">'An object farther than this many times the typical object distance from the model centre.'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'int'</span>, <span class="s">'key'</span>: <span class="s">'age_days'</span>, <span class="s">'label'</span>: <span class="s">'Old file after'</span>, <span class="s">'default'</span>: values[<span class="s">'age_days'</span>],
+         <span class="s">'min'</span>: 1, <span class="s">'max'</span>: 3650, <span class="s">'suffix'</span>: <span class="s">'days'</span>, <span class="s">'required'</span>: <span class="k">True</span>},
+        {<span class="s">'kind'</span>: <span class="s">'int'</span>, <span class="s">'key'</span>: <span class="s">'item_budget'</span>, <span class="s">'label'</span>: <span class="s">'Items read per model'</span>, <span class="s">'default'</span>: values[<span class="s">'item_budget'</span>],
+         <span class="s">'min'</span>: 10000, <span class="s">'max'</span>: 20000000, <span class="s">'required'</span>: <span class="k">True</span>,
+         <span class="s">'hint'</span>: <span class="s">'Counting stops here on very large models, and the report says so.'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'separator'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'multi'</span>, <span class="s">'key'</span>: <span class="s">'formats'</span>, <span class="s">'label'</span>: <span class="s">'Reports'</span>,
+         <span class="s">'options'</span>: [(<span class="s">'HTML report'</span>, <span class="s">'html'</span>), (<span class="s">'Excel workbook'</span>, <span class="s">'xlsx'</span>)], <span class="s">'default'</span>: values[<span class="s">'formats'</span>]},
+        {<span class="s">'kind'</span>: <span class="s">'folder'</span>, <span class="s">'key'</span>: <span class="s">'folder'</span>, <span class="s">'label'</span>: <span class="s">'Save reports in'</span>, <span class="s">'default'</span>: values[<span class="s">'folder'</span>],
+         <span class="s">'hint'</span>: <span class="s">'Blank: the document\'s folder, or Playground\'s reports folder for an unsaved document.'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'open_report'</span>, <span class="s">'label'</span>: <span class="s">'Open the HTML report when done'</span>,
+         <span class="s">'default'</span>: values[<span class="s">'open_report'</span>]},
+    ]
+
+    <span class="k">def</span> check(answer):
+        <span class="k">if</span> answer.get(<span class="s">'warn_km'</span>) <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> answer.get(<span class="s">'fail_km'</span>) <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> \
+                <span class="k">and</span> answer[<span class="s">'fail_km'</span>] &lt; answer[<span class="s">'warn_km'</span>]:
+            <span class="k">return</span> {<span class="s">'fail_km'</span>: <span class="s">'Fail must be at least the warning distance.'</span>}
+        <span class="k">return</span> <span class="k">None</span>
+
+    answer = ui.form(<span class="s">'Health check settings'</span>, fields, validate=check)
+    <span class="k">if</span> answer <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    saved = health.settings(answer)
+    script.save_config(saved)
+    toast.success(<span class="s">'Health check settings saved'</span>,
+                  <span class="s">'Warn at %s km, fail at %s km.'</span> % (health.num_text(saved[<span class="s">'warn_km'</span>]), health.num_text(saved[<span class="s">'fail_km'</span>])))
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/health.py" rel="noopener"><code>namo.health</code></a><span class="mod-doc">Model Health Check: a scorecard per appended model.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/mdl_output.py" rel="noopener"><code>namo.mdl_output</code></a><span class="mod-doc">Output-window HTML for the Models, Quality and Publish tools (pure string building).</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/rep_health_check.py" rel="noopener"><code>namo.rep_health_check</code></a><span class="mod-doc">Model Health Check: a scorecard per appended model, as an HTML report and a workbook.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/reports.py" rel="noopener"><code>namo.reports</code></a><span class="mod-doc">The registry of automation-ready reports, and the helpers every report shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Quality.panel/Model_Health_Check.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Quality.panel/Model_Health_Check.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Health\nCheck
+tooltip: Scores every appended model from 0 to 100 on units, distance from the origin, far-away objects, element IDs, duplicate appends, transforms and file age, with an HTML and Excel report. Shift+Click to set the thresholds and report formats.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="project-models-stale-file-alert.html"><span class="dir">Previous</span><span class="ttl">Stale Files</span></a>
 <a class="next" href="project-quality-duplicate-finder.html"><span class="dir">Next</span><span class="ttl">Duplicate Finder</span></a>

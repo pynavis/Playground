@@ -6,6 +6,7 @@
 <title>Batch Sets - pyNavis Playground</title>
 <meta name="description" content="Creates one search set per value of a property, such as one set per level, named and foldered from templates. One undo step.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Batch Sets", "description": "Creates one search set per value of a property, such as one set per level, named and foldered from templates. One undo step.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-find-batch-sets.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,135 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Batch Sets is on the Model tab, Find panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Batch%20Sets&amp;tool=Model.tab%2FFind.panel%2FBatch_Sets.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Find.panel/Batch_Sets.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Find.panel/Batch_Sets.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Creates one search set per value of a property, named and foldered from templates."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+<span class="k">from</span> pynavis._api <span class="k">import</span> Application
+
+<span class="k">from</span> namo <span class="k">import</span> find_batch, find_query, find_sets, items, progress, ui
+
+cfg = script.get_config(find_batch.DEFAULTS)
+document = Application.ActiveDocument
+
+
+<span class="k">def</span> pick_property(selected):
+    <span class="k">if</span> selected:
+        sample = items.dedupe([items.object_of(i) <span class="k">for</span> i <span class="k">in</span> selected[:find_batch.SAMPLE_SIZE]])
+        where = <span class="s">'the selected elements'</span>
+    <span class="k">else</span>:
+        sample = find_query.sample_objects(items.roots(document), find_batch.SAMPLE_SIZE)
+        where = <span class="s">'%d elements sampled across the model'</span> % len(sample)
+    rows = [{<span class="s">'value'</span>: (c, p), <span class="s">'cells'</span>: [c, p, n]} <span class="k">for</span> c, p, n <span class="k">in</span> items.sample_properties(sample, <span class="k">None</span>)]
+    <span class="k">if</span> <span class="k">not</span> rows:
+        toast.info(<span class="s">'No properties found'</span>, <span class="s">'The model has no element properties to make sets from.'</span>)
+        <span class="k">return</span> <span class="k">None</span>
+    picked = ui.choose(<span class="s">'Batch Sets'</span>, rows, [<span class="s">'Category'</span>, <span class="s">'Property'</span>, <span class="s">'Elements carrying it'</span>],
+                       multiselect=<span class="k">False</span>, checked=[(cfg[<span class="s">'category'</span>], cfg[<span class="s">'property'</span>])],
+                       prompt=<span class="s">'Choose the property to make one search set per value of. Listed from %s.'</span>
+                              % where, width=660)
+    <span class="k">return</span> <span class="k">None</span> <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span> <span class="k">else</span> picked[0]
+
+
+<span class="k">def</span> collect_values(selected, category, prop):
+    <span class="k">if</span> selected:
+        source = forms.ask_options(<span class="s">'Collect the values of %s &gt; %s from:'</span> % (category, prop),
+                                   [<span class="s">'The selection'</span>, <span class="s">'The whole model'</span>], title=<span class="s">'Batch Sets'</span>)
+        <span class="k">if</span> source <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span> <span class="k">None</span>
+        <span class="k">if</span> source == <span class="s">'The selection'</span>:
+            elements = items.dedupe([items.object_of(i) <span class="k">for</span> i <span class="k">in</span> selected])
+            <span class="k">return</span> progress.run(<span class="s">'Collecting values'</span>, <span class="k">lambda</span> report: find_batch.collect(
+                elements, category, prop, report))
+    <span class="k">return</span> progress.run(<span class="s">'Collecting values from the whole model'</span>, <span class="k">lambda</span> report: find_batch.collect(
+        find_batch.carriers(category, prop, doc=document), category, prop, report))
+
+
+<span class="k">def</span> ask_options(category, prop, tally):
+    choices = find_batch.value_choices(tally)
+
+    <span class="k">def</span> validate(values):
+        <span class="k">try</span>:
+            find_batch.extra_conditions(values[<span class="s">'extra'</span>])
+        <span class="k">except</span> ValueError <span class="k">as</span> error:
+            <span class="k">return</span> {<span class="s">'extra'</span>: str(error)}
+        <span class="k">if</span> <span class="k">not</span> values[<span class="s">'values'</span>]:
+            <span class="k">return</span> {<span class="s">'values'</span>: <span class="s">'Tick at least one value.'</span>}
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">return</span> ui.form(<span class="s">'Batch Sets'</span>, [
+        {<span class="s">'kind'</span>: <span class="s">'label'</span>, <span class="s">'text'</span>: <span class="s">'%s &gt; %s has %d values. Each ticked value becomes a search set.'</span>
+                                  % (category, prop, len(choices))},
+        {<span class="s">'kind'</span>: <span class="s">'multi'</span>, <span class="s">'key'</span>: <span class="s">'values'</span>, <span class="s">'label'</span>: <span class="s">'Values'</span>, <span class="s">'options'</span>: choices,
+         <span class="s">'default'</span>: [v <span class="k">for</span> _l, v <span class="k">in</span> choices]},
+        {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'name_template'</span>, <span class="s">'label'</span>: <span class="s">'Set name'</span>, <span class="s">'default'</span>: cfg[<span class="s">'name_template'</span>],
+         <span class="s">'required'</span>: <span class="k">True</span>, <span class="s">'hint'</span>: <span class="s">'Tokens: {value}, {property}, {category}, {count}.'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'folder_template'</span>, <span class="s">'label'</span>: <span class="s">'Folder'</span>,
+         <span class="s">'default'</span>: cfg[<span class="s">'folder_template'</span>], <span class="s">'hint'</span>: <span class="s">'Same tokens; / makes subfolders; blank is the top level.'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'extra'</span>, <span class="s">'label'</span>: <span class="s">'Also require (optional)'</span>, <span class="s">'default'</span>: cfg[<span class="s">'extra'</span>],
+         <span class="s">'placeholder'</span>: <span class="s">'Element &gt; Category = Ducts'</span>,
+         <span class="s">'hint'</span>: <span class="s">'One condition every set adds, written as Category &gt; Property, operator, value.'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'ignore_case'</span>, <span class="s">'label'</span>: <span class="s">'Ignore case when matching text values'</span>,
+         <span class="s">'default'</span>: cfg[<span class="s">'ignore_case'</span>]},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'replace'</span>, <span class="s">'label'</span>: <span class="s">'Replace sets that already exist (otherwise skip them)'</span>,
+         <span class="s">'default'</span>: cfg[<span class="s">'replace'</span>]},
+    ], ok=<span class="s">'Create sets'</span>, validate=validate, width=520)
+
+
+<span class="k">if</span> document <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> document.Models.Count == 0:
+    toast.info(<span class="s">'Nothing to search'</span>, <span class="s">'Open or append a model first.'</span>)
+<span class="k">else</span>:
+    selected = items.selected(document)
+    picked = pick_property(selected)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        category, prop = picked
+        values = collect_values(selected, category, prop)
+        <span class="k">if</span> values <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> values <span class="k">is</span> <span class="k">not</span> progress.CANCELLED:
+            tally = find_query.tally_values(values)
+            <span class="k">if</span> <span class="k">not</span> find_batch.value_choices(tally):
+                toast.info(<span class="s">'No values to make sets from'</span>,
+                           <span class="s">'%s &gt; %s is blank or missing on every item searched.'</span> % (category, prop))
+            <span class="k">else</span>:
+                answer = ask_options(category, prop, tally)
+                <span class="k">if</span> answer <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+                    cfg.update({<span class="s">'category'</span>: category, <span class="s">'property'</span>: prop,
+                                <span class="s">'name_template'</span>: answer[<span class="s">'name_template'</span>].strip(),
+                                <span class="s">'folder_template'</span>: answer[<span class="s">'folder_template'</span>].strip(),
+                                <span class="s">'extra'</span>: answer[<span class="s">'extra'</span>].strip(), <span class="s">'replace'</span>: answer[<span class="s">'replace'</span>],
+                                <span class="s">'ignore_case'</span>: answer[<span class="s">'ignore_case'</span>]})
+                    script.save_config(cfg)
+                    existing = find_sets.existing_index(find_sets.snapshot(document))
+                    plan = find_batch.plan(category, prop, answer[<span class="s">'values'</span>], tally,
+                                           cfg[<span class="s">'name_template'</span>], cfg[<span class="s">'folder_template'</span>],
+                                           find_batch.extra_conditions(cfg[<span class="s">'extra'</span>]), existing,
+                                           cfg[<span class="s">'replace'</span>], cfg[<span class="s">'ignore_case'</span>])
+                    outcome = progress.run(<span class="s">'Creating search sets'</span>, <span class="k">lambda</span> report: find_batch.apply(
+                        plan, document, report))
+                    created, replaced, skipped, errors, stopped = outcome
+                    folder = plan[0][<span class="s">'folder'</span>] <span class="k">if</span> plan <span class="k">else</span> <span class="s">''</span>
+                    level, message, detail = find_batch.summary(created, replaced, skipped, errors, folder)
+                    <span class="k">if</span> <span class="k">not</span> stopped:
+                        toast.show(level, message, detail)
+                    <span class="k">elif</span> created <span class="k">or</span> replaced:
+                        <span class="c"># Cancel stops the batch but keeps what was written: say what exists.</span>
+                        toast.info(message, <span class="s">'Stopped after %d of %d values.'</span> % (
+                            created + replaced + skipped, len(plan)))
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/find_batch.py" rel="noopener"><code>namo.find_batch</code></a><span class="mod-doc">Batch Sets: one search set per value of a property (&#x27;By Level/Level 1&#x27;, ...).</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/find_query.py" rel="noopener"><code>namo.find_query</code></a><span class="mod-doc">Native search conditions built from property values, shared by the Select and Find tools.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/find_sets.py" rel="noopener"><code>namo.find_sets</code></a><span class="mod-doc">The saved-sets tree, shared by the Find tools: paths, lookups and creating sets.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Find.panel/Batch_Sets.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Find.panel/Batch_Sets.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Batch\nSets
+tooltip: Creates one search set per value of a property, such as one set per level, named and foldered from templates. One undo step.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="model-find-search-set-wizard.html"><span class="dir">Previous</span><span class="ttl">Search Set Wizard</span></a>
 <a class="next" href="model-find-sets-library.html"><span class="dir">Next</span><span class="ttl">Sets Library</span></a>

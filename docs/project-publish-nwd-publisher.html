@@ -6,6 +6,7 @@
 <title>NWD Publisher - pyNavis Playground</title>
 <meta name="description" content="Publishes the document as a numbered NWD with title, author and expiry, after a Preflight, and moves older versions into an Archive folder.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "NWD Publisher", "description": "Publishes the document as a numbered NWD with title, author and expiry, after a Preflight, and moves older versions into an Archive folder.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/project-publish-nwd-publisher.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -222,6 +226,164 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. NWD Publisher is on the Project tab, Publish panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20NWD%20Publisher&amp;tool=Project.tab%2FPublish.panel%2FNWD_Publisher.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Publish.panel/NWD_Publisher.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Publish.panel/NWD_Publisher.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Publishes the document as the next numbered NWD, after a Preflight, and archives older versions."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> pynavis <span class="k">import</span> doc <span class="k">as</span> navis_doc
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> config <span class="k">as</span> namo_config
+<span class="k">from</span> namo <span class="k">import</span> modelmgmt, naming, paths, preflight, progress, publish, ui
+
+LAST = <span class="s">'Last used settings'</span>
+
+
+<span class="k">def</span> choose_settings(config):
+    <span class="s">"""The settings to pre-fill: the last used ones, or a saved profile. None = cancel."""</span>
+    saved = publish.profile_names()
+    last = publish.normalize_settings(config.get(<span class="s">'last'</span>) <span class="k">or</span> {})
+    <span class="k">if</span> <span class="k">not</span> saved:
+        <span class="k">return</span> last, <span class="k">None</span>
+    options = [LAST] + saved
+    checked = config.get(<span class="s">'profile'</span>) <span class="k">if</span> config.get(<span class="s">'profile'</span>) <span class="k">in</span> saved <span class="k">else</span> LAST
+    picked = forms.select_from_list(options, title=<span class="s">'NWD Publisher'</span>,
+                                    prompt=<span class="s">'Start from which settings?'</span>, checked=[checked])
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>, <span class="k">None</span>
+    <span class="k">if</span> picked == LAST:
+        <span class="k">return</span> last, <span class="k">None</span>
+    <span class="k">return</span> (publish.load_profile(picked) <span class="k">or</span> last), picked
+
+
+<span class="k">def</span> run():
+    doc = navis_doc.get_doc()
+    doc_path = navis_doc.get_filename(doc) <span class="k">or</span> <span class="s">''</span>
+    config = script.get_config({<span class="s">'last'</span>: {}, <span class="s">'profile'</span>: <span class="s">''</span>})
+    settings, profile_name = choose_settings(config)
+    <span class="k">if</span> settings <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    values = naming.standard_values(doc)
+    folder_now = publish.target_folder(dict(settings, folder=publish.start_folder(settings, doc_path)))
+    _version, preview = publish.plan_target(settings[<span class="s">'template'</span>], values, publish.list_files(folder_now))
+    fields = publish.form_fields(settings, doc_path, preflight.profile_names(), namo_config.user_name())
+    answers = ui.form(<span class="s">'NWD Publisher'</span>, fields, ok=<span class="s">'Publish'</span>, width=560,
+                      intro=<span class="s">'Next file: %s in %s.'</span> % (preview, folder_now))
+    <span class="k">if</span> answers <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    save_as = (answers.pop(<span class="s">'save_as'</span>) <span class="k">or</span> <span class="s">''</span>).strip()
+    chosen = publish.normalize_settings(dict(settings, **answers))
+    folder = publish.target_folder(chosen)
+
+    preflight_text = <span class="s">'skipped'</span>
+    <span class="k">if</span> chosen[<span class="s">'preflight'</span>]:
+        profile = preflight.load_profile(chosen[<span class="s">'preflight_profile'</span>]) <span class="k">or</span> \
+            preflight.normalize_profile(preflight.DEFAULT_PROFILE)
+        checks = progress.run(<span class="s">'Preflight'</span>, <span class="k">lambda</span> report: preflight.run_profile(profile, doc, report),
+                              <span class="s">'Reading the models'</span>)
+        <span class="k">if</span> checks <span class="k">is</span> progress.CANCELLED:
+            <span class="k">return</span>
+        preflight_text = preflight.summary_text(checks)
+        failed = [c <span class="k">for</span> c <span class="k">in</span> checks <span class="k">if</span> c[<span class="s">'level'</span>] == <span class="s">'fail'</span>]
+        <span class="k">if</span> failed:
+            question = (<span class="s">'Preflight (%s) found %d failed check%s: %s. Publish anyway?'</span>
+                        % (profile[<span class="s">'name'</span>], len(failed), <span class="s">''</span> <span class="k">if</span> len(failed) == 1 <span class="k">else</span> <span class="s">'s'</span>,
+                           preflight.failures_text(checks)))
+            <span class="k">if</span> <span class="k">not</span> forms.confirm(question, title=<span class="s">'NWD Publisher'</span>):
+                <span class="k">return</span>
+            preflight_text += <span class="s">', published anyway'</span>
+
+    existing = publish.list_files(folder)
+    version, name = publish.plan_target(chosen[<span class="s">'template'</span>], values, existing)
+    path = os.path.join(folder, name)
+    <span class="c"># Never write over, or archive, the open document or a file a model was loaded from.</span>
+    <span class="k">try</span>:
+        model_files = [p <span class="k">for</span> info <span class="k">in</span> modelmgmt.models_info(doc) <span class="k">for</span> p <span class="k">in</span> (info[<span class="s">'file'</span>], info[<span class="s">'source'</span>])]
+    <span class="k">except</span> Exception:
+        model_files = []
+    protected = publish.protected_paths(doc_path, model_files)
+    problem = publish.target_problem(path, protected)
+    <span class="k">if</span> problem:
+        toast.error(<span class="s">'Nothing was published'</span>, problem)
+        <span class="k">return</span>
+    staying = [n <span class="k">for</span> n <span class="k">in</span> existing <span class="k">if</span> publish.is_protected(os.path.join(folder, n), protected)]
+    to_archive = 0
+    <span class="k">if</span> chosen[<span class="s">'archive'</span>]:
+        to_archive = len(publish.archive_plan(existing, chosen[<span class="s">'template'</span>], values, name, keep=staying))
+    <span class="c"># The one question before anything is written: the exact file, and what moves.</span>
+    <span class="k">if</span> <span class="k">not</span> forms.confirm(publish.confirm_text(name, folder, chosen[<span class="s">'method'</span>], to_archive,
+                                              os.path.basename(doc_path)), title=<span class="s">'NWD Publisher'</span>):
+        <span class="k">return</span>
+    <span class="k">try</span>:
+        paths.ensure_dir(folder)
+    <span class="k">except</span> Exception <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not create the folder'</span>, <span class="s">'%s: %s'</span> % (folder, error))
+        <span class="k">return</span>
+    props = dict(chosen)
+    named = dict(values, version=version)
+    props[<span class="s">'title'</span>] = naming.render(chosen[<span class="s">'title'</span>], named)[0].strip() <span class="k">or</span> os.path.splitext(name)[0]
+    props[<span class="s">'comments'</span>] = naming.render(chosen[<span class="s">'comments'</span>], named)[0]
+    props[<span class="s">'publisher'</span>] = namo_config.user_name()
+    <span class="k">try</span>:
+        publish.publish(doc, path, chosen[<span class="s">'method'</span>], props)
+    <span class="k">except</span> Exception <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not write %s'</span> % name,
+                    <span class="s">'%s. Check that %s can be written to, then try again.'</span>
+                    % (str(error) <span class="k">or</span> type(error).__name__, folder))
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> os.path.isfile(path):
+        toast.error(<span class="s">'Navisworks did not write %s'</span> % name,
+                    <span class="s">'Nothing is at %s. Check the folder can be written to.'</span> % path)
+        <span class="k">return</span>
+
+    moved, archive_failed = [], []
+    <span class="k">if</span> chosen[<span class="s">'archive'</span>]:
+        plan = publish.archive_plan(publish.list_files(folder), chosen[<span class="s">'template'</span>], values, name,
+                                    publish.list_files(os.path.join(folder, publish.ARCHIVE_FOLDER)),
+                                    keep=staying)
+        moved, archive_failed = publish.archive(folder, plan)
+
+    size = os.path.getsize(path)
+    record = publish.history_record(path, version, chosen[<span class="s">'method'</span>], size,
+                                    preflight_text, namo_config.user_name(), doc_path, len(moved))
+    history_note = publish.log_history(record, doc, doc_path)
+
+    last = dict(chosen)
+    script.save_config({<span class="s">'last'</span>: last, <span class="s">'profile'</span>: profile_name <span class="k">or</span> <span class="s">''</span>})
+    <span class="k">if</span> save_as:
+        <span class="k">try</span>:
+            publish.save_profile(save_as, chosen)
+        <span class="k">except</span> (IOError, OSError, ValueError) <span class="k">as</span> error:
+            history_note = ((history_note <span class="k">or</span> <span class="s">''</span>) + <span class="s">' The profile was not saved: %s.'</span> % error).strip()
+
+    level, message, detail = publish.toast_text(name, folder, len(moved), archive_failed,
+                                                history_note, chosen[<span class="s">'method'</span>], size)
+    toast.show(level, message, detail)
+    <span class="k">if</span> chosen[<span class="s">'open_folder'</span>]:
+        ui.show_in_explorer(path)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/config.py" rel="noopener"><code>namo.config</code></a><span class="mod-doc">Playground-wide settings: one JSON file shared by every Playground tool.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/modelmgmt.py" rel="noopener"><code>namo.modelmgmt</code></a><span class="mod-doc">Appended models: listing, identifying, file freshness, batch append and model actions.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/naming.py" rel="noopener"><code>namo.naming</code></a><span class="mod-doc">Name templates: &#x27;{test} - {n:000}&#x27;, &#x27;{date:%Y%m%d} {project}&#x27;, &#x27;{{literal braces}}&#x27;.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/paths.py" rel="noopener"><code>namo.paths</code></a><span class="mod-doc">Where Playground keeps its files, and how it writes them safely.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/preflight.py" rel="noopener"><code>namo.preflight</code></a><span class="mod-doc">Preflight: is this document ready to share? A profile of checks, each pass, warn or fail.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/publish.py" rel="noopener"><code>namo.publish</code></a><span class="mod-doc">NWD Publisher: versioned NWD files with publish properties, older versions archived.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Publish.panel/NWD_Publisher.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Publish.panel/NWD_Publisher.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: NWD\nPublisher
+tooltip: Publishes the document as a numbered NWD with title, author and expiry, after a Preflight, and moves older versions into an Archive folder.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="project-quality-session-stats.html"><span class="dir">Previous</span><span class="ttl">Session Stats</span></a>
 <a class="next" href="project-publish-model-wipe.html"><span class="dir">Next</span><span class="ttl">Model Wipe</span></a>

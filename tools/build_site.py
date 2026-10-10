@@ -4,10 +4,13 @@
     python tools/build_site.py            write docs/
     python tools/build_site.py --check    exit 1 when docs/ is stale
 
-CPython 3.11, stdlib only. The only input about tools is catalog.json (never the
-extension tree): every word on a page is either a catalog field or one of the fixed
-sentences in this file. The one thing read from the extension is each tool's icon, by the
-catalog's own `icon` path, copied beside the pages. Look and behaviour come from
+CPython 3.11, stdlib only. The input about tools is catalog.json: every word on a page is
+a catalog field, one of the fixed sentences in this file, or a file the catalog names. The
+extension tree is read only through the catalog: each tool's icon (by its `icon` path,
+copied beside the pages), and the script.py, config.py, pane.xaml and bundle.yaml in the
+tool's `files` list, shown verbatim in the page's Source section with light syntax colour
+from a small tokenizer below. The namo library modules a script imports are listed by
+name with the first paragraph of their docstring, read from lib/namo/, never inlined. Look and behaviour come from
 tools/site/ (base.css and guide.css are copies of the pyNavis sites' styles, site.js of
 their script, playground.css is this site's own).
 
@@ -23,9 +26,11 @@ Output, all generated, never hand-edited:
 
 Any other file under docs/ is stale: a write removes it, --check reports it.
 """
+import ast
 import html
 import io
 import json
+import keyword
 import os
 import re
 import sys
@@ -89,6 +94,14 @@ VIA_SENTENCE = {
                       'search engine\'s own snippet, as shown.',
 }
 EM_DASH = chr(8212)
+LICENSE_URL = 'https://www.apache.org/licenses/LICENSE-2.0'
+# The Source section: which bundle files are shown, in this order, and what each one is.
+SOURCE_FILES = (
+    ('script.py', 'python', 'The script that runs on a click.'),
+    ('config.py', 'python', 'The Shift+Click action.'),
+    ('pane.xaml', 'xml', 'The dock panel\'s content.'),
+    ('bundle.yaml', 'yaml', 'The bundle contract: the keys pyNavis reads for this tool.'),
+)
 
 
 class SiteError(Exception):
@@ -99,6 +112,11 @@ class SiteError(Exception):
 
 def esc(text):
     return html.escape(text or '', quote=True)
+
+
+def esc_code(text):
+    """Escaping for text inside <pre>: only &, < and > need it."""
+    return html.escape(text or '', quote=False)
 
 
 def slug_of(tool_id):
@@ -224,7 +242,7 @@ SHELL = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 <meta name="description" content="{description}">
-<link rel="stylesheet" href="_assets/site.css">
+<link rel="stylesheet" href="_assets/site.css">{head}
 </head>
 <body data-base="">
 <div class="layout">
@@ -244,7 +262,10 @@ SHELL = """<!doctype html>
   {sidebar}
   <div class="side-foot">
     <span>Playground {version}</span>
-    <a class="side-link" href="{repo}">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="{repo}">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -302,8 +323,8 @@ def sidebar(site, current):
     return '\n'.join(out)
 
 
-def page(site, title, description, body, current):
-    return SHELL.format(title=esc(title), description=esc(description), logo=LOGO,
+def page(site, title, description, body, current, head=''):
+    return SHELL.format(title=esc(title), description=esc(description), logo=LOGO, head=head,
                         sidebar=sidebar(site, current), body=body,
                         version=esc(site.catalog['version']), repo=esc(site.catalog['repo']))
 
@@ -508,6 +529,8 @@ def render_tool(site, index):
                 '<a class="button" href="%s" rel="noopener">Report</a></div>'
                 % esc(site.report_url(tool)))
 
+    body.append(source_section(site, tool))
+
     prev = site.tools[index - 1] if index > 0 else None
     nxt = site.tools[index + 1] if index < len(site.tools) - 1 else None
     nav = ['<div class="pagenav">']
@@ -524,7 +547,157 @@ def render_tool(site, index):
     nav.append('</div>')
     body.append('\n'.join(nav))
     return page(site, '%s - pyNavis Playground' % tool['title'], tool['summary'],
-                '\n'.join(body), tool)
+                '\n'.join(body), tool, json_ld(site, tool))
+
+
+# ---- source -------------------------------------------------------------------------------
+
+PY_KEYWORDS = frozenset(keyword.kwlist)
+PY_TOKEN = re.compile(r'''
+    (?P<c>\#[^\n]*)
+  | (?P<s>[rRbBuUfF]{0,2}(?:'\'\'(?:\\.|[\s\S])*?(?:'\'\'|\Z)
+                          |"""(?:\\.|[\s\S])*?(?:"""|\Z)
+                          |'(?:\\.|[^'\\\n])*'?
+                          |"(?:\\.|[^"\\\n])*"?))
+  | (?P<d>(?<![\w)\]}])@[A-Za-z_][\w.]*)
+  | (?P<n>[A-Za-z_]\w*)
+  | (?P<o>[^\w\#'"@]+|[\s\S])
+''', re.VERBOSE)
+PANE_SCRIPT_NOTE = 'The script that fills the panel; it receives the panel as __pane__.'
+
+
+def highlight_python(text):
+    """HTML for Python source: every character escaped once; comments, strings, decorators
+    and keywords wrapped in <span class="c|s|d|k">. Stripping the spans gives esc_code(text)."""
+    out = []
+    for match in PY_TOKEN.finditer(text):
+        kind = match.lastgroup
+        chunk = esc_code(match.group())
+        if kind == 'n':
+            kind = 'k' if match.group() in PY_KEYWORDS else None
+        elif kind == 'o':
+            kind = None
+        out.append('<span class="%s">%s</span>' % (kind, chunk) if kind else chunk)
+    return ''.join(out)
+
+
+def read_text(ext_root, rel):
+    path = os.path.join(ext_root, rel.replace('/', os.sep))
+    if not os.path.isfile(path):
+        raise SiteError('%s named by the catalog is missing' % rel)
+    with io.open(path, encoding='utf-8') as handle:
+        return handle.read()
+
+
+def namo_imports(text, rel):
+    """Sorted namo module names Python source imports: `from namo import a, b`,
+    `from namo.x import y`, `import namo.x`."""
+    try:
+        tree = ast.parse(text)
+    except SyntaxError as error:
+        raise SiteError('%s does not parse: %s' % (rel, error))
+    names = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+            parts = node.module.split('.')
+            if parts[0] != 'namo':
+                continue
+            if len(parts) > 1:
+                names.add(parts[1])
+            else:
+                names.update(alias.name for alias in node.names if alias.name != '*')
+        elif isinstance(node, ast.Import):
+            for alias in node.names:
+                parts = alias.name.split('.')
+                if parts[0] == 'namo' and len(parts) > 1:
+                    names.add(parts[1])
+    return sorted(names)
+
+
+def doc_summary(text):
+    """The first paragraph of a module docstring, on one line ('' when there is none)."""
+    doc = ast.get_docstring(ast.parse(text)) or ''
+    return ' '.join(doc.strip().split('\n\n', 1)[0].split())
+
+
+def blob_url(catalog, rel):
+    """The GitHub page of a file, rel being relative to the extension folder."""
+    return '%s/blob/main/%s/%s' % (catalog['repo'], catalog['extension'], quote(rel, safe='/'))
+
+
+def code_block(catalog, rel, lang, text):
+    body = highlight_python(text) if lang == 'python' else esc_code(text)
+    return ('<div class="code src"><div class="code-head"><span class="code-cap">'
+            '<code>%s</code> <a href="%s" rel="noopener">View on GitHub</a></span>'
+            '<button type="button" class="copy-btn">Copy</button></div>'
+            '<pre><code class="language-%s">%s</code></pre></div>'
+            % (esc(rel), esc(blob_url(catalog, rel)), lang, body))
+
+
+def source_files(tool):
+    """[(rel, name, lang, note)] for the tool's shown files, in SOURCE_FILES order."""
+    out = []
+    for name, lang, note in SOURCE_FILES:
+        rel = tool['id'] + '/' + name
+        if rel in tool['files']:
+            if name == 'script.py' and tool['kind'] == 'dockpane':
+                note = PANE_SCRIPT_NOTE
+            out.append((rel, name, lang, note))
+    return out
+
+
+def source_section(site, tool):
+    catalog = site.catalog
+    shown = source_files(tool)
+    texts = dict((rel, read_text(site.ext_root, rel)) for rel, _n, _l, _t in shown)
+    out = ['<h2 id="source">Source</h2>',
+           '<p>The tool\'s own files, word for word as published in <a href="%s">%s</a>. '
+           'Paths are relative to the <code>Playground.extension</code> folder.</p>'
+           % (esc(catalog['repo']), esc(catalog['repo'].split('github.com/', 1)[-1]))]
+    modules = set()
+    for rel, name, lang, note in shown:
+        if lang == 'python':
+            modules.update(namo_imports(texts[rel], rel))
+        if name != 'bundle.yaml':
+            out.append('<h3 id="src-%s">%s</h3><p class="src-note">%s</p>'
+                       % (anchor(name), esc(name), esc(note)))
+            out.append(code_block(catalog, rel, lang, texts[rel]))
+
+    out.append('<h3 id="src-library">Library modules this tool uses</h3>')
+    if modules:
+        out.append('<p class="src-note">From the shared <code>namo</code> library, which installs '
+                   'with every tool. Each name opens the module on GitHub.</p><ul class="modules">')
+        for module in sorted(modules):
+            rel = 'lib/namo/%s.py' % module
+            summary = doc_summary(read_text(site.ext_root, rel))
+            out.append('<li><a href="%s" rel="noopener"><code>namo.%s</code></a>%s</li>'
+                       % (esc(blob_url(catalog, rel)), esc(module),
+                          '<span class="mod-doc">%s</span>' % esc(summary) if summary else ''))
+        out.append('</ul>')
+    else:
+        out.append('<p class="src-note">None. It imports nothing from the shared '
+                   '<code>namo</code> library.</p>')
+
+    for rel, name, lang, note in shown:
+        if name == 'bundle.yaml':
+            out.append('<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">%s</p>'
+                       % esc(note))
+            out.append(code_block(catalog, rel, lang, texts[rel]))
+    return '\n'.join(out)
+
+
+def json_ld(site, tool):
+    """schema.org SoftwareSourceCode, so search engines index the page as code."""
+    data = [('@context', 'https://schema.org'),
+            ('@type', 'SoftwareSourceCode'),
+            ('name', tool['title']),
+            ('description', tool['summary']),
+            ('programmingLanguage', 'Python'),
+            ('codeRepository', site.catalog['repo']),
+            ('license', LICENSE_URL),
+            ('url', SITE_URL + site.url(tool))]
+    text = json.dumps(dict(data), ensure_ascii=True).replace('</', '<\\/')
+    return '\n<script type="application/ld+json">%s</script>' % text
 
 
 # ---- search index and assets --------------------------------------------------------------
@@ -554,6 +727,7 @@ def build(catalog, ext_root=None):
     """{path under docs/ (forward slashes): str for text, bytes for icons}."""
     site = Site(catalog)
     ext_root = ext_root or os.path.join(ROOT, catalog['extension'])
+    site.ext_root = ext_root
     out = {'.nojekyll': '', '_headers': HEADERS, 'index.html': render_index(site)}
     for index, tool in enumerate(site.tools):
         out[site.url(tool)] = render_tool(site, index)

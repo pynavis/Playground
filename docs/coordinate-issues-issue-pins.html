@@ -6,6 +6,7 @@
 <title>Issue Pins - pyNavis Playground</title>
 <meta name="description" content="Shows every open issue that has a location as a pin in the view, labelled with its number, type and title. Each pin stands about a person tall, whatever the size of the model. The pins follow edits and come back when another model opens.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Issue Pins", "description": "Shows every open issue that has a location as a pin in the view, labelled with its number, type and title. Each pin stands about a person tall, whatever the size of the model. The pins follow edits and come back when another model opens.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/coordinate-issues-issue-pins.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -220,6 +224,89 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Issue Pins is on the Coordinate tab, Issues panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Issue%20Pins&amp;tool=Coordinate.tab%2FIssues.panel%2FIssue_Pins.toggle" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Issues.panel/Issue_Pins.toggle/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Issues.panel/Issue_Pins.toggle/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Shows every open issue with a location as a pin in the view, or hides the pins.
+
+On: pins are drawn with pynavis.overlay (one item per issue, tagged
+'playground-issues:&lt;id&gt;'), each a real 1.2 m tall whatever the model's units; a session
+flag makes hk_issuepins redraw them when another document opens, and an issue listener
+redraws them after any edit made in this session. Off: every issue pin in the view is
+cleared and both stop.
+
+Pins that are on, by the button or by the session flag, decide what a click does, so a
+click on Hide Pins always hides: the two can never disagree for longer than one click.
+"""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> overlay, script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> issueapi, issuestore
+
+
+<span class="k">def</span> _overlay_redraw():
+    <span class="s">"""Redraws the overlay through namo.overlayfix, so labels land on their points."""</span>
+    <span class="k">from</span> namo <span class="k">import</span> overlayfix
+    <span class="k">return</span> overlayfix.redraw()
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> script.get_toggle_state() <span class="k">or</span> issueapi.pins_on():
+        issueapi.unwatch_pins()
+        issueapi.set_pins_on(<span class="k">False</span>)
+        issueapi.clear_pins()
+        script.set_toggle_state(<span class="k">False</span>)
+        toast.info(<span class="s">'Issue pins hidden'</span>)
+        <span class="k">return</span>
+    doc = issuestore.active_doc()
+    <span class="k">if</span> doc <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> <span class="k">not</span> issueapi.has_model(doc):
+        script.set_toggle_state(<span class="k">False</span>)
+        toast.info(<span class="s">'No model open'</span>, <span class="s">'Open the model the issues belong to, then show the pins.'</span>)
+        <span class="k">return</span>
+    store = issuestore.for_doc(doc)
+    rows = store.list()
+    <span class="k">if</span> rows:
+        count = issueapi.draw_pins(rows, doc)
+    <span class="k">else</span>:
+        count = 0
+        issueapi.clear_pins()
+    <span class="k">if</span> <span class="k">not</span> _overlay_redraw():
+        <span class="c"># Nothing can be drawn, so the button stays off rather than claim pins are showing.</span>
+        script.set_toggle_state(<span class="k">False</span>)
+        toast.error(<span class="s">'Could not show the issue pins'</span>,
+                    <span class="s">'The pyNavis view overlay is not loaded. Restart Navisworks, then try again.'</span>)
+        <span class="k">return</span>
+    issueapi.set_pins_on(<span class="k">True</span>)
+    issueapi.watch_pins()
+    script.set_toggle_state(<span class="k">True</span>)
+    <span class="k">if</span> count:
+        toast.success(<span class="s">'%s issue pin%s shown'</span> % (<span class="s">'{:,}'</span>.format(count), <span class="s">''</span> <span class="k">if</span> count == 1 <span class="k">else</span> <span class="s">'s'</span>),
+                      <span class="s">'Open and in progress issues with a location.'</span>)
+    <span class="k">elif</span> <span class="k">not</span> store.saved:
+        toast.info(<span class="s">'Issue pins are on'</span>, <span class="s">'Save the model, then raise issues: their pins appear here.'</span>)
+    <span class="k">elif</span> <span class="k">not</span> rows:
+        toast.info(<span class="s">'Issue pins are on'</span>, <span class="s">'No issues yet. Raise one with Issue Stamps and its pin '</span>
+                   <span class="s">'appears here.'</span>)
+    <span class="k">else</span>:
+        toast.info(<span class="s">'Issue pins are on'</span>, <span class="s">'No open issue has a location yet. Use Set pin in the '</span>
+                   <span class="s">'Issues panel, or Issue Stamps.'</span>)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/issueapi.py" rel="noopener"><code>namo.issueapi</code></a><span class="mod-doc">The Navisworks half of the issue tools: capture a view as issue material, go back to it, draw issue pins, pick stamp points, and find BCF components in the model.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/issuestore.py" rel="noopener"><code>namo.issuestore</code></a><span class="mod-doc">Where Playground issues live: one record per issue, per model file, in the data mode namo.config chooses, plus the session events every issue view listens to.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/overlayfix.py" rel="noopener"><code>namo.overlayfix</code></a><span class="mod-doc">Keeps pynavis.overlay labels on their points, whichever way up the view counts pixels.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Issues.panel/Issue_Pins.toggle/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Issues.panel/Issue_Pins.toggle/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Issue\nPins
+title_on: Hide\nPins
+tooltip: Shows every open issue that has a location as a pin in the view, labelled with its number, type and title. Each pin stands about a person tall, whatever the size of the model. The pins follow edits and come back when another model opens.
+tooltip_on: Takes the issue pins out of the view.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="coordinate-issues-issue-stamps-stamp-from-template.html"><span class="dir">Previous</span><span class="ttl">Stamp from Template</span></a>
 <a class="next" href="coordinate-issues-meeting-mode.html"><span class="dir">Next</span><span class="ttl">Meeting Mode</span></a>

@@ -6,6 +6,7 @@
 <title>Batch Append - pyNavis Playground</title>
 <meta name="description" content="Appends many model files at once from a folder (optionally with its subfolders) or from a manifest list (txt, csv or xlsx with optional order and trade columns), after a preview that ticks only the files not appended yet.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Batch Append", "description": "Appends many model files at once from a folder (optionally with its subfolders) or from a manifest list (txt, csv or xlsx with optional order and trade columns), after a preview that ticks only the files not appended yet.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/project-models-batch-append.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -219,6 +223,189 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Batch Append is on the Project tab, Models panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Batch%20Append&amp;tool=Project.tab%2FModels.panel%2FBatch_Append.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Models.panel/Batch_Append.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Models.panel/Batch_Append.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Appends many model files at once from a folder or a manifest, after a preview of what is new."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> namo <span class="k">import</span> hk_sessionstats, modelmgmt, progress, transforms, ui
+
+<span class="k">from</span> pynavis <span class="k">import</span> app, script, toast
+
+DEFAULTS = {<span class="s">'source'</span>: <span class="s">'folder'</span>, <span class="s">'folder'</span>: <span class="s">''</span>, <span class="s">'recursive'</span>: <span class="k">True</span>,
+            <span class="s">'types'</span>: modelmgmt.types_text(modelmgmt.DEFAULT_TYPES), <span class="s">'manifest'</span>: <span class="s">''</span>}
+
+
+<span class="k">def</span> start_folder(cfg, doc):
+    <span class="k">if</span> cfg[<span class="s">'folder'</span>] <span class="k">and</span> os.path.isdir(cfg[<span class="s">'folder'</span>]):
+        <span class="k">return</span> cfg[<span class="s">'folder'</span>]
+    name = doc.FileName <span class="k">or</span> <span class="s">''</span>
+    <span class="k">if</span> name <span class="k">and</span> os.path.isdir(os.path.dirname(name)):
+        <span class="k">return</span> os.path.dirname(name)
+    <span class="k">return</span> os.path.join(os.path.expanduser(<span class="s">'~'</span>), <span class="s">'Documents'</span>)
+
+
+<span class="k">def</span> ask(cfg, doc):
+    fields = [
+        {<span class="s">'kind'</span>: <span class="s">'radio'</span>, <span class="s">'key'</span>: <span class="s">'source'</span>, <span class="s">'label'</span>: <span class="s">'Append from'</span>, <span class="s">'default'</span>: cfg[<span class="s">'source'</span>], <span class="s">'fallback'</span>: <span class="k">None</span>,
+         <span class="s">'options'</span>: [(<span class="s">'A folder'</span>, <span class="s">'folder'</span>), (<span class="s">'A manifest file (txt, csv or xlsx)'</span>, <span class="s">'manifest'</span>)]},
+        {<span class="s">'kind'</span>: <span class="s">'folder'</span>, <span class="s">'key'</span>: <span class="s">'folder'</span>, <span class="s">'label'</span>: <span class="s">'Folder'</span>, <span class="s">'default'</span>: start_folder(cfg, doc),
+         <span class="s">'enabled_if'</span>: (<span class="s">'source'</span>, <span class="s">'folder'</span>)},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'recursive'</span>, <span class="s">'label'</span>: <span class="s">'Include subfolders'</span>, <span class="s">'default'</span>: cfg[<span class="s">'recursive'</span>],
+         <span class="s">'enabled_if'</span>: (<span class="s">'source'</span>, <span class="s">'folder'</span>)},
+        {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'types'</span>, <span class="s">'label'</span>: <span class="s">'File types'</span>, <span class="s">'default'</span>: cfg[<span class="s">'types'</span>],
+         <span class="s">'hint'</span>: <span class="s">'Extensions separated by spaces. Leave empty for every model type Navisworks reads.'</span>,
+         <span class="s">'enabled_if'</span>: (<span class="s">'source'</span>, <span class="s">'folder'</span>)},
+        {<span class="s">'kind'</span>: <span class="s">'file_open'</span>, <span class="s">'key'</span>: <span class="s">'manifest'</span>, <span class="s">'label'</span>: <span class="s">'Manifest'</span>, <span class="s">'default'</span>: cfg[<span class="s">'manifest'</span>],
+         <span class="s">'filter'</span>: <span class="s">'Manifests (*.txt;*.csv;*.xlsx)|*.txt;*.csv;*.xlsx|All files (*.*)|*.*'</span>,
+         <span class="s">'hint'</span>: <span class="s">'One file path per row; optional Order and Trade columns.'</span>,
+         <span class="s">'enabled_if'</span>: (<span class="s">'source'</span>, <span class="s">'manifest'</span>)},
+    ]
+
+    <span class="k">def</span> check(values):
+        <span class="k">if</span> values[<span class="s">'source'</span>] == <span class="s">'folder'</span> <span class="k">and</span> <span class="k">not</span> values[<span class="s">'folder'</span>]:
+            <span class="k">return</span> {<span class="s">'folder'</span>: <span class="s">'Choose the folder to append from.'</span>}
+        <span class="k">if</span> values[<span class="s">'source'</span>] == <span class="s">'manifest'</span> <span class="k">and</span> <span class="k">not</span> values[<span class="s">'manifest'</span>]:
+            <span class="k">return</span> {<span class="s">'manifest'</span>: <span class="s">'Choose the manifest file.'</span>}
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">return</span> ui.form(<span class="s">'Batch Append'</span>, fields, ok=<span class="s">'Preview'</span>, validate=check, width=520)
+
+
+<span class="k">def</span> candidates(answer):
+    <span class="s">"""(candidate dicts, note or problem sentence, whether a trade column is worth showing)."""</span>
+    <span class="k">if</span> answer[<span class="s">'source'</span>] == <span class="s">'folder'</span>:
+        types = modelmgmt.parse_types(answer[<span class="s">'types'</span>])
+        files, cut = modelmgmt.scan_folder(answer[<span class="s">'folder'</span>], types, answer[<span class="s">'recursive'</span>])
+        <span class="k">if</span> <span class="k">not</span> files:
+            <span class="k">return</span> [], <span class="s">'Nothing matching %s in %s.'</span> % (<span class="s">' '</span>.join(types[:8]), answer[<span class="s">'folder'</span>]), <span class="k">False</span>
+        <span class="k">for</span> f <span class="k">in</span> files:
+            f[<span class="s">'shown_folder'</span>] = os.path.dirname(f[<span class="s">'relative'</span>])
+            f[<span class="s">'trade'</span>] = <span class="s">''</span>
+        note = (<span class="s">'Showing the first {:,} files.'</span>.format(len(files))) <span class="k">if</span> cut <span class="k">else</span> <span class="k">None</span>
+        <span class="k">return</span> files, note, <span class="k">False</span>
+    <span class="k">try</span>:
+        entries, problems = modelmgmt.read_manifest(answer[<span class="s">'manifest'</span>])
+    <span class="k">except</span> ValueError <span class="k">as</span> error:
+        <span class="k">return</span> [], str(error), <span class="k">False</span>
+    out = []
+    <span class="k">for</span> entry <span class="k">in</span> entries:
+        path = entry[<span class="s">'path'</span>]
+        <span class="k">try</span>:
+            info = os.stat(path)
+            size, mtime, exists = info.st_size, info.st_mtime, os.path.isfile(path)
+        <span class="k">except</span> (IOError, OSError):
+            size, mtime, exists = <span class="k">None</span>, <span class="k">None</span>, <span class="k">False</span>
+        out.append({<span class="s">'path'</span>: path, <span class="s">'name'</span>: os.path.basename(path), <span class="s">'shown_folder'</span>: os.path.dirname(path),
+                    <span class="s">'ext'</span>: modelmgmt.ext_of(path), <span class="s">'size'</span>: size, <span class="s">'mtime'</span>: mtime, <span class="s">'exists'</span>: exists,
+                    <span class="s">'trade'</span>: entry.get(<span class="s">'trade'</span>) <span class="k">or</span> <span class="s">''</span>})
+    <span class="k">if</span> <span class="k">not</span> out:
+        <span class="k">return</span> [], problems[0] <span class="k">if</span> problems <span class="k">else</span> <span class="s">'The manifest lists no files.'</span>, <span class="k">False</span>
+    <span class="k">return</span> out, <span class="k">None</span>, any(c[<span class="s">'trade'</span>] <span class="k">for</span> c <span class="k">in</span> out)
+
+
+<span class="k">def</span> preview(rows, trades, note):
+    columns = [<span class="s">'File'</span>, <span class="s">'Folder'</span>, <span class="s">'Type'</span>, <span class="s">'Size, MB'</span>, <span class="s">'Modified'</span>, <span class="s">'Status'</span>] + ([<span class="s">'Trade'</span>] <span class="k">if</span> trades <span class="k">else</span> [])
+    table = []
+    <span class="k">for</span> index, row <span class="k">in</span> enumerate(rows):
+        size = round(row[<span class="s">'size'</span>] / 1048576.0, 1) <span class="k">if</span> row.get(<span class="s">'size'</span>) <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">else</span> <span class="s">''</span>
+        cells = [row[<span class="s">'name'</span>], row[<span class="s">'shown_folder'</span>], row[<span class="s">'ext'</span>].upper(), size,
+                 modelmgmt.format_time(row.get(<span class="s">'mtime'</span>)), row[<span class="s">'status'</span>]]
+        <span class="k">if</span> trades:
+            cells.append(row[<span class="s">'trade'</span>])
+        table.append({<span class="s">'value'</span>: index, <span class="s">'cells'</span>: cells})
+    new = sum(1 <span class="k">for</span> r <span class="k">in</span> rows <span class="k">if</span> r[<span class="s">'status'</span>] == <span class="s">'New'</span>)
+    done = sum(1 <span class="k">for</span> r <span class="k">in</span> rows <span class="k">if</span> r[<span class="s">'status'</span>] == <span class="s">'Appended'</span>)
+    prompt = <span class="s">'%s ticked.'</span> % modelmgmt.plural(new, <span class="s">'new file'</span>)
+    <span class="k">if</span> done:
+        prompt += <span class="s">' %s already appended.'</span> % (<span class="s">'1 file is'</span> <span class="k">if</span> done == 1 <span class="k">else</span> <span class="s">'{:,} files are'</span>.format(done))
+    <span class="k">if</span> note:
+        prompt += <span class="s">' '</span> + note
+    checked = [i <span class="k">for</span> i, r <span class="k">in</span> enumerate(rows) <span class="k">if</span> r[<span class="s">'checked'</span>]]
+    <span class="k">return</span> ui.choose(<span class="s">'Batch Append'</span>, table, columns, multiselect=<span class="k">True</span>, checked=checked,
+                     prompt=prompt, ok=<span class="s">'Append'</span>, width=860, height=600)
+
+
+<span class="k">def</span> seconds_by_key(doc, result):
+    <span class="s">"""{new model key: seconds its file took} matched by folder and file stem."""</span>
+    by_stem = {}
+    <span class="k">for</span> path, seconds <span class="k">in</span> result[<span class="s">'seconds'</span>].items():
+        by_stem[modelmgmt.stem_key(path)] = seconds
+    out = {}
+    <span class="k">for</span> info <span class="k">in</span> modelmgmt.models_info(doc):
+        <span class="k">if</span> info[<span class="s">'key'</span>] <span class="k">not</span> <span class="k">in</span> result[<span class="s">'new_keys'</span>]:
+            <span class="k">continue</span>
+        <span class="k">for</span> path <span class="k">in</span> (info[<span class="s">'file'</span>], info[<span class="s">'source'</span>]):
+            <span class="k">if</span> path <span class="k">and</span> modelmgmt.stem_key(path) <span class="k">in</span> by_stem:
+                out[info[<span class="s">'key'</span>]] = by_stem[modelmgmt.stem_key(path)]
+                <span class="k">break</span>
+    <span class="k">return</span> out
+
+
+<span class="k">def</span> took(seconds):
+    <span class="k">if</span> seconds &gt;= 60:
+        <span class="k">return</span> modelmgmt.format_age(seconds)
+    <span class="k">return</span> <span class="s">'%d s'</span> % int(round(seconds))
+
+
+<span class="k">def</span> run():
+    doc = app.get_doc()
+    cfg = script.get_config(DEFAULTS)
+    answer = ask(cfg, doc)
+    <span class="k">if</span> answer <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    cfg.update(answer)
+    script.save_config(cfg)
+    found, note, trades = candidates(answer)
+    <span class="k">if</span> <span class="k">not</span> found:
+        toast.info(<span class="s">'No model files found'</span>, note)
+        <span class="k">return</span>
+    rows = modelmgmt.plan_append(found, modelmgmt.models_info(doc) <span class="k">if</span> modelmgmt.has_models(doc) <span class="k">else</span> [])
+    picked = preview(rows, trades, note)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    paths = [rows[i][<span class="s">'path'</span>] <span class="k">for</span> i <span class="k">in</span> picked]
+    <span class="k">if</span> <span class="k">not</span> paths:
+        toast.info(<span class="s">'Nothing appended'</span>, <span class="s">'No files were ticked.'</span>)
+        <span class="k">return</span>
+    result = progress.run(<span class="s">'Batch Append'</span>, <span class="k">lambda</span> report: modelmgmt.append_files(paths, doc, report),
+                          <span class="s">'Appending'</span>)
+    <span class="k">if</span> result <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    appended, failed = result[<span class="s">'appended'</span>], result[<span class="s">'failed'</span>]
+    <span class="k">if</span> result[<span class="s">'new_keys'</span>]:
+        hk_sessionstats.record_batch(doc, seconds_by_key(doc, result))
+    presets, _preset_failures = transforms.apply_auto_presets(result[<span class="s">'new_keys'</span>], doc)
+    extra = (<span class="s">' Transform presets applied to %s.'</span> % modelmgmt.join_names(presets)) <span class="k">if</span> presets <span class="k">else</span> <span class="s">''</span>
+    <span class="k">if</span> result[<span class="s">'stopped'</span>]:
+        toast.info(<span class="s">'Appended %d of %d files'</span> % (len(appended), len(paths)), <span class="s">'Stopped before the rest.'</span> + extra)
+    <span class="k">elif</span> <span class="k">not</span> appended:
+        name, why = failed[0]
+        toast.error(<span class="s">'Could not append the files'</span>, <span class="s">'%s: %s'</span> % (os.path.basename(name), why))
+    <span class="k">elif</span> failed:
+        name, why = failed[0]
+        toast.warning(<span class="s">'Appended %s, %d failed'</span> % (modelmgmt.plural(len(appended), <span class="s">'file'</span>), len(failed)),
+                      <span class="s">'%s: %s%s'</span> % (os.path.basename(name), why, extra))
+    <span class="k">else</span>:
+        toast.success(<span class="s">'Appended %s'</span> % modelmgmt.plural(len(appended), <span class="s">'file'</span>),
+                      <span class="s">'Took %s.%s'</span> % (took(sum(result[<span class="s">'seconds'</span>].values())), extra))
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/hk_sessionstats.py" rel="noopener"><code>namo.hk_sessionstats</code></a><span class="mod-doc">Session Stats handler: stamps when the document opened and when each model arrived, so Session Stats can say how and when every model joined this session.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/modelmgmt.py" rel="noopener"><code>namo.modelmgmt</code></a><span class="mod-doc">Appended models: listing, identifying, file freshness, batch append and model actions.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/transforms.py" rel="noopener"><code>namo.transforms</code></a><span class="mod-doc">Model transforms: read, decompose, move, rotate about Z, presets per model file.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Models.panel/Batch_Append.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Models.panel/Batch_Append.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Batch\nAppend
+tooltip: Appends many model files at once from a folder (optionally with its subfolders) or from a manifest list (txt, csv or xlsx with optional order and trade columns), after a preview that ticks only the files not appended yet.
+</code></pre></div>
 <div class="pagenav">
 <a href="coordinate-bcf-bcf-import.html"><span class="dir">Previous</span><span class="ttl">BCF Import</span></a>
 <a class="next" href="project-models-source-files.html"><span class="dir">Next</span><span class="ttl">Source Files</span></a>

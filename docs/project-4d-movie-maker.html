@@ -6,6 +6,7 @@
 <title>4D Movie Maker - pyNavis Playground</title>
 <meta name="description" content="Renders a construction sequence from TimeLiner dates and task types, one stamped frame per day or week, as PNG frames, an HTML player and an MP4 when ffmpeg is installed. Visibility and colours are put back exactly afterwards, even on cancel.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "4D Movie Maker", "description": "Renders a construction sequence from TimeLiner dates and task types, one stamped frame per day or week, as PNG frames, an HTML player and an MP4 when ffmpeg is installed. Visibility and colours are put back exactly afterwards, even on cancel.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/project-4d-movie-maker.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -221,6 +225,156 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. 4D Movie Maker is on the Project tab, 4D panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%204D%20Movie%20Maker&amp;tool=Project.tab%2F4D.panel%2FMovie_Maker.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/4D.panel/Movie_Maker.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/4D.panel/Movie_Maker.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Renders a 4D construction sequence from TimeLiner dates as stamped frames, an HTML player and an MP4."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> camera, dates, fourd_common, movie, naming, paths, progress, timeliner, ui
+
+TITLE = <span class="s">'4D Movie Maker'</span>
+CURRENT = <span class="s">'@current'</span>
+DEFAULTS = {<span class="s">'basis'</span>: <span class="s">'planned'</span>, <span class="s">'step'</span>: 1, <span class="s">'unit'</span>: <span class="s">'weeks'</span>, <span class="s">'size'</span>: <span class="s">'1920 x 1080'</span>, <span class="s">'viewpoint'</span>: CURRENT,
+            <span class="s">'show_unscheduled'</span>: <span class="k">True</span>, <span class="s">'mp4'</span>: <span class="k">True</span>, <span class="s">'fps'</span>: 4, <span class="s">'folder'</span>: <span class="s">''</span>}
+
+
+<span class="k">def</span> ask(doc, rows, values):
+    first, last = timeliner.schedule_bounds(rows)
+    first_actual, last_actual = timeliner.schedule_bounds(rows, actual=<span class="k">True</span>)
+    views = [(<span class="s">'Current view'</span>, CURRENT)] + [(path_of(folder, saved), path_of(folder, saved))
+                                           <span class="k">for</span> folder, saved <span class="k">in</span> camera.saved_views(doc)]
+    view_values = [v <span class="k">for</span> _l, v <span class="k">in</span> views]
+    folder = values.get(<span class="s">'folder'</span>) <span class="k">or</span> <span class="s">''</span>
+    <span class="k">if</span> <span class="k">not</span> folder <span class="k">or</span> <span class="k">not</span> os.path.isdir(folder):
+        folder = fourd_common.doc_folder(doc)
+    start = first_actual <span class="k">if</span> values.get(<span class="s">'basis'</span>) == <span class="s">'actual'</span> <span class="k">else</span> first
+    end = last_actual <span class="k">if</span> values.get(<span class="s">'basis'</span>) == <span class="s">'actual'</span> <span class="k">else</span> last
+    fields = [
+        {<span class="s">'kind'</span>: <span class="s">'radio'</span>, <span class="s">'key'</span>: <span class="s">'basis'</span>, <span class="s">'label'</span>: <span class="s">'Dates'</span>, <span class="s">'inline'</span>: <span class="k">True</span>,
+         <span class="s">'options'</span>: [(<span class="s">'Planned'</span>, <span class="s">'planned'</span>), (<span class="s">'Actual, planned where missing'</span>, <span class="s">'actual'</span>)],
+         <span class="s">'default'</span>: values.get(<span class="s">'basis'</span>, <span class="s">'planned'</span>), <span class="s">'fallback'</span>: <span class="s">'planned'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'date'</span>, <span class="s">'key'</span>: <span class="s">'start'</span>, <span class="s">'label'</span>: <span class="s">'From'</span>, <span class="s">'default'</span>: dates.iso(start, <span class="k">True</span>), <span class="s">'required'</span>: <span class="k">True</span>},
+        {<span class="s">'kind'</span>: <span class="s">'date'</span>, <span class="s">'key'</span>: <span class="s">'end'</span>, <span class="s">'label'</span>: <span class="s">'To'</span>, <span class="s">'default'</span>: dates.iso(end, <span class="k">True</span>), <span class="s">'required'</span>: <span class="k">True</span>},
+        {<span class="s">'kind'</span>: <span class="s">'int'</span>, <span class="s">'key'</span>: <span class="s">'step'</span>, <span class="s">'label'</span>: <span class="s">'One frame every'</span>, <span class="s">'min'</span>: 1, <span class="s">'max'</span>: 365,
+         <span class="s">'default'</span>: int(values.get(<span class="s">'step'</span>) <span class="k">or</span> 1), <span class="s">'required'</span>: <span class="k">True</span>},
+        {<span class="s">'kind'</span>: <span class="s">'radio'</span>, <span class="s">'key'</span>: <span class="s">'unit'</span>, <span class="s">'label'</span>: <span class="s">'Step in'</span>, <span class="s">'inline'</span>: <span class="k">True</span>,
+         <span class="s">'options'</span>: [(<span class="s">'Days'</span>, <span class="s">'days'</span>), (<span class="s">'Weeks'</span>, <span class="s">'weeks'</span>)], <span class="s">'default'</span>: values.get(<span class="s">'unit'</span>, <span class="s">'weeks'</span>), <span class="s">'fallback'</span>: <span class="s">'weeks'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'choice'</span>, <span class="s">'key'</span>: <span class="s">'viewpoint'</span>, <span class="s">'label'</span>: <span class="s">'Camera'</span>, <span class="s">'options'</span>: views,
+         <span class="s">'default'</span>: values.get(<span class="s">'viewpoint'</span>) <span class="k">if</span> values.get(<span class="s">'viewpoint'</span>) <span class="k">in</span> view_values <span class="k">else</span> CURRENT},
+        {<span class="s">'kind'</span>: <span class="s">'choice'</span>, <span class="s">'key'</span>: <span class="s">'size'</span>, <span class="s">'label'</span>: <span class="s">'Frame size'</span>, <span class="s">'options'</span>: [l <span class="k">for</span> l, _s <span class="k">in</span> movie.SIZES],
+         <span class="s">'default'</span>: values.get(<span class="s">'size'</span>, <span class="s">'1920 x 1080'</span>), <span class="s">'fallback'</span>: <span class="s">'1920 x 1080'</span>},
+        {<span class="s">'kind'</span>: <span class="s">'int'</span>, <span class="s">'key'</span>: <span class="s">'fps'</span>, <span class="s">'label'</span>: <span class="s">'Frames per second when played'</span>, <span class="s">'min'</span>: 1, <span class="s">'max'</span>: 30,
+         <span class="s">'default'</span>: int(values.get(<span class="s">'fps'</span>) <span class="k">or</span> 4), <span class="s">'required'</span>: <span class="k">True</span>},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'show_unscheduled'</span>, <span class="s">'label'</span>: <span class="s">'Show items that are in no task'</span>,
+         <span class="s">'default'</span>: bool(values.get(<span class="s">'show_unscheduled'</span>, <span class="k">True</span>))},
+        {<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'mp4'</span>, <span class="s">'label'</span>: <span class="s">'Also make an MP4 when ffmpeg is installed'</span>,
+         <span class="s">'default'</span>: bool(values.get(<span class="s">'mp4'</span>, <span class="k">True</span>))},
+        {<span class="s">'kind'</span>: <span class="s">'folder'</span>, <span class="s">'key'</span>: <span class="s">'folder'</span>, <span class="s">'label'</span>: <span class="s">'Save in'</span>, <span class="s">'default'</span>: folder, <span class="s">'required'</span>: <span class="k">True</span>,
+         <span class="s">'hint'</span>: <span class="s">'A new folder for the frames and the player is made inside it.'</span>},
+    ]
+    attached = len([r <span class="k">for</span> r <span class="k">in</span> rows <span class="k">if</span> (r.get(<span class="s">'attach_kind'</span>) <span class="k">or</span> <span class="s">'none'</span>) != <span class="s">'none'</span>])
+    intro = <span class="s">'%s with items attached, planned from %s to %s.'</span> % (
+        fourd_common.plural(attached, <span class="s">'task'</span>), dates.format(first) <span class="k">or</span> <span class="s">'no date'</span>, dates.format(last) <span class="k">or</span> <span class="s">'no date'</span>)
+
+    <span class="k">def</span> validate(answer):
+        start_, end_ = dates.parse(answer.get(<span class="s">'start'</span>)), dates.parse(answer.get(<span class="s">'end'</span>))
+        <span class="k">if</span> start_ <span class="k">is</span> <span class="k">None</span> <span class="k">or</span> end_ <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span> {<span class="s">'end'</span>: <span class="s">'Give both dates.'</span>}
+        <span class="k">if</span> end_ &lt; start_:
+            <span class="k">return</span> {<span class="s">'end'</span>: <span class="s">'The end date is before the start date.'</span>}
+        count = movie.count_frames(start_, end_, answer.get(<span class="s">'step'</span>) <span class="k">or</span> 1, answer.get(<span class="s">'unit'</span>))
+        <span class="k">if</span> count &gt; movie.MAX_FRAMES:
+            <span class="k">return</span> {<span class="s">'step'</span>: <span class="s">'That makes %s frames; the most is %s. Use a longer step.'</span>
+                    % (<span class="s">'{:,}'</span>.format(count), <span class="s">'{:,}'</span>.format(movie.MAX_FRAMES))}
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">return</span> ui.form(TITLE, fields, intro=intro, ok=<span class="s">'Make movie'</span>, validate=validate, width=520)
+
+
+<span class="k">def</span> path_of(folder, saved):
+    name = str(saved.DisplayName <span class="k">or</span> <span class="s">''</span>)
+    <span class="k">return</span> <span class="s">'%s/%s'</span> % (folder, name) <span class="k">if</span> folder <span class="k">else</span> name
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> ui.is_runner():
+        toast.info(<span class="s">'%s needs a person at the screen'</span> % TITLE, <span class="s">'Run it from the ribbon.'</span>)
+        <span class="k">return</span>
+    doc = fourd_common.active_doc()
+    <span class="k">if</span> <span class="k">not</span> fourd_common.has_models(doc):
+        toast.info(<span class="s">'No model is open'</span>, <span class="s">'Open or append a model first.'</span>)
+        <span class="k">return</span>
+    <span class="k">try</span>:
+        rows = timeliner.snapshot(doc)
+    <span class="k">except</span> RuntimeError <span class="k">as</span> error:
+        toast.error(<span class="s">'TimeLiner is not available'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> rows:
+        toast.info(<span class="s">'No TimeLiner tasks'</span>, <span class="s">'Add tasks in TimeLiner, or build them with TimeLiner from Excel.'</span>)
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> [r <span class="k">for</span> r <span class="k">in</span> rows <span class="k">if</span> (r.get(<span class="s">'attach_kind'</span>) <span class="k">or</span> <span class="s">'none'</span>) != <span class="s">'none'</span>]:
+        toast.info(<span class="s">'No task has items attached'</span>, <span class="s">'Attach items with Auto Attach or TimeLiner from Excel first.'</span>)
+        <span class="k">return</span>
+    values = script.get_config(DEFAULTS)
+    answer = ask(doc, rows, values)
+    <span class="k">if</span> answer <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    values.update(dict((k, answer[k]) <span class="k">for</span> k <span class="k">in</span> (<span class="s">'basis'</span>, <span class="s">'step'</span>, <span class="s">'unit'</span>, <span class="s">'size'</span>, <span class="s">'viewpoint'</span>,
+                                                 <span class="s">'show_unscheduled'</span>, <span class="s">'mp4'</span>, <span class="s">'fps'</span>, <span class="s">'folder'</span>)))
+    script.save_config(values)
+    stem = os.path.splitext(fourd_common.doc_title(doc) <span class="k">or</span> <span class="s">'Untitled'</span>)[0]
+    title = <span class="s">'%s 4D sequence'</span> % stem
+    name = naming.sanitize(<span class="s">'%s 4D %s'</span> % (stem, dates.today().strftime(<span class="s">'%Y-%m-%d'</span>)), for_file=<span class="k">True</span>)
+    folder = paths.unique_path(os.path.join(answer[<span class="s">'folder'</span>], name))
+    size = dict(movie.SIZES).get(answer[<span class="s">'size'</span>], (1920, 1080))
+    saved = <span class="k">None</span>
+    <span class="k">if</span> answer[<span class="s">'viewpoint'</span>] != CURRENT:
+        saved = camera.find_view(answer[<span class="s">'viewpoint'</span>], doc)
+    options = {<span class="s">'basis'</span>: answer[<span class="s">'basis'</span>], <span class="s">'start'</span>: dates.parse(answer[<span class="s">'start'</span>]), <span class="s">'end'</span>: dates.parse(answer[<span class="s">'end'</span>]),
+               <span class="s">'step'</span>: answer[<span class="s">'step'</span>], <span class="s">'unit'</span>: answer[<span class="s">'unit'</span>], <span class="s">'width'</span>: size[0], <span class="s">'height'</span>: size[1],
+               <span class="s">'folder'</span>: folder, <span class="s">'title'</span>: title, <span class="s">'viewpoint'</span>: saved, <span class="s">'show_unscheduled'</span>: answer[<span class="s">'show_unscheduled'</span>],
+               <span class="s">'mp4'</span>: answer[<span class="s">'mp4'</span>], <span class="s">'fps'</span>: answer[<span class="s">'fps'</span>], <span class="s">'date_format'</span>: <span class="s">'%Y-%m-%d'</span>}
+    result = progress.run(TITLE, <span class="k">lambda</span> report: movie.make(doc, rows, options, report))
+    <span class="k">if</span> result <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> result[<span class="s">'items'</span>]:
+        toast.info(<span class="s">'Nothing to animate'</span>, <span class="s">'No attached task has dates of the kind chosen.'</span>)
+        <span class="k">return</span>
+    detail = <span class="s">'%s of %s tasks in %s.'</span> % (fourd_common.plural(result[<span class="s">'items'</span>], <span class="s">'item'</span>),
+                                        <span class="s">'{:,}'</span>.format(result[<span class="s">'tasks'</span>]), folder)
+    <span class="k">if</span> result.get(<span class="s">'mp4'</span>):
+        detail = <span class="s">'Player and MP4 in %s.'</span> % folder
+    <span class="k">elif</span> result.get(<span class="s">'mp4_note'</span>) <span class="k">and</span> answer[<span class="s">'mp4'</span>]:
+        detail += <span class="s">' '</span> + result[<span class="s">'mp4_note'</span>]
+    <span class="k">if</span> result[<span class="s">'no_dates'</span>]:
+        detail += <span class="s">' %s had no dates.'</span> % fourd_common.plural(result[<span class="s">'no_dates'</span>], <span class="s">'task'</span>)
+    toast.success(<span class="s">'Made a 4D movie of %s'</span> % fourd_common.plural(result[<span class="s">'frames'</span>], <span class="s">'frame'</span>), detail)
+    <span class="k">if</span> result.get(<span class="s">'html'</span>):
+        fourd_common.open_file(result[<span class="s">'html'</span>])
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/camera.py" rel="noopener"><code>namo.camera</code></a><span class="mod-doc">The Navisworks camera, saved viewpoints and section planes, as plain data.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/dates.py" rel="noopener"><code>namo.dates</code></a><span class="mod-doc">Dates from anywhere (ISO text, typed dates, Excel serials, .NET DateTime) and the few calculations reports need.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/fourd_common.py" rel="noopener"><code>namo.fourd_common</code></a><span class="mod-doc">Helpers the 4D, Quantities and Field tools share: scopes, default files, text.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/movie.py" rel="noopener"><code>namo.movie</code></a><span class="mod-doc">4D Movie Maker: a self-driven construction sequence rendered frame by frame.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/naming.py" rel="noopener"><code>namo.naming</code></a><span class="mod-doc">Name templates: &#x27;{test} - {n:000}&#x27;, &#x27;{date:%Y%m%d} {project}&#x27;, &#x27;{{literal braces}}&#x27;.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/paths.py" rel="noopener"><code>namo.paths</code></a><span class="mod-doc">Where Playground keeps its files, and how it writes them safely.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/timeliner.py" rel="noopener"><code>namo.timeliner</code></a><span class="mod-doc">TimeLiner: every Playground access to Navisworks TimeLiner, plus the pure schedule logic.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/4D.panel/Movie_Maker.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/4D.panel/Movie_Maker.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: 4D Movie\nMaker
+tooltip: Renders a construction sequence from TimeLiner dates and task types, one stamped frame per day or week, as PNG frames, an HTML player and an MP4 when ffmpeg is installed. Visibility and colours are put back exactly afterwards, even on cancel.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="project-4d-progress-painter.html"><span class="dir">Previous</span><span class="ttl">Progress Painter</span></a>
 <a class="next" href="project-4d-schedule-tools-timeliner-export.html"><span class="dir">Next</span><span class="ttl">TimeLiner Export</span></a>

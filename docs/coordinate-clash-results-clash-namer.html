@@ -6,6 +6,7 @@
 <title>Clash Namer - pyNavis Playground</title>
 <meta name="description" content="Renames clashes and result groups from a template like {test} {n:000} {grid} {level}, with a live before and after preview. Pick the tests, type the template, check the preview, then Rename. Shift+Click for settings.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Clash Namer", "description": "Renames clashes and result groups from a template like {test} {n:000} {grid} {level}, with a live before and after preview. Pick the tests, type the template, check the preview, then Rename. Shift+Click for settings.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/coordinate-clash-results-clash-namer.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -222,6 +226,127 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Clash Namer is on the Coordinate tab, Clash Results panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Clash%20Namer&amp;tool=Coordinate.tab%2FClash_Results.panel%2FClash_Namer.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Results.panel/Clash_Namer.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Results.panel/Clash_Namer.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Renames clash results and result groups from a name template, with a live preview."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> clashname, naming, progress, ui
+<span class="k">from</span> namo <span class="k">import</span> clashset_common <span class="k">as</span> common
+<span class="k">from</span> namo <span class="k">import</span> clashset_tests <span class="k">as</span> defs
+
+DEFAULTS = {<span class="s">'clash_template'</span>: clashname.DEFAULT_CLASH, <span class="s">'group_template'</span>: clashname.DEFAULT_GROUP,
+            <span class="s">'scope'</span>: <span class="s">'clashes'</span>, <span class="s">'tests'</span>: [], <span class="s">'threshold'</span>: clashname.DEFAULT_THRESHOLD}
+TITLE = <span class="s">'Clash Namer'</span>
+
+
+<span class="k">def</span> run():
+    <span class="k">from</span> pynavis <span class="k">import</span> doc <span class="k">as</span> pdoc
+    doc = pdoc.get_doc()
+    problem = common.clash_problem(doc, need_results=<span class="k">True</span>)
+    <span class="k">if</span> problem:
+        toast.show(*problem)
+        <span class="k">return</span>
+    values = script.get_config(DEFAULTS)
+    tests = common.choose_tests(TITLE, <span class="s">'Tick the tests whose clashes you want to rename.'</span>,
+                                values[<span class="s">'tests'</span>], doc=doc)
+    <span class="k">if</span> tests <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> tests:
+        toast.info(<span class="s">'No clash results yet'</span>, <span class="s">'Run your clash tests in Clash Detective first.'</span>)
+        <span class="k">return</span>
+    <span class="k">try</span>:
+        entries = common.read_entries(tests, doc)
+    <span class="k">except</span> RuntimeError <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not read the clashes'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">if</span> entries <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    units = defs.doc_units(doc)
+    standard = naming.standard_values(doc)
+    readers = [clashname.category_reader(entry) <span class="k">for</span> entry <span class="k">in</span> entries]
+
+    <span class="k">def</span> preview(clash_template, group_template, scope):
+        <span class="k">return</span> clashname.preview(entries, clash_template, group_template, scope, units, readers,
+                                 standard)
+
+    win = clashname.build_window(preview, values, TITLE)
+    ui.show_modal(win)
+    state = win.Tag
+    <span class="k">if</span> <span class="k">not</span> state.accepted:
+        <span class="k">return</span>
+    choice = state.result
+    values.update(choice)
+    values[<span class="s">'tests'</span>] = [t.DisplayName <span class="k">for</span> t <span class="k">in</span> tests]
+    script.save_config(values)
+    plans = progress.run(<span class="s">'Planning names'</span>, <span class="k">lambda</span> report_to: clashname.plan_all(
+        entries, choice[<span class="s">'clash_template'</span>], choice[<span class="s">'group_template'</span>], choice[<span class="s">'scope'</span>], units,
+        readers, standard, report_to))
+    <span class="k">if</span> plans <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> any(p[<span class="s">'clashes'</span>] <span class="k">or</span> p[<span class="s">'groups'</span>] <span class="k">for</span> p <span class="k">in</span> plans):
+        toast.info(<span class="s">'Every name already matches this template'</span>)
+        <span class="k">return</span>
+    <span class="k">try</span>:
+        result = common.write_progress(<span class="s">'Renaming clashes'</span>, <span class="k">lambda</span> report_to: clashname.apply(
+            entries, plans, clashname.threshold_of(values), doc, report_to))
+    <span class="k">except</span> ValueError <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not rename the clashes'</span>, str(error))
+        <span class="k">return</span>
+    detail = <span class="k">None</span>
+    <span class="k">if</span> result[<span class="s">'mode'</span>] == <span class="s">'rebuild'</span>:
+        detail = <span class="s">'Each test was rebuilt once with the new names. One undo step.'</span>
+    toast.success(clashname.result_text(result[<span class="s">'clashes'</span>], result[<span class="s">'groups'</span>], result[<span class="s">'tests'</span>]), detail)
+
+
+<span class="k">if</span> globals().get(<span class="s">'__runner__'</span>):
+    toast.warning(*common.RUNNER_MESSAGE)
+<span class="k">else</span>:
+    run()
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Results.panel/Clash_Namer.pushbutton/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Results.panel/Clash_Namer.pushbutton/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Options for Clash Namer: when to rebuild tests instead of renaming one by one."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> clashname, ui
+
+DEFAULTS = {<span class="s">'clash_template'</span>: clashname.DEFAULT_CLASH, <span class="s">'group_template'</span>: clashname.DEFAULT_GROUP,
+            <span class="s">'scope'</span>: <span class="s">'clashes'</span>, <span class="s">'tests'</span>: [], <span class="s">'threshold'</span>: clashname.DEFAULT_THRESHOLD}
+
+values = script.get_config(DEFAULTS)
+fields = [
+    {<span class="s">'kind'</span>: <span class="s">'int'</span>, <span class="s">'key'</span>: <span class="s">'threshold'</span>, <span class="s">'label'</span>: <span class="s">'Rename one by one up to'</span>,
+     <span class="s">'default'</span>: clashname.threshold_of(values),
+     <span class="s">'min'</span>: 1, <span class="s">'max'</span>: 1000000, <span class="s">'suffix'</span>: <span class="s">'names'</span>, <span class="s">'required'</span>: <span class="k">True</span>,
+     <span class="s">'hint'</span>: <span class="s">'Above this, each test is rebuilt once with the new names, which stays fast on '</span>
+             <span class="s">'big tests. One by one takes longer the larger the model is.'</span>},
+    {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'clash_template'</span>, <span class="s">'label'</span>: <span class="s">'Starting clash template'</span>,
+     <span class="s">'default'</span>: values[<span class="s">'clash_template'</span>]},
+    {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'group_template'</span>, <span class="s">'label'</span>: <span class="s">'Starting group template'</span>,
+     <span class="s">'default'</span>: values[<span class="s">'group_template'</span>]},
+]
+answers = ui.form(<span class="s">'Clash Namer options'</span>, fields, ok=<span class="s">'Save'</span>)
+<span class="k">if</span> answers <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+    values.update(answers)
+    script.save_config(values)
+    toast.success(<span class="s">'Saved Clash Namer options'</span>,
+                  <span class="s">'One by one up to {:,} names, then a rebuild.'</span>.format(values[<span class="s">'threshold'</span>]))
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashname.py" rel="noopener"><code>namo.clashname</code></a><span class="mod-doc">Clash Namer: rename clash results and result groups from a name template.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashset_common.py" rel="noopener"><code>namo.clashset_common</code></a><span class="mod-doc">Small things every Clash Setup and Clash Results tool shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashset_tests.py" rel="noopener"><code>namo.clashset_tests</code></a><span class="mod-doc">Clash test definitions as plain data, and the one place Playground builds tests from them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/naming.py" rel="noopener"><code>namo.naming</code></a><span class="mod-doc">Name templates: &#x27;{test} - {n:000}&#x27;, &#x27;{date:%Y%m%d} {project}&#x27;, &#x27;{{literal braces}}&#x27;.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Results.panel/Clash_Namer.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Results.panel/Clash_Namer.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Clash\nNamer
+tooltip: Renames clashes and result groups from a template like {test} {n:000} {grid} {level}, with a live before and after preview. Pick the tests, type the template, check the preview, then Rename. Shift+Click for settings.
+context: clash-results
+</code></pre></div>
 <div class="pagenav">
 <a href="coordinate-clash-setup-scan-vs-model.html"><span class="dir">Previous</span><span class="ttl">Scan vs Model</span></a>
 <a class="next" href="coordinate-clash-results-status-rules.html"><span class="dir">Next</span><span class="ttl">Status Rules</span></a>

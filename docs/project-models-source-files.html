@@ -6,6 +6,7 @@
 <title>Source Files - pyNavis Playground</title>
 <meta name="description" content="A panel listing every appended model with its type, units, file time and item count, flagging files that are out of date or missing. Tick to show or hide a model; isolate, select, zoom, open its folder, refresh changed files or remove models from here.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Source Files", "description": "A panel listing every appended model with its type, units, file time and item count, flagging files that are out of date or missing. Tick to show or hide a model; isolate, select, zoom, open its folder, refresh changed files or remove models from here.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/project-models-source-files.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -221,6 +225,59 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Source Files is on the Project tab, Models panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Source%20Files&amp;tool=Project.tab%2FModels.panel%2FSource_Files.dockpane" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that fills the panel; it receives the panel as __pane__.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Models.panel/Source_Files.dockpane/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Models.panel/Source_Files.dockpane/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Lists the appended models live: visibility, type, units, file time, out-of-date files and item counts.
+
+All of the behaviour is in lib/namo/sourcefiles.py. Reload re-runs this script
+against fresh controls; attach() first detaches the previous run's timer and event
+subscriptions, which it keeps in a session holder, the way the shipped Viewpoint
+Tracker does.
+"""</span>
+<span class="k">from</span> namo <span class="k">import</span> sourcefiles
+
+<span class="k">from</span> pynavis <span class="k">import</span> script
+
+sourcefiles.attach(__pane__, script.get_logger())
+</code></pre></div>
+<h3 id="src-pane-xaml">pane.xaml</h3><p class="src-note">The dock panel&#x27;s content.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Models.panel/Source_Files.dockpane/pane.xaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Models.panel/Source_Files.dockpane/pane.xaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-xml">&lt;Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      x:Name="Root" Focusable="True"&gt;
+  &lt;Grid.RowDefinitions&gt;
+    &lt;RowDefinition Height="Auto"/&gt;
+    &lt;RowDefinition Height="Auto"/&gt;
+    &lt;RowDefinition Height="*"/&gt;
+    &lt;RowDefinition Height="Auto"/&gt;
+  &lt;/Grid.RowDefinitions&gt;
+
+  &lt;!-- No colours here: script.py paints the paper, rows and hairlines from the
+       pyNavis design system tokens, which follow the Navisworks theme. The
+       toolbar buttons are DesignSystem quiet buttons added by the script. --&gt;
+  &lt;WrapPanel x:Name="Toolbar" Grid.Row="0" Margin="8,8,4,4"/&gt;
+
+  &lt;Border x:Name="Rule" Grid.Row="1" Height="1"/&gt;
+
+  &lt;ScrollViewer x:Name="Scroller" Grid.Row="2" Focusable="False"
+                VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"&gt;
+    &lt;StackPanel x:Name="Rows"/&gt;
+  &lt;/ScrollViewer&gt;
+
+  &lt;TextBlock x:Name="Status" Grid.Row="3" Margin="12,6,12,8" FontSize="11.5"
+             TextWrapping="Wrap" Text=""/&gt;
+&lt;/Grid&gt;
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/sourcefiles.py" rel="noopener"><code>namo.sourcefiles</code></a><span class="mod-doc">The Source Files dock pane: a live list of the appended models.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Models.panel/Source_Files.dockpane/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Models.panel/Source_Files.dockpane/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Source Files
+tooltip: A panel listing every appended model with its type, units, file time and item count, flagging files that are out of date or missing. Tick to show or hide a model; isolate, select, zoom, open its folder, refresh changed files or remove models from here.
+keytip: SF
+</code></pre></div>
 <div class="pagenav">
 <a href="project-models-batch-append.html"><span class="dir">Previous</span><span class="ttl">Batch Append</span></a>
 <a class="next" href="project-models-link-navigator.html"><span class="dir">Next</span><span class="ttl">Link Navigator</span></a>

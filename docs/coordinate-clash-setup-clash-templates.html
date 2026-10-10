@@ -6,6 +6,7 @@
 <title>Clash Templates - pyNavis Playground</title>
 <meta name="description" content="Saves clash test definitions as named templates shared with your team, and builds them again in another model, naming any selection sets it cannot find.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Clash Templates", "description": "Saves clash test definitions as named templates shared with your team, and builds them again in another model, naming any selection sets it cannot find.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/coordinate-clash-setup-clash-templates.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -221,6 +225,302 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Clash Templates is on the Coordinate tab, Clash Setup panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Clash%20Templates&amp;tool=Coordinate.tab%2FClash_Setup.panel%2FClash_Templates.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Setup.panel/Clash_Templates.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Setup.panel/Clash_Templates.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Saves clash test definitions as named templates and builds them again in other models."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> forms, output, script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> clashtemplates, naming, paths, progress, ui
+<span class="k">from</span> namo <span class="k">import</span> clashset_common <span class="k">as</span> common
+<span class="k">from</span> namo <span class="k">import</span> clashset_tests <span class="k">as</span> defs
+<span class="k">from</span> namo.htmlreport <span class="k">import</span> escape
+
+ACTIONS = [(<span class="s">'Save tests as a template'</span>, <span class="s">'save'</span>), (<span class="s">'Apply a template to this model'</span>, <span class="s">'apply'</span>),
+           (<span class="s">'Import templates from a file'</span>, <span class="s">'import'</span>), (<span class="s">'Export templates to a file'</span>, <span class="s">'export'</span>),
+           (<span class="s">'Delete templates'</span>, <span class="s">'delete'</span>)]
+DEFAULTS = {<span class="s">'tests'</span>: [], <span class="s">'existing'</span>: <span class="s">'skip'</span>, <span class="s">'run'</span>: <span class="k">False</span>, <span class="s">'last'</span>: <span class="s">''</span>}
+JSON_FILTER = <span class="s">'Playground templates (*.json)|*.json|All files (*.*)|*.*'</span>
+TITLE = <span class="s">'Clash Templates'</span>
+
+
+<span class="k">def</span> template_rows(store):
+    rows = []
+    <span class="k">for</span> name <span class="k">in</span> store.names():
+        info = store.info(name) <span class="k">or</span> {}
+        rows.append({<span class="s">'value'</span>: name, <span class="s">'cells'</span>: [name, clashtemplates.describe(store.get(name)),
+                                              (info.get(<span class="s">'updated'</span>) <span class="k">or</span> <span class="s">''</span>)[:10], info.get(<span class="s">'user'</span>) <span class="k">or</span> <span class="s">''</span>]})
+    <span class="k">return</span> rows
+
+
+<span class="k">def</span> pick_templates(store, prompt, multiselect, checked=<span class="k">None</span>, ok=<span class="s">'OK'</span>):
+    rows = template_rows(store)
+    <span class="k">if</span> <span class="k">not</span> rows:
+        toast.info(<span class="s">'No clash templates yet'</span>, <span class="s">'Save tests as a template first, or import a template file.'</span>)
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">return</span> ui.choose(TITLE, rows, [<span class="s">'Template'</span>, <span class="s">'Tests'</span>, <span class="s">'Saved'</span>, <span class="s">'By'</span>], multiselect=multiselect,
+                     checked=checked, prompt=prompt, ok=ok)
+
+
+<span class="k">def</span> save(values, doc):
+    problem = common.clash_problem(doc)
+    <span class="k">if</span> problem:
+        toast.show(*problem)
+        <span class="k">return</span>
+    tests = common.choose_tests(TITLE, <span class="s">'Tick the tests to keep in the template.'</span>, values[<span class="s">'tests'</span>],
+                                only_with_results=<span class="k">False</span>, doc=doc)
+    <span class="k">if</span> tests <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> tests:
+        toast.info(<span class="s">'No tests ticked'</span>, <span class="s">'Tick the tests to keep, then save the template.'</span>)
+        <span class="k">return</span>
+    definitions, unread = clashtemplates.read_tests(tests, doc, with_failures=<span class="k">True</span>)
+    custom = [d <span class="k">for</span> d <span class="k">in</span> definitions <span class="k">if</span> d[<span class="s">'type'</span>] <span class="k">not</span> <span class="k">in</span> defs.TYPE_KEYS]
+    definitions = [d <span class="k">for</span> d <span class="k">in</span> definitions <span class="k">if</span> d[<span class="s">'type'</span>] <span class="k">in</span> defs.TYPE_KEYS]
+    <span class="k">if</span> <span class="k">not</span> definitions:
+        <span class="k">if</span> unread <span class="k">and</span> <span class="k">not</span> custom:
+            toast.error(<span class="s">'Could not read the tests'</span>, <span class="s">'Navisworks would not give the settings of %s.'</span>
+                        % unread[0])
+        <span class="k">else</span>:
+            toast.warning(<span class="s">'Nothing to save'</span>, <span class="s">'Custom (plugin) clash tests cannot be kept in a template.'</span>)
+        <span class="k">return</span>
+    store = clashtemplates.store()
+    text, _missing = naming.render(<span class="s">'{file} clash tests'</span>, naming.standard_values(doc))
+    default = naming.sanitize(text)
+    <span class="k">if</span> default.lower() == <span class="s">'clash tests'</span>:
+        default = <span class="s">'Clash tests'</span>
+    name = forms.ask_string(<span class="s">'Name of the template:'</span>, default, TITLE)
+    <span class="k">if</span> name <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    name = name.strip()
+    <span class="k">if</span> <span class="k">not</span> name:
+        toast.info(<span class="s">'The template needs a name'</span>, <span class="s">'Run Clash Templates again and type one.'</span>)
+        <span class="k">return</span>
+    <span class="k">if</span> store.info(name) <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> <span class="k">not</span> forms.confirm(<span class="s">'Replace the template "%s"?'</span> % name, TITLE):
+        <span class="k">return</span>
+    <span class="k">from</span> pynavis <span class="k">import</span> doc <span class="k">as</span> pdoc
+    config = clashtemplates.template_config(definitions, pdoc.get_title(doc), defs.doc_units(doc))
+    <span class="k">try</span>:
+        stored = store.save(name, config)
+    <span class="k">except</span> (IOError, OSError, ValueError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not save the template'</span>, str(error))
+        <span class="k">return</span>
+    values[<span class="s">'tests'</span>] = [t.DisplayName <span class="k">for</span> t <span class="k">in</span> tests]
+    values[<span class="s">'last'</span>] = stored
+    script.save_config(values)
+    notes = clashtemplates.portability_notes(definitions)
+    <span class="k">if</span> custom:
+        notes.insert(0, <span class="s">'%s left out (custom tests).'</span> % common.plural(len(custom), <span class="s">'plugin test'</span>))
+    <span class="k">if</span> unread:
+        notes.insert(0, <span class="s">'%s could not be read and %s left out, starting with %s.'</span> % (
+            common.plural(len(unread), <span class="s">'test'</span>), <span class="s">'was'</span> <span class="k">if</span> len(unread) == 1 <span class="k">else</span> <span class="s">'were'</span>, unread[0]))
+    where = <span class="s">'the team folder'</span> <span class="k">if</span> paths.team_available() <span class="k">else</span> <span class="s">'your templates'</span>
+    <span class="k">if</span> notes:
+        toast.warning(<span class="s">'Saved "%s" with %s'</span> % (stored, common.plural(len(definitions), <span class="s">'test'</span>)), notes[0])
+    <span class="k">else</span>:
+        toast.success(<span class="s">'Saved "%s" with %s'</span> % (stored, common.plural(len(definitions), <span class="s">'test'</span>)),
+                      <span class="s">'Kept in %s; apply it in any model with Clash Templates.'</span> % where)
+
+
+<span class="k">def</span> report_failures(results, name):
+    output.set_title(TITLE)
+    output.print_md(<span class="s">'# %s'</span> % name)
+    lines = [<span class="s">'&lt;table class="pynavis"&gt;&lt;tr&gt;&lt;th&gt;Test&lt;/th&gt;&lt;th&gt;Result&lt;/th&gt;&lt;th&gt;Why&lt;/th&gt;&lt;/tr&gt;'</span>]
+    <span class="k">for</span> result <span class="k">in</span> results:
+        <span class="k">if</span> result[<span class="s">'outcome'</span>] <span class="k">in</span> (<span class="s">'created'</span>, <span class="s">'updated'</span>):
+            <span class="k">continue</span>
+        lines.append(<span class="s">'&lt;tr&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;/tr&gt;'</span> % (
+            escape(result[<span class="s">'name'</span>]), <span class="s">'Left as it was'</span> <span class="k">if</span> result[<span class="s">'outcome'</span>] == <span class="s">'skipped'</span> <span class="k">else</span> <span class="s">'Not built'</span>,
+            escape(result[<span class="s">'detail'</span>])))
+    lines.append(<span class="s">'&lt;/table&gt;'</span>)
+    output.print_html(<span class="s">''</span>.join(lines))
+
+
+<span class="k">def</span> apply_template(values, doc):
+    <span class="k">if</span> <span class="k">not</span> defs.available(doc):
+        toast.error(<span class="s">'Clash Detective is not available'</span>, <span class="s">'Clash Templates needs Navisworks Manage.'</span>)
+        <span class="k">return</span>
+    store = clashtemplates.store()
+    picked = pick_templates(store, <span class="s">'Choose the template to apply to this model.'</span>, <span class="k">False</span>,
+                            [values[<span class="s">'last'</span>]] <span class="k">if</span> values[<span class="s">'last'</span>] <span class="k">else</span> <span class="k">None</span>, <span class="s">'Next'</span>)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    name = picked[0]
+    plan_rows = clashtemplates.plan(store.get(name), doc)
+    <span class="k">if</span> <span class="k">not</span> plan_rows:
+        toast.info(<span class="s">'"%s" holds no tests'</span> % name, <span class="s">'Save tests into it first.'</span>)
+        <span class="k">return</span>
+    units = defs.doc_units(doc)
+    table = [{<span class="s">'value'</span>: i, <span class="s">'cells'</span>: clashtemplates.plan_cells(row, units)} <span class="k">for</span> i, row <span class="k">in</span> enumerate(plan_rows)]
+    ready = [i <span class="k">for</span> i, row <span class="k">in</span> enumerate(plan_rows) <span class="k">if</span> row[<span class="s">'status'</span>] <span class="k">in</span> (<span class="s">'ready'</span>, <span class="s">'recreate'</span>)]
+    chosen_ids = ui.choose(<span class="s">'Apply %s'</span> % name, table,
+                           [<span class="s">'Test'</span>, <span class="s">'Type'</span>, <span class="s">'Tolerance'</span>, <span class="s">'Selection A'</span>, <span class="s">'Selection B'</span>, <span class="s">'Status'</span>],
+                           multiselect=<span class="k">True</span>, checked=ready, ok=<span class="s">'Next'</span>, width=1000,
+                           prompt=<span class="s">'Tick the tests to build. The Status column names anything missing '</span>
+                                  <span class="s">'from this model.'</span>)
+    <span class="k">if</span> chosen_ids <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    chosen = [plan_rows[i] <span class="k">for</span> i <span class="k">in</span> chosen_ids]
+    blocked = [row <span class="k">for</span> row <span class="k">in</span> chosen <span class="k">if</span> <span class="k">not</span> clashtemplates.buildable(row)]
+    chosen = [row <span class="k">for</span> row <span class="k">in</span> chosen <span class="k">if</span> clashtemplates.buildable(row)]
+    <span class="k">if</span> <span class="k">not</span> chosen:
+        reason = blocked[0][<span class="s">'problems'</span>][0] <span class="k">if</span> blocked <span class="k">and</span> blocked[0][<span class="s">'problems'</span>] <span class="k">else</span> \
+            <span class="s">'Every chosen test is missing selection sets or models in this model.'</span>
+        toast.warning(<span class="s">'None of the chosen tests can be built'</span>, reason)
+        <span class="k">return</span>
+    fields = []
+    <span class="k">if</span> any(row[<span class="s">'status'</span>] == <span class="s">'exists'</span> <span class="k">for</span> row <span class="k">in</span> chosen):
+        fields.append({<span class="s">'kind'</span>: <span class="s">'radio'</span>, <span class="s">'key'</span>: <span class="s">'existing'</span>, <span class="s">'label'</span>: <span class="s">'Tests that already exist'</span>,
+                       <span class="s">'default'</span>: values[<span class="s">'existing'</span>], <span class="s">'fallback'</span>: <span class="k">None</span>,
+                       <span class="s">'options'</span>: [(<span class="s">'Leave them as they are'</span>, <span class="s">'skip'</span>),
+                                   (<span class="s">'Update their settings (their results are kept)'</span>, <span class="s">'update'</span>)]})
+    fields.append({<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'run'</span>, <span class="s">'label'</span>: <span class="s">'Run the tests after building them'</span>,
+                   <span class="s">'default'</span>: values[<span class="s">'run'</span>]})
+    recreate = sum(len(row[<span class="s">'recreate'</span>]) <span class="k">for</span> row <span class="k">in</span> chosen)
+    intro = <span class="s">'Build %s from "%s".'</span> % (common.plural(len(chosen), <span class="s">'clash test'</span>), name)
+    <span class="k">if</span> recreate:
+        intro += <span class="s">' Missing search sets are rebuilt from the template.'</span>
+    answers = ui.form(<span class="s">'Apply %s'</span> % name, fields, intro=intro, ok=<span class="s">'Build'</span>)
+    <span class="k">if</span> answers <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    values.update(answers)
+    values[<span class="s">'last'</span>] = name
+    script.save_config(values)
+    results, recreated = common.write_progress(<span class="s">'Applying %s'</span> % name, <span class="k">lambda</span> report_to: clashtemplates.apply(
+        chosen, answers.get(<span class="s">'existing'</span>, <span class="s">'skip'</span>), doc, report_to))
+    built = [r[<span class="s">'test'</span>] <span class="k">for</span> r <span class="k">in</span> results <span class="k">if</span> r[<span class="s">'outcome'</span>] <span class="k">in</span> (<span class="s">'created'</span>, <span class="s">'updated'</span>) <span class="k">and</span> r[<span class="s">'test'</span>] <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>]
+    found = <span class="k">None</span>
+    run_problem = <span class="k">None</span>
+    <span class="k">if</span> answers[<span class="s">'run'</span>] <span class="k">and</span> built:
+        <span class="k">try</span>:
+            outcome = progress.run(<span class="s">'Running clash tests'</span>,
+                                   <span class="k">lambda</span> report_to: defs.run_tests(built, doc, report_to))
+        <span class="k">except</span> Exception <span class="k">as</span> error:
+            outcome = progress.CANCELLED
+            run_problem = str(error)
+        <span class="k">if</span> outcome <span class="k">is</span> <span class="k">not</span> progress.CANCELLED:
+            found = sum(outcome.values())
+    created = sum(1 <span class="k">for</span> r <span class="k">in</span> results <span class="k">if</span> r[<span class="s">'outcome'</span>] == <span class="s">'created'</span>)
+    updated = sum(1 <span class="k">for</span> r <span class="k">in</span> results <span class="k">if</span> r[<span class="s">'outcome'</span>] == <span class="s">'updated'</span>)
+    failed = [r <span class="k">for</span> r <span class="k">in</span> results <span class="k">if</span> r[<span class="s">'outcome'</span>] <span class="k">not</span> <span class="k">in</span> (<span class="s">'created'</span>, <span class="s">'updated'</span>)]
+    parts = []
+    <span class="k">if</span> updated:
+        parts.append(<span class="s">'%s updated'</span> % <span class="s">'{:,}'</span>.format(updated))
+    <span class="k">if</span> recreated:
+        parts.append(<span class="s">'%s rebuilt'</span> % common.plural(recreated, <span class="s">'selection set'</span>))
+    <span class="k">if</span> found <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        parts.append(<span class="s">'%s found'</span> % common.plural(found, <span class="s">'clash'</span>, <span class="s">'clashes'</span>))
+    <span class="k">if</span> blocked:
+        parts.append(<span class="s">'%s missing items'</span> % common.plural(len(blocked), <span class="s">'test'</span>))
+    <span class="k">if</span> failed:
+        report_failures(failed, name)
+        parts.append(<span class="s">'%s not built (see the list)'</span> % <span class="s">'{:,}'</span>.format(len(failed)))
+    headline = <span class="s">'Built %s from "%s"'</span> % (common.plural(created + updated, <span class="s">'clash test'</span>), name)
+    <span class="k">if</span> run_problem:
+        parts.append(<span class="s">'Navisworks could not run them (%s)'</span> % run_problem)
+    <span class="k">if</span> failed <span class="k">or</span> blocked <span class="k">or</span> run_problem:
+        toast.warning(headline, <span class="s">'; '</span>.join(parts))
+    <span class="k">else</span>:
+        toast.success(headline, <span class="s">'; '</span>.join(parts) <span class="k">or</span> <span class="k">None</span>)
+
+
+<span class="k">def</span> import_templates():
+    path = forms.open_file(filter=JSON_FILTER, title=<span class="s">'Import clash templates'</span>)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">try</span>:
+        count = clashtemplates.store().import_file(path)
+    <span class="k">except</span> ValueError <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not import the templates'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not save the templates'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> count:
+        toast.info(<span class="s">'The file holds no clash templates'</span>)
+    <span class="k">else</span>:
+        toast.success(<span class="s">'Imported %s'</span> % common.plural(count, <span class="s">'clash template'</span>),
+                      <span class="s">'A name already in use gets a number, like "Name (2)".'</span>)
+
+
+<span class="k">def</span> export_templates(doc):
+    store = clashtemplates.store()
+    names = pick_templates(store, <span class="s">'Tick the templates to export.'</span>, <span class="k">True</span>, ok=<span class="s">'Export'</span>)
+    <span class="k">if</span> names <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    path = common.ask_save_path(<span class="s">'Export clash templates'</span>, <span class="s">'{file} - Clash templates'</span>, <span class="s">'.json'</span>,
+                                JSON_FILTER, doc)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">try</span>:
+        count = store.export(path, names)
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not write the file'</span>, str(error))
+        <span class="k">return</span>
+    toast.success(<span class="s">'Exported %s'</span> % common.plural(count, <span class="s">'clash template'</span>), path)
+
+
+<span class="k">def</span> delete_templates():
+    store = clashtemplates.store()
+    names = pick_templates(store, <span class="s">'Tick the templates to delete.'</span>, <span class="k">True</span>, ok=<span class="s">'Delete'</span>)
+    <span class="k">if</span> names <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    shared = <span class="s">' Everyone using the team folder loses them too.'</span> <span class="k">if</span> paths.team_available() <span class="k">else</span> <span class="s">''</span>
+    <span class="k">if</span> <span class="k">not</span> forms.confirm(<span class="s">'Delete %s?%s'</span> % (common.plural(len(names), <span class="s">'clash template'</span>), shared), TITLE):
+        <span class="k">return</span>
+    removed = 0
+    <span class="k">for</span> name <span class="k">in</span> names:
+        <span class="k">try</span>:
+            <span class="k">if</span> store.delete(name):
+                removed += 1
+        <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+            toast.error(<span class="s">'Could not delete "%s"'</span> % name, str(error))
+            <span class="k">return</span>
+    toast.success(<span class="s">'Deleted %s'</span> % common.plural(removed, <span class="s">'clash template'</span>))
+
+
+<span class="k">def</span> run():
+    <span class="k">from</span> pynavis <span class="k">import</span> doc <span class="k">as</span> pdoc
+    doc = pdoc.get_doc()
+    picked = forms.ask_options(<span class="s">'What do you want to do with clash templates?'</span>,
+                               [label <span class="k">for</span> label, _value <span class="k">in</span> ACTIONS], TITLE)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    action = dict(ACTIONS)[picked]
+    values = script.get_config(DEFAULTS)
+    <span class="k">if</span> action == <span class="s">'save'</span>:
+        save(values, doc)
+    <span class="k">elif</span> action == <span class="s">'apply'</span>:
+        apply_template(values, doc)
+    <span class="k">elif</span> action == <span class="s">'import'</span>:
+        import_templates()
+    <span class="k">elif</span> action == <span class="s">'export'</span>:
+        export_templates(doc)
+    <span class="k">else</span>:
+        delete_templates()
+
+
+<span class="k">if</span> globals().get(<span class="s">'__runner__'</span>):
+    toast.warning(*common.RUNNER_MESSAGE)
+<span class="k">else</span>:
+    run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashset_common.py" rel="noopener"><code>namo.clashset_common</code></a><span class="mod-doc">Small things every Clash Setup and Clash Results tool shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashset_tests.py" rel="noopener"><code>namo.clashset_tests</code></a><span class="mod-doc">Clash test definitions as plain data, and the one place Playground builds tests from them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/clashtemplates.py" rel="noopener"><code>namo.clashtemplates</code></a><span class="mod-doc">Clash Templates: clash test definitions saved by name and applied in other projects.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/htmlreport.py" rel="noopener"><code>namo.htmlreport</code></a><span class="mod-doc">Standalone HTML reports: one self-contained .html file (inline CSS, JS, SVG charts and base64 images) that opens in any browser, offline, in light or dark theme.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/naming.py" rel="noopener"><code>namo.naming</code></a><span class="mod-doc">Name templates: &#x27;{test} - {n:000}&#x27;, &#x27;{date:%Y%m%d} {project}&#x27;, &#x27;{{literal braces}}&#x27;.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/paths.py" rel="noopener"><code>namo.paths</code></a><span class="mod-doc">Where Playground keeps its files, and how it writes them safely.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Coordinate.tab/Clash_Setup.panel/Clash_Templates.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Coordinate.tab/Clash_Setup.panel/Clash_Templates.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Clash\nTemplates
+tooltip: Saves clash test definitions as named templates shared with your team, and builds them again in another model, naming any selection sets it cannot find.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="coordinate-clash-setup-clash-matrix.html"><span class="dir">Previous</span><span class="ttl">Clash Matrix</span></a>
 <a class="next" href="coordinate-clash-setup-scan-vs-model.html"><span class="dir">Next</span><span class="ttl">Scan vs Model</span></a>

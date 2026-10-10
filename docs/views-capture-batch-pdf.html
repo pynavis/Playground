@@ -6,6 +6,7 @@
 <title>Batch PDF - pyNavis Playground</title>
 <meta name="description" content="Prints the viewpoints you choose, in folder order or your own order, to one PDF handout: title page, contents, one page per view with its comments and a footer. A4, A3, Letter or Tabloid.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Batch PDF", "description": "Prints the viewpoints you choose, in folder order or your own order, to one PDF handout: title page, contents, one page per view with its comments and a footer. A4, A3, Letter or Tabloid.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/views-capture-batch-pdf.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,95 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Batch PDF is on the Views tab, Capture panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Batch%20PDF&amp;tool=Views.tab%2FCapture.panel%2FBatch_PDF.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Capture.panel/Batch_PDF.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Capture.panel/Batch_PDF.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Prints an ordered set of saved viewpoints to one PDF handout with a title page, contents and page footers."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> namo <span class="k">import</span> progress, rep_batch_pdf, reports, ui, vp_common, vp_ui
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+TITLE = <span class="s">'Batch PDF'</span>
+REPORT = <span class="s">'batch_pdf'</span>
+
+
+<span class="k">def</span> run():
+    document = vp_common.active_doc()
+    rows = vp_common.view_rows(document) <span class="k">if</span> vp_common.has_models(document) <span class="k">else</span> []
+    <span class="k">if</span> <span class="k">not</span> rows:
+        toast.info(<span class="s">'No saved viewpoints'</span>, <span class="s">'Save some viewpoints, then run Batch PDF again.'</span>)
+        <span class="k">return</span>
+    defaults = reports.default_config(REPORT)
+    defaults.update({<span class="s">'open'</span>: <span class="k">True</span>, <span class="s">'hand_order'</span>: <span class="k">False</span>})
+    cfg = script.get_config(defaults)
+    picked = vp_common.choose_views(<span class="s">'%s: viewpoints'</span> % TITLE, rows, cfg.get(<span class="s">'views'</span>), ok=<span class="s">'Next'</span>)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    chosen, spec = picked
+    <span class="k">if</span> <span class="k">not</span> chosen:
+        toast.info(<span class="s">'No viewpoints chosen'</span>, <span class="s">'Tick at least one viewpoint, then run Batch PDF again.'</span>)
+        <span class="k">return</span>
+    values = ui.form(TITLE, rep_batch_pdf.option_fields(cfg),
+                     intro=<span class="s">'%s chosen. Project and author come from the Playground settings.'</span>
+                           % vp_common.plural(len(chosen), <span class="s">'viewpoint'</span>),
+                     ok=<span class="s">'Next'</span>, width=500)
+    <span class="k">if</span> values <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    order = []
+    <span class="k">if</span> values[<span class="s">'hand_order'</span>] <span class="k">and</span> len(chosen) &gt; 1:
+        current = vp_common.apply_order(chosen, cfg.get(<span class="s">'order'</span>))
+        labels = [vp_common.join_path(r[<span class="s">'folder'</span>], r[<span class="s">'name'</span>]) <span class="k">for</span> r <span class="k">in</span> current]
+        indices = vp_ui.order(<span class="s">'%s: page order'</span> % TITLE, labels)
+        <span class="k">if</span> indices <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+        order = [[current[i][<span class="s">'folder'</span>], current[i][<span class="s">'name'</span>]] <span class="k">for</span> i <span class="k">in</span> indices]
+    cfg.update(values)
+    cfg[<span class="s">'views'</span>] = spec
+    cfg[<span class="s">'order'</span>] = order
+    stem = <span class="s">'%s - Viewpoints'</span> % vp_common.file_stem(vp_common.doc_path(document))
+    folder = vp_common.default_folder(vp_common.doc_path(document))
+    path = forms.save_file(filter=<span class="s">'PDF files (*.pdf)|*.pdf'</span>, default_name=os.path.join(folder, stem + <span class="s">'.pdf'</span>),
+                           title=TITLE)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> path.lower().endswith(<span class="s">'.pdf'</span>):
+        path += <span class="s">'.pdf'</span>
+    script.save_config(cfg)
+    run_cfg = dict(cfg)
+    run_cfg[<span class="s">'folder'</span>] = os.path.dirname(path)
+    run_cfg[<span class="s">'name_template'</span>] = os.path.splitext(os.path.basename(path))[0].replace(<span class="s">'{'</span>, <span class="s">'{{'</span>).replace(<span class="s">'}'</span>, <span class="s">'}}'</span>)
+    <span class="c"># The file the user picked, exactly: folder + name_template alone would pass the name</span>
+    <span class="c"># through naming.sanitize and safe_filename (cut at 80 characters, dashes changed).</span>
+    run_cfg[<span class="s">'path'</span>] = path
+    result = progress.run(TITLE, <span class="k">lambda</span> report: reports.run(REPORT, run_cfg, doc=document, interactive=<span class="k">True</span>,
+                                                            progress=report), <span class="s">'Capturing'</span>)
+    <span class="k">if</span> result <span class="k">is</span> progress.CANCELLED <span class="k">or</span> result.get(<span class="s">'cancelled'</span>):
+        <span class="k">return</span>
+    toast.show(result[<span class="s">'level'</span>], result[<span class="s">'message'</span>], result[<span class="s">'detail'</span>])
+    <span class="k">if</span> cfg[<span class="s">'open'</span>] <span class="k">and</span> result.get(<span class="s">'pdf'</span>) <span class="k">and</span> result[<span class="s">'level'</span>] <span class="k">in</span> (<span class="s">'success'</span>, <span class="s">'warning'</span>):
+        <span class="k">try</span>:
+            ui.open_path(result[<span class="s">'pdf'</span>])
+        <span class="k">except</span> Exception:
+            <span class="k">pass</span>
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/rep_batch_pdf.py" rel="noopener"><code>namo.rep_batch_pdf</code></a><span class="mod-doc">Batch PDF Printer: an ordered set of saved viewpoints as one PDF handout.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/reports.py" rel="noopener"><code>namo.reports</code></a><span class="mod-doc">The registry of automation-ready reports, and the helpers every report shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/vp_common.py" rel="noopener"><code>namo.vp_common</code></a><span class="mod-doc">Shared helpers for the Views tools (Viewpoints, Capture and Navigate panels).</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/vp_ui.py" rel="noopener"><code>namo.vp_ui</code></a><span class="mod-doc">Windows of the Views tools: the hand-order list Batch PDF uses.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Capture.panel/Batch_PDF.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Capture.panel/Batch_PDF.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Batch\nPDF
+tooltip: Prints the viewpoints you choose, in folder order or your own order, to one PDF handout: title page, contents, one page per view with its comments and a footer. A4, A3, Letter or Tabloid.
+context: viewpoints
+</code></pre></div>
 <div class="pagenav">
 <a href="views-capture-batch-image-export.html"><span class="dir">Previous</span><span class="ttl">Batch Images</span></a>
 <a class="next" href="views-navigate-level-sectioner.html"><span class="dir">Next</span><span class="ttl">Level Sectioner</span></a>

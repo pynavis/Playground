@@ -6,6 +6,7 @@
 <title>Exploded View - pyNavis Playground</title>
 <meta name="description" content="Spreads the selected objects or their models away from their common center as one undoable move, without touching the source files. Click again to collapse them back or spread them further.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Exploded View", "description": "Spreads the selected objects or their models away from their common center as one undoable move, without touching the source files. Click again to collapse them back or spread them further.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-look-look-tools-exploded-view.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -222,6 +226,118 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Exploded View is on the Model tab, Look panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Exploded%20View&amp;tool=Model.tab%2FLook.panel%2FLook_Tools.stack%2FExploded_View.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Look.panel/Look_Tools.stack/Exploded_View.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Look.panel/Look_Tools.stack/Exploded_View.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Spreads the selected objects (or their models) apart in one undo step; click again to collapse or spread further."""</span>
+<span class="k">from</span> namo <span class="k">import</span> colorize, explode, items, ui
+<span class="k">from</span> pynavis <span class="k">import</span> doc <span class="k">as</span> nwdoc
+<span class="k">from</span> pynavis <span class="k">import</span> forms, script, toast
+
+TITLE = <span class="s">'Exploded View'</span>
+
+
+<span class="k">def</span> new_explode(document, cfg):
+    selected = items.selected(document)
+    <span class="k">if</span> <span class="k">not</span> selected:
+        toast.info(<span class="s">'Nothing selected'</span>, <span class="s">'Select the objects to spread apart, then run Exploded View again.'</span>)
+        <span class="k">return</span>
+    model_count = len(explode.units_of(selected, <span class="s">'models'</span>))
+    values = ui.form(TITLE, explode.option_fields(cfg, model_count), ok=<span class="s">'Explode'</span>)
+    <span class="k">if</span> values <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    opts = explode.normalize_options(values)
+    script.save_config(opts)
+    nodes = explode.units_of(selected, opts[<span class="s">'units'</span>])
+    <span class="k">if</span> len(nodes) &gt; explode.MAX_UNITS:
+        toast.info(<span class="s">'Too many objects to spread'</span>, <span class="s">'Exploded View moves up to %s objects at a time; %s are '</span>
+                   <span class="s">'selected. Select fewer, or choose Their whole models.'</span>
+                   % (colorize.count_text(explode.MAX_UNITS), colorize.count_text(len(nodes))))
+        <span class="k">return</span>
+    <span class="k">if</span> len(nodes) &lt; 2:
+        what = <span class="s">'models'</span> <span class="k">if</span> opts[<span class="s">'units'</span>] == <span class="s">'models'</span> <span class="k">else</span> <span class="s">'objects'</span>
+        toast.info(<span class="s">'Select two or more %s'</span> % what,
+                   <span class="s">'One %s has nothing to spread away from.'</span> % what[:-1])
+        <span class="k">return</span>
+    moved, record = explode.explode(nodes, opts, document)
+    <span class="k">if</span> <span class="k">not</span> moved <span class="k">or</span> record <span class="k">is</span> <span class="k">None</span>:
+        toast.info(<span class="s">'Nothing moved'</span>, <span class="s">'The selected items share one center, or have no size.'</span>)
+        <span class="k">return</span>
+    explode.save_record(record, document)
+    toast.success(<span class="s">'Exploded %s'</span> % colorize.plural(moved, <span class="s">'model'</span> <span class="k">if</span> opts[<span class="s">'units'</span>] == <span class="s">'models'</span> <span class="k">else</span> <span class="s">'object'</span>),
+                  <span class="s">'Spread %s. Ctrl+Z undoes it, or click Exploded View again to collapse.'</span>
+                  % explode.factor_text(opts[<span class="s">'factor'</span>]))
+
+
+<span class="k">def</span> explode_more(document, record):
+    factor = forms.ask_number(<span class="s">'Spread the exploded view further by:'</span>, default=1.5,
+                              min_value=explode.MIN_FACTOR, max_value=explode.MAX_FACTOR, title=TITLE)
+    <span class="k">if</span> factor <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    moved, record, missing = explode.explode_more(record, factor, document)
+    explode.save_record(record, document)
+    detail = <span class="s">'Now %s.'</span> % explode.describe(record)
+    <span class="k">if</span> missing:
+        detail += <span class="s">' %s could not be found.'</span> % colorize.plural(missing, <span class="s">'item'</span>)
+    <span class="k">if</span> moved:
+        toast.success(<span class="s">'Spread %s further'</span> % colorize.plural(moved, <span class="s">'item'</span>), detail)
+    <span class="k">else</span>:
+        toast.warning(<span class="s">'Nothing moved'</span>, detail)
+
+
+<span class="k">def</span> collapse(document, record):
+    route = explode.collapse_route(record)
+    back, moved_since, missing = explode.collapse(record, document)
+    explode.save_record(<span class="k">None</span>, document)
+    problems = []
+    <span class="k">if</span> moved_since:
+        problems.append(<span class="s">'%s no longer sat where the explode left them (moved or undone since), '</span>
+                        <span class="s">'so they stayed put.'</span> % colorize.plural(moved_since, <span class="s">'item'</span>))
+    <span class="k">if</span> missing:
+        problems.append(<span class="s">'%s could not be found.'</span> % colorize.plural(missing, <span class="s">'item'</span>))
+    <span class="k">if</span> problems:
+        title = <span class="s">'Collapsed %s'</span> % colorize.plural(back, <span class="s">'item'</span>) <span class="k">if</span> back <span class="k">else</span> <span class="s">'Nothing collapsed'</span>
+        toast.warning(title, <span class="s">' '</span>.join(problems))
+    <span class="k">else</span>:
+        toast.success(<span class="s">'Collapsed %s'</span> % colorize.plural(back, <span class="s">'item'</span>),
+                      <span class="s">'Everything is back where it was.'</span> <span class="k">if</span> route == <span class="s">'inverse'</span>
+                      <span class="k">else</span> <span class="s">'Everything is back where its file has it.'</span>)
+
+
+<span class="k">def</span> run():
+    document = nwdoc.get_doc()
+    <span class="k">if</span> document.Models.Count == 0:
+        toast.info(<span class="s">'No model open'</span>, <span class="s">'Open a model, then run Exploded View again.'</span>)
+        <span class="k">return</span>
+    cfg = explode.normalize_options(script.get_config(explode.DEFAULTS))
+    record = explode.load_record(document)
+    <span class="k">if</span> record <span class="k">is</span> <span class="k">not</span> <span class="k">None</span> <span class="k">and</span> explode.check(record, document)[<span class="s">'stale'</span>]:
+        explode.save_record(<span class="k">None</span>, document)         <span class="c"># undone or moved since: start afresh</span>
+        record = <span class="k">None</span>
+    <span class="k">if</span> record <span class="k">is</span> <span class="k">None</span>:
+        new_explode(document, cfg)
+        <span class="k">return</span>
+    action = forms.ask_options(<span class="k">None</span>, [explode.COLLAPSE, explode.MORE], title=TITLE)
+    <span class="k">if</span> action == explode.COLLAPSE:
+        collapse(document, record)
+    <span class="k">elif</span> action == explode.MORE:
+        explode_more(document, record)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/colorize.py" rel="noopener"><code>namo.colorize</code></a><span class="mod-doc">Colouring by property: the engine behind Color by Property, Color Presets and Status Painter.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/explode.py" rel="noopener"><code>namo.explode</code></a><span class="mod-doc">Exploded View: pull objects (or whole models) apart from their common centre.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Look.panel/Look_Tools.stack/Exploded_View.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Look.panel/Look_Tools.stack/Exploded_View.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Exploded View
+tooltip: Spreads the selected objects or their models away from their common center as one undoable move, without touching the source files. Click again to collapse them back or spread them further.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="model-look-look-tools-match-appearance.html"><span class="dir">Previous</span><span class="ttl">Match Appearance</span></a>
 <a class="next" href="model-look-view-tools-reset-all-overrides.html"><span class="dir">Next</span><span class="ttl">Reset Overrides</span></a>

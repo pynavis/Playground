@@ -6,6 +6,7 @@
 <title>Environment Doctor - pyNavis Playground</title>
 <meta name="description" content="Checks Navisworks, pyNavis, engines, extensions, shortcuts, panels, add-ins, folders and the log, and reports what needs attention. Shift+Click copies the report as text.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Environment Doctor", "description": "Checks Navisworks, pyNavis, engines, extensions, shortcuts, panels, add-ins, folders and the log, and reports what needs attention. Shift+Click copies the report as text.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/dev-team-team-tools-environment-doctor.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -223,6 +227,46 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Environment Doctor is on the Dev tab, Team panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Environment%20Doctor&amp;tool=Dev.tab%2FTeam.panel%2FTeam_Tools.stack%2FEnvironment_Doctor.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Dev.tab/Team.panel/Team_Tools.stack/Environment_Doctor.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Dev.tab/Team.panel/Team_Tools.stack/Environment_Doctor.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Checks everything pyNavis and Playground depend on and reports pass, warning or fail."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> toast
+
+<span class="k">from</span> namo <span class="k">import</span> doctor
+
+results = doctor.checks(doctor.gather())
+doctor.print_report(results)
+level, message = doctor.headline(results)
+toast.show(level, message, <span class="s">'The details are in the output window.'</span>)
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Dev.tab/Team.panel/Team_Tools.stack/Environment_Doctor.pushbutton/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Dev.tab/Team.panel/Team_Tools.stack/Environment_Doctor.pushbutton/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Runs the Environment Doctor and copies its report as plain text (for a support email)."""</span>
+<span class="k">import</span> datetime
+
+<span class="k">from</span> pynavis <span class="k">import</span> toast
+
+<span class="k">from</span> namo <span class="k">import</span> doctor, ui
+
+results = doctor.checks(doctor.gather())
+text = doctor.text_report(results, datetime.datetime.now().strftime(<span class="s">'%Y-%m-%d %H:%M'</span>))
+<span class="k">if</span> ui.copy(text):
+    level, message = doctor.headline(results)
+    toast.success(<span class="s">'Environment report copied'</span>, <span class="s">'%s. Paste it into an email or a ticket.'</span> % message)
+<span class="k">else</span>:
+    toast.error(<span class="s">'The clipboard is busy'</span>, <span class="s">'Another program is holding it; try again.'</span>)
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/doctor.py" rel="noopener"><code>namo.doctor</code></a><span class="mod-doc">Environment Doctor: everything that decides whether pyNavis and Playground can work on this machine, as pass / warning / fail lines.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Dev.tab/Team.panel/Team_Tools.stack/Environment_Doctor.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Dev.tab/Team.panel/Team_Tools.stack/Environment_Doctor.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Environment Doctor
+tooltip: Checks Navisworks, pyNavis, engines, extensions, shortcuts, panels, add-ins, folders and the log, and reports what needs attention. Shift+Click copies the report as text.
+</code></pre></div>
 <div class="pagenav">
 <a href="dev-team-usage-analytics.html"><span class="dir">Previous</span><span class="ttl">Usage Analytics</span></a>
 <a class="next" href="dev-team-team-tools-playground-settings.html"><span class="dir">Next</span><span class="ttl">Playground Settings</span></a>

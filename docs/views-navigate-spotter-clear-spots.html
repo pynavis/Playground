@@ -6,6 +6,7 @@
 <title>Clear Spots - pyNavis Playground</title>
 <meta name="description" content="Removes the Coordinate Spotter markers from the view and starts the numbering again at P1.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Clear Spots", "description": "Removes the Coordinate Spotter markers from the view and starts the numbering again at P1.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/views-navigate-spotter-clear-spots.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -222,6 +226,28 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Clear Spots is on the Views tab, Navigate panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Clear%20Spots&amp;tool=Views.tab%2FNavigate.panel%2FSpotter.stack%2FClear_Spots.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Navigate.panel/Spotter.stack/Clear_Spots.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Navigate.panel/Spotter.stack/Clear_Spots.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Removes the Coordinate Spotter markers from the view and starts the numbering again."""</span>
+<span class="k">from</span> namo <span class="k">import</span> spotter, vp_common
+<span class="k">from</span> pynavis <span class="k">import</span> toast
+
+count = spotter.clear()
+<span class="k">if</span> count:
+    toast.success(<span class="s">'Cleared %s'</span> % vp_common.plural(count, <span class="s">'spot'</span>))
+<span class="k">else</span>:
+    toast.info(<span class="s">'No spots to clear'</span>, <span class="s">'Coordinate Spotter drops them where you click.'</span>)
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/spotter.py" rel="noopener"><code>namo.spotter</code></a><span class="mod-doc">Coordinate Spotter: numbered coordinate markers dropped by clicking, a table of them, and Clear Spots.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/vp_common.py" rel="noopener"><code>namo.vp_common</code></a><span class="mod-doc">Shared helpers for the Views tools (Viewpoints, Capture and Navigate panels).</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Navigate.panel/Spotter.stack/Clear_Spots.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Navigate.panel/Spotter.stack/Clear_Spots.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Clear Spots
+tooltip: Removes the Coordinate Spotter markers from the view and starts the numbering again at P1.
+</code></pre></div>
 <div class="pagenav">
 <a href="views-navigate-spotter-coordinate-spotter.html"><span class="dir">Previous</span><span class="ttl">Coordinate Spotter</span></a>
 <a class="next" href="views-navigate-sheet-sheet-overlay.html"><span class="dir">Next</span><span class="ttl">Sheet Overlay</span></a>

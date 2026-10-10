@@ -6,6 +6,7 @@
 <title>Quick Takeoff - pyNavis Playground</title>
 <meta name="description" content="Counts and measures objects (length, area, volume, weight from Revit and IFC properties, or from geometry) grouped by one or two properties, with subtotals and totals. Export to Excel, select any group, or save the setup as a template.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Quick Takeoff", "description": "Counts and measures objects (length, area, volume, weight from Revit and IFC properties, or from geometry) grouped by one or two properties, with subtotals and totals. Export to Excel, select any group, or save the setup as a template.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/project-quantities-quick-takeoff.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -223,6 +227,58 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Quick Takeoff is on the Project tab, Quantities panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Quick%20Takeoff&amp;tool=Project.tab%2FQuantities.panel%2FQuick_Takeoff.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Quantities.panel/Quick_Takeoff.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Quantities.panel/Quick_Takeoff.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Counts and measures objects grouped by one or two properties, with subtotals, totals and Excel export."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> fourd_common, items, qty_run, qty_ui, reports, takeoff, ui
+
+TITLE = <span class="s">'Quick Takeoff'</span>
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> ui.is_runner():
+        result = reports.run(<span class="s">'quick_takeoff'</span>, script.get_config(takeoff.default_quick_config()),
+                             interactive=<span class="k">False</span>)
+        toast.show(result[<span class="s">'level'</span>], result[<span class="s">'message'</span>], result[<span class="s">'detail'</span>])
+        <span class="k">return</span>
+    doc = fourd_common.active_doc()
+    <span class="k">if</span> <span class="k">not</span> fourd_common.has_models(doc):
+        toast.info(<span class="s">'No model is open'</span>, <span class="s">'Open or append a model first.'</span>)
+        <span class="k">return</span>
+    values = script.get_config(takeoff.default_quick_config())
+    selected = items.selected(doc)
+    sample = items.objects(selected <span class="k">if</span> selected <span class="k">else</span> items.roots(doc), budget=300)
+    choices, specs = qty_ui.group_choices(takeoff.property_options(sample))
+    fields = qty_ui.quick_fields(values, bool(selected), choices)
+    answer = ui.form(TITLE, fields, ok=<span class="s">'Measure'</span>, width=560, validate=qty_ui.validate_quick)
+    <span class="k">if</span> answer <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    config = qty_ui.config_from(answer, specs)
+    script.save_config(config)
+    qty_run.run_quick(doc, config)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/fourd_common.py" rel="noopener"><code>namo.fourd_common</code></a><span class="mod-doc">Helpers the 4D, Quantities and Field tools share: scopes, default files, text.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/qty_run.py" rel="noopener"><code>namo.qty_run</code></a><span class="mod-doc">Runs a Quick or Zone Takeoff configuration and shows its result window: shared by the two takeoff buttons and Takeoff Templates.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/qty_ui.py" rel="noopener"><code>namo.qty_ui</code></a><span class="mod-doc">Forms and windows of the Quantities panel (Quick Takeoff, Zone Takeoff, Takeoff Templates, COG Calculator), built on namo.ui.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/reports.py" rel="noopener"><code>namo.reports</code></a><span class="mod-doc">The registry of automation-ready reports, and the helpers every report shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/takeoff.py" rel="noopener"><code>namo.takeoff</code></a><span class="mod-doc">Quantity takeoff: measures from properties (and geometry), grouping, zones, workbooks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Quantities.panel/Quick_Takeoff.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Quantities.panel/Quick_Takeoff.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Quick\nTakeoff
+tooltip: Counts and measures objects (length, area, volume, weight from Revit and IFC properties, or from geometry) grouped by one or two properties, with subtotals and totals. Export to Excel, select any group, or save the setup as a template.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="project-4d-schedule-tools-schedule-health.html"><span class="dir">Previous</span><span class="ttl">Schedule Health</span></a>
 <a class="next" href="project-quantities-zone-takeoff.html"><span class="dir">Next</span><span class="ttl">Zone Takeoff</span></a>

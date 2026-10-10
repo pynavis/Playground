@@ -6,6 +6,7 @@
 <title>Viewpoint Sync - pyNavis Playground</title>
 <meta name="description" content="Copies viewpoint folders from one Navisworks file to another through a package: export the folders here, import them there into the folder you choose, skipping, replacing or keeping both when a name exists.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Viewpoint Sync", "description": "Copies viewpoint folders from one Navisworks file to another through a package: export the folders here, import them there into the folder you choose, skipping, replacing or keeping both when a name exists.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/views-viewpoints-viewpoint-sync.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -219,6 +223,135 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Viewpoint Sync is on the Views tab, Viewpoints panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Viewpoint%20Sync&amp;tool=Views.tab%2FViewpoints.panel%2FViewpoint_Sync.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Viewpoints.panel/Viewpoint_Sync.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Viewpoints.panel/Viewpoint_Sync.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Copies saved-viewpoint folders between Navisworks files through a viewpoint package."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> namo <span class="k">import</span> progress, ui, vp_common, vp_sync, vpexport
+<span class="k">from</span> pynavis <span class="k">import</span> forms, output, script, toast
+
+TITLE = <span class="s">'Viewpoint Sync'</span>
+ACTIONS = [<span class="s">'Export package'</span>, <span class="s">'Import package'</span>]
+DEFAULTS = {<span class="s">'target'</span>: <span class="s">''</span>, <span class="s">'keep_paths'</span>: <span class="k">True</span>, <span class="s">'policy'</span>: <span class="s">'skip'</span>, <span class="s">'clip'</span>: <span class="k">True</span>, <span class="s">'comments'</span>: <span class="k">True</span>}
+
+
+<span class="k">def</span> export_package(document):
+    rows = vp_common.view_rows(document)
+    <span class="k">if</span> <span class="k">not</span> rows:
+        toast.info(<span class="s">'No saved viewpoints'</span>, <span class="s">'Save some viewpoints, then export a package.'</span>)
+        <span class="k">return</span>
+    folders = vp_common.folder_paths(rows)
+    table = [{<span class="s">'value'</span>: path, <span class="s">'cells'</span>: [vp_common.folder_label(path), count]} <span class="k">for</span> path, count <span class="k">in</span> folders]
+    picked = ui.choose(<span class="s">'%s: folders to export'</span> % TITLE, table, [<span class="s">'Folder'</span>, <span class="s">'Viewpoints'</span>],
+                       checked=[path <span class="k">for</span> path, _c <span class="k">in</span> folders], ok=<span class="s">'Next'</span>,
+                       prompt=<span class="s">'A folder takes its subfolders with it. (top level) is the viewpoints '</span>
+                              <span class="s">'outside any folder.'</span>)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    chosen = vp_common.select_rows(rows, {<span class="s">'mode'</span>: <span class="s">'folders'</span>, <span class="s">'folders'</span>: picked})
+    <span class="k">if</span> <span class="k">not</span> chosen:
+        toast.info(<span class="s">'Nothing to export'</span>, <span class="s">'The chosen folders hold no viewpoints.'</span>)
+        <span class="k">return</span>
+    path = forms.save_file(filter=<span class="s">'Playground viewpoint packages (*.nvp.json)|*.nvp.json'</span>,
+                           default_name=vp_sync.package_path_default(document), title=TITLE)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> path.lower().endswith(<span class="s">'.nvp.json'</span>):
+        path = (path[:-5] <span class="k">if</span> path.lower().endswith(<span class="s">'.json'</span>) <span class="k">else</span> path) + <span class="s">'.nvp.json'</span>
+    <span class="k">try</span>:
+        vpexport.write_package(path, vpexport.records_from(chosen, document, include_clip=<span class="k">True</span>), document)
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not write the package'</span>, <span class="s">'%s. Check the folder is writable, then try again.'</span> % error)
+        <span class="k">return</span>
+    toast.success(<span class="s">'Exported %s'</span> % vp_common.plural(len(chosen), <span class="s">'viewpoint'</span>),
+                  <span class="s">'%s. Open the other model and choose Import package.'</span> % path)
+
+
+<span class="k">def</span> import_package(document):
+    path = forms.open_file(filter=<span class="s">'Viewpoint packages and Navisworks XML (*.nvp.json;*.json;*.xml)|'</span>
+                                  <span class="s">'*.nvp.json;*.json;*.xml'</span>, title=TITLE)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">try</span>:
+        records, units_from, notes = vpexport.read_file(path)
+    <span class="k">except</span> ValueError <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not read the package'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> records:
+        toast.info(<span class="s">'The file holds no viewpoints'</span>, notes[0] <span class="k">if</span> notes <span class="k">else</span> os.path.basename(path))
+        <span class="k">return</span>
+    counts = vpexport.folder_counts(records)
+    table = [{<span class="s">'value'</span>: folder, <span class="s">'cells'</span>: [vp_common.folder_label(folder), count]} <span class="k">for</span> folder, count <span class="k">in</span> counts]
+    picked = ui.choose(<span class="s">'%s: folders to import'</span> % TITLE, table, [<span class="s">'Folder'</span>, <span class="s">'Viewpoints'</span>],
+                       checked=[folder <span class="k">for</span> folder, _c <span class="k">in</span> counts], ok=<span class="s">'Next'</span>)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    chosen = vp_sync.chosen(records, picked)
+    <span class="k">if</span> <span class="k">not</span> chosen:
+        toast.info(<span class="s">'No folders chosen'</span>, <span class="s">'Tick at least one folder, then import the package again.'</span>)
+        <span class="k">return</span>
+    cfg = script.get_config(DEFAULTS)
+    units = str(document.Units)
+    same = abs(vp_common.unit_factor(units_from, units) - 1.0) &lt; 1e-12
+    intro = <span class="s">'%s from %s.'</span> % (vp_common.plural(len(chosen), <span class="s">'viewpoint'</span>), os.path.basename(path))
+    <span class="k">if</span> <span class="k">not</span> same:
+        intro += <span class="s">' The package is in %s and will be converted to %s.'</span> % (units_from.lower(), units.lower())
+    values = ui.form(TITLE, vp_sync.import_fields(cfg), intro=intro, ok=<span class="s">'Import'</span>)
+    <span class="k">if</span> values <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    cfg.update(values)
+    script.save_config(cfg)
+    steps = vp_sync.plan(chosen, values[<span class="s">'target'</span>], values[<span class="s">'policy'</span>], vp_sync.existing_lookup(document),
+                         values[<span class="s">'keep_paths'</span>])
+    counts_now = vp_sync.plan_counts(steps)
+    <span class="k">if</span> counts_now[<span class="s">'replace'</span>] <span class="k">and</span> <span class="k">not</span> forms.confirm(<span class="s">'%s\n\nReplaced viewpoints lose their own camera, section and '</span>
+                                                   <span class="s">'comments. One Ctrl+Z undoes the import.'</span>
+                                                   % vp_sync.plan_sentence(steps), TITLE):
+        <span class="k">return</span>
+    outcome = progress.run(TITLE, <span class="k">lambda</span> report: vp_sync.apply(document, steps, units_from, values[<span class="s">'clip'</span>],
+                                                               values[<span class="s">'comments'</span>], report), <span class="s">'Importing'</span>)
+    <span class="k">if</span> outcome <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    results, stopped = outcome
+    <span class="k">if</span> results:
+        output.set_title(<span class="s">'%s: import report'</span> % TITLE)
+        output.print_md(<span class="s">'## Imported from %s'</span> % os.path.basename(path))
+        <span class="k">for</span> note <span class="k">in</span> notes:
+            output.print_md(note)
+        output.print_table(vp_sync.report_rows(results), [<span class="s">'Folder'</span>, <span class="s">'Name'</span>, <span class="s">'Result'</span>])
+    level, message, detail = vp_sync.summary(results, stopped, len(steps))
+    toast.show(level, message, detail)
+
+
+<span class="k">def</span> run():
+    document = vp_common.active_doc()
+    <span class="k">if</span> <span class="k">not</span> vp_common.has_models(document):
+        toast.info(<span class="s">'No model open'</span>, <span class="s">'Open or append a model, then run Viewpoint Sync again.'</span>)
+        <span class="k">return</span>
+    action = forms.ask_options(<span class="k">None</span>, ACTIONS, title=TITLE)
+    <span class="k">if</span> action == ACTIONS[0]:
+        export_package(document)
+    <span class="k">elif</span> action == ACTIONS[1]:
+        import_package(document)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/vp_common.py" rel="noopener"><code>namo.vp_common</code></a><span class="mod-doc">Shared helpers for the Views tools (Viewpoints, Capture and Navigate panels).</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/vp_sync.py" rel="noopener"><code>namo.vp_sync</code></a><span class="mod-doc">Viewpoint Sync: copy saved-viewpoint folders between Navisworks files through a package (namo.vpexport records in a .nvp.json file; a Navisworks viewpoint .xml is read too).</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/vpexport.py" rel="noopener"><code>namo.vpexport</code></a><span class="mod-doc">Saved viewpoints out of Navisworks, as plain records, as Navisworks viewpoint exchange XML, and as a Playground package (.nvp.json) that Viewpoint Sync reads back.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Viewpoints.panel/Viewpoint_Sync.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Viewpoints.panel/Viewpoint_Sync.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Viewpoint\nSync
+tooltip: Copies viewpoint folders from one Navisworks file to another through a package: export the folders here, import them there into the folder you choose, skipping, replacing or keeping both when a name exists.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="views-viewpoints-export-viewpoints.html"><span class="dir">Previous</span><span class="ttl">Export Viewpoints</span></a>
 <a class="next" href="views-viewpoints-where-am-i.html"><span class="dir">Next</span><span class="ttl">Where Am I</span></a>

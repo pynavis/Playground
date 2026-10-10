@@ -6,6 +6,7 @@
 <title>Playground Settings - pyNavis Playground</title>
 <meta name="description" content="Sets your name, the project and company, where Playground keeps team data, the trades and trade rules, report units and the date format.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Playground Settings", "description": "Sets your name, the project and company, where Playground keeps team data, the trades and trade rules, report units and the date format.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/dev-team-team-tools-playground-settings.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -221,6 +225,40 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Playground Settings is on the Dev tab, Team panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Playground%20Settings&amp;tool=Dev.tab%2FTeam.panel%2FTeam_Tools.stack%2FPlayground_Settings.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Dev.tab/Team.panel/Team_Tools.stack/Playground_Settings.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Dev.tab/Team.panel/Team_Tools.stack/Playground_Settings.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Edits the settings every Playground tool shares."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> toast
+
+<span class="k">from</span> namo <span class="k">import</span> config, paths, team_settings, ui
+
+<span class="k">if</span> globals().get(<span class="s">'__runner__'</span>):
+    toast.info(<span class="s">'The settings window needs Navisworks'</span>, <span class="s">'It cannot open under pynavis run.'</span>)
+<span class="k">else</span>:
+    values = ui.form(<span class="s">'Playground Settings'</span>, team_settings.fields(config.load()), ok=<span class="s">'Save'</span>, width=560,
+                     validate=<span class="k">lambda</span> v: team_settings.validate(v))
+    <span class="k">if</span> values <span class="k">is</span> <span class="k">not</span> <span class="k">None</span>:
+        <span class="k">try</span>:
+            saved = config.save(team_settings.to_config(values))
+        <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+            toast.error(<span class="s">'Could not save the settings'</span>, str(error))
+        <span class="k">else</span>:
+            paths.forget_reachability()
+            toast.success(<span class="s">'Saved the Playground settings'</span>, team_settings.summary(saved))
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/config.py" rel="noopener"><code>namo.config</code></a><span class="mod-doc">Playground-wide settings: one JSON file shared by every Playground tool.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/paths.py" rel="noopener"><code>namo.paths</code></a><span class="mod-doc">Where Playground keeps its files, and how it writes them safely.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/team_settings.py" rel="noopener"><code>namo.team_settings</code></a><span class="mod-doc">Playground Settings: the form over namo.config (user, project, company, where team data lives, trades and trade rules, report units, date format).</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Dev.tab/Team.panel/Team_Tools.stack/Playground_Settings.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Dev.tab/Team.panel/Team_Tools.stack/Playground_Settings.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Playground Settings
+tooltip: Sets your name, the project and company, where Playground keeps team data, the trades and trade rules, report units and the date format.
+</code></pre></div>
 <div class="pagenav">
 <a href="dev-team-team-tools-environment-doctor.html"><span class="dir">Previous</span><span class="ttl">Environment Doctor</span></a>
 <a class="next" href="dev-tools-unit-converter.html"><span class="dir">Next</span><span class="ttl">Unit Converter</span></a>

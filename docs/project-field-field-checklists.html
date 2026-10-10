@@ -6,6 +6,7 @@
 <title>Field Checklists - pyNavis Playground</title>
 <meta name="description" content="Inspection checklists attached to saved viewpoints: Pass, Fail or N/A with notes per item, inspector, date and sign-off, stepping from viewpoint to viewpoint, with an HTML and Excel report. Shift+Click edits the team&#x27;s templates.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Field Checklists", "description": "Inspection checklists attached to saved viewpoints: Pass, Fail or N/A with notes per item, inspector, date and sign-off, stepping from viewpoint to viewpoint, with an HTML and Excel report. Shift+Click edits the team's templates.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/project-field-field-checklists.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -218,6 +222,108 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Field Checklists is on the Project tab, Field panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Field%20Checklists&amp;tool=Project.tab%2FField.panel%2FField_Checklists.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Field.panel/Field_Checklists.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Field.panel/Field_Checklists.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Opens the inspection checklist of the current saved viewpoint: Pass, Fail or N/A per item, notes and sign-off."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> toast
+
+<span class="k">from</span> namo <span class="k">import</span> checklists, config <span class="k">as</span> namo_config, field_checklistwin, fourd_common, ui
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> ui.is_runner():
+        toast.info(<span class="s">'Field Checklists is a window'</span>, <span class="s">'Run it from the ribbon.'</span>)
+        <span class="k">return</span>
+    doc = fourd_common.active_doc()
+    views = checklists.viewpoint_list(doc)
+    <span class="k">if</span> <span class="k">not</span> views:
+        toast.info(<span class="s">'No saved viewpoints'</span>, <span class="s">'Save a viewpoint for each place you inspect, then open Field Checklists.'</span>)
+        <span class="k">return</span>
+    records = checklists.records_store(doc)
+    field_checklistwin.show(doc, records, views, checklists.available_templates(),
+                            checklists.current_guid(doc), namo_config.user_name())
+    <span class="k">if</span> records.note:
+        toast.info(<span class="s">'Checklists from local data'</span>, records.note)
+
+
+run()
+</code></pre></div>
+<h3 id="src-config-py">config.py</h3><p class="src-note">The Shift+Click action.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Field.panel/Field_Checklists.pushbutton/config.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Field.panel/Field_Checklists.pushbutton/config.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Edits the team's checklist templates: new, change, delete (the QA and safety examples can be copied)."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> forms, toast
+
+<span class="k">from</span> namo <span class="k">import</span> checklists, ui
+
+TITLE = <span class="s">'Checklist templates'</span>
+NEW = <span class="s">'(new template)'</span>
+
+
+<span class="k">def</span> validate_items(text):
+    <span class="k">try</span>:
+        checklists.parse_template_text(text)
+    <span class="k">except</span> ValueError <span class="k">as</span> error:
+        <span class="k">return</span> str(error)
+    <span class="k">return</span> <span class="k">None</span>
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> ui.is_runner():
+        <span class="k">return</span>
+    store = checklists.templates()
+    team = store.names()
+    every = checklists.available_templates()
+    options = [NEW] + sorted(every)
+    picked = forms.select_from_list(options, title=TITLE, prompt=<span class="s">'Pick a template to change or copy.'</span>)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    builtin = picked <span class="k">in</span> checklists.BUILTIN <span class="k">and</span> picked <span class="k">not</span> <span class="k">in</span> team
+    config = every.get(picked) <span class="k">or</span> {<span class="s">'text'</span>: <span class="s">'# Section\nFirst item to check'</span>}
+    text = checklists.template_text(checklists.template_items(config)) <span class="k">if</span> picked != NEW <span class="k">else</span> config[<span class="s">'text'</span>]
+    name = <span class="s">''</span> <span class="k">if</span> picked == NEW <span class="k">else</span> (<span class="s">'%s (team copy)'</span> % picked <span class="k">if</span> builtin <span class="k">else</span> picked)
+    fields = [
+        {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'name'</span>, <span class="s">'label'</span>: <span class="s">'Name'</span>, <span class="s">'default'</span>: name, <span class="s">'required'</span>: <span class="k">True</span>},
+        {<span class="s">'kind'</span>: <span class="s">'text'</span>, <span class="s">'key'</span>: <span class="s">'description'</span>, <span class="s">'label'</span>: <span class="s">'Description'</span>, <span class="s">'default'</span>: config.get(<span class="s">'description'</span>, <span class="s">''</span>)},
+        {<span class="s">'kind'</span>: <span class="s">'textarea'</span>, <span class="s">'key'</span>: <span class="s">'text'</span>, <span class="s">'label'</span>: <span class="s">'Items, one per line; # starts a section'</span>, <span class="s">'rows'</span>: 14,
+         <span class="s">'default'</span>: text, <span class="s">'validate'</span>: validate_items},
+    ]
+    <span class="k">if</span> picked <span class="k">in</span> team:
+        fields.append({<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'delete'</span>, <span class="s">'label'</span>: <span class="s">'Delete this template instead'</span>, <span class="s">'default'</span>: <span class="k">False</span>})
+    intro = (<span class="s">'A built-in example: saving makes a team copy.'</span> <span class="k">if</span> builtin
+             <span class="k">else</span> <span class="s">'Checklists already attached keep their answers; new items are added when you reopen them.'</span>)
+    answer = ui.form(TITLE, fields, intro=intro, ok=<span class="s">'Save'</span>, width=600)
+    <span class="k">if</span> answer <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">if</span> answer.get(<span class="s">'delete'</span>):
+        <span class="k">if</span> <span class="k">not</span> forms.confirm(<span class="s">'Delete the checklist template %s for everyone who shares it?'</span> % picked, title=TITLE):
+            <span class="k">return</span>
+        store.delete(picked)
+        toast.success(<span class="s">'Deleted the checklist template'</span>, picked)
+        <span class="k">return</span>
+    <span class="k">if</span> picked <span class="k">in</span> team <span class="k">and</span> answer[<span class="s">'name'</span>].strip() != picked:
+        store.delete(picked)
+    stored = store.save(answer[<span class="s">'name'</span>], {<span class="s">'text'</span>: answer[<span class="s">'text'</span>], <span class="s">'description'</span>: answer[<span class="s">'description'</span>]})
+    count = len(checklists.parse_template_text(answer[<span class="s">'text'</span>]))
+    toast.success(<span class="s">'Saved the checklist template %s'</span> % stored, <span class="s">'%d items.'</span> % count)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/checklists.py" rel="noopener"><code>namo.checklists</code></a><span class="mod-doc">Field Checklists: inspection checklists attached to saved viewpoints.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/config.py" rel="noopener"><code>namo.config</code></a><span class="mod-doc">Playground-wide settings: one JSON file shared by every Playground tool.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/field_checklistwin.py" rel="noopener"><code>namo.field_checklistwin</code></a><span class="mod-doc">Field Checklists window: the checklist of one saved viewpoint at a time.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/fourd_common.py" rel="noopener"><code>namo.fourd_common</code></a><span class="mod-doc">Helpers the 4D, Quantities and Field tools share: scopes, default files, text.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Project.tab/Field.panel/Field_Checklists.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Project.tab/Field.panel/Field_Checklists.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Field\nChecklists
+tooltip: Inspection checklists attached to saved viewpoints: Pass, Fail or N/A with notes per item, inspector, date and sign-off, stepping from viewpoint to viewpoint, with an HTML and Excel report. Shift+Click edits the team's templates.
+context: viewpoints
+</code></pre></div>
 <div class="pagenav">
 <a href="project-field-photo-browser.html"><span class="dir">Previous</span><span class="ttl">Photo Browser</span></a>
 <a class="next" href="project-exchange-geometry-exporter.html"><span class="dir">Next</span><span class="ttl">Geometry Exporter</span></a>

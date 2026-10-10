@@ -6,6 +6,7 @@
 <title>Viewpoints from Excel - pyNavis Playground</title>
 <meta name="description" content="Exports saved viewpoints to an Excel workbook (folder, name, eye, target, up, lens, comment) in model units, or creates and updates viewpoints from one by folder and name.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Viewpoints from Excel", "description": "Exports saved viewpoints to an Excel workbook (folder, name, eye, target, up, lens, comment) in model units, or creates and updates viewpoints from one by folder and name.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/views-viewpoints-viewpoints-from-excel.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -221,6 +225,156 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Viewpoints from Excel is on the Views tab, Viewpoints panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Viewpoints%20from%20Excel&amp;tool=Views.tab%2FViewpoints.panel%2FViewpoints_from_Excel.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Viewpoints.panel/Viewpoints_from_Excel.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Viewpoints.panel/Viewpoints_from_Excel.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="s">"""Exports saved viewpoints to an Excel workbook, or creates and updates viewpoints from one."""</span>
+<span class="k">import</span> os
+
+<span class="k">from</span> namo <span class="k">import</span> dates, progress, vp_common, vpexcel
+<span class="k">from</span> pynavis <span class="k">import</span> forms, output, toast
+
+TITLE = <span class="s">'Viewpoints from Excel'</span>
+ACTIONS = [<span class="s">'Export viewpoints to Excel'</span>, <span class="s">'Import viewpoints from Excel'</span>, <span class="s">'Blank template'</span>]
+FILTER = <span class="s">'Excel workbooks (*.xlsx)|*.xlsx'</span>
+
+
+<span class="k">def</span> default_name(document, what):
+    <span class="k">return</span> <span class="s">'%s - %s - %s.xlsx'</span> % (vp_common.file_stem(vp_common.doc_path(document)), what,
+                                  dates.format(dates.now(), <span class="s">'%Y-%m-%d'</span>))
+
+
+<span class="k">def</span> ask_save(document, what):
+    <span class="s">"""The workbook path (the dialog opens in the model's folder), or None."""</span>
+    folder = vp_common.default_folder(vp_common.doc_path(document))
+    path = forms.save_file(filter=FILTER, default_name=os.path.join(folder, default_name(document, what)),
+                           title=TITLE)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    <span class="k">if</span> <span class="k">not</span> path.lower().endswith(<span class="s">'.xlsx'</span>):
+        path += <span class="s">'.xlsx'</span>
+    <span class="k">return</span> path
+
+
+<span class="k">def</span> export(document, example=<span class="k">False</span>):
+    rows = [] <span class="k">if</span> example <span class="k">else</span> vp_common.view_rows(document)
+    <span class="k">if</span> <span class="k">not</span> example <span class="k">and</span> <span class="k">not</span> rows:
+        toast.info(<span class="s">'No saved viewpoints'</span>, <span class="s">'Choose Blank template to start a workbook from the current view.'</span>)
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> example:
+        picked = vp_common.choose_views(<span class="s">'%s: export'</span> % TITLE, rows, ok=<span class="s">'Export'</span>)
+        <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+        rows = picked[0]
+        <span class="k">if</span> <span class="k">not</span> rows:
+            toast.info(<span class="s">'No viewpoints chosen'</span>, <span class="s">'Tick at least one viewpoint, then export again.'</span>)
+            <span class="k">return</span>
+    path = ask_save(document, <span class="s">'Viewpoint template'</span> <span class="k">if</span> example <span class="k">else</span> <span class="s">'Viewpoints'</span>)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    <span class="k">try</span>:
+        count = vpexcel.write_workbook(path, document, rows, example=example)
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not save the workbook'</span>, <span class="s">'%s. Close it in Excel, then try again.'</span> % error)
+        <span class="k">return</span>
+    <span class="k">if</span> example:
+        toast.success(<span class="s">'Template saved'</span>, <span class="s">'%s. Fill in a row per viewpoint, then import it.'</span> % path)
+    <span class="k">else</span>:
+        toast.success(<span class="s">'Exported %s'</span> % vp_common.plural(count, <span class="s">'viewpoint'</span>), path)
+
+
+<span class="k">def</span> show_errors(errors, units):
+    output.set_title(<span class="s">'%s: rows not imported'</span> % TITLE)
+    output.print_md(<span class="s">'## Rows not imported\nLengths are read in %s. Fix these rows and import again.'</span> % units.lower())
+    output.print_table([[row, vp_common.folder_label(folder), name, problem] <span class="k">for</span> row, folder, name, problem <span class="k">in</span> errors],
+                       [<span class="s">'Row'</span>, <span class="s">'Folder'</span>, <span class="s">'Name'</span>, <span class="s">'Problem'</span>])
+
+
+<span class="k">def</span> import_(document):
+    path = forms.open_file(filter=FILTER, title=TITLE)
+    <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    units = str(document.Units)
+    <span class="k">try</span>:
+        rows = vpexcel.read_sheet(path)
+        records, errors, _header = vpexcel.parse_rows(rows, units)
+    <span class="k">except</span> (IOError, OSError) <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not read the workbook'</span>, <span class="s">'%s. Close it in Excel, then try again.'</span> % error)
+        <span class="k">return</span>
+    <span class="k">except</span> ValueError <span class="k">as</span> error:
+        toast.error(<span class="s">'Not a viewpoints workbook'</span>, str(error))
+        <span class="k">return</span>
+    <span class="k">except</span> Exception <span class="k">as</span> error:
+        toast.error(<span class="s">'Could not read the workbook'</span>, <span class="s">'It is not an Excel .xlsx file (%s).'</span> % type(error).__name__)
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="k">not</span> records:
+        <span class="k">if</span> errors:
+            show_errors(errors, units)
+            toast.warning(<span class="s">'No row could be imported'</span>, <span class="s">'The problems are listed in the output window.'</span>)
+        <span class="k">else</span>:
+            toast.info(<span class="s">'The workbook has no viewpoint rows'</span>, <span class="s">'Add a row per viewpoint under the header.'</span>)
+        <span class="k">return</span>
+    exists, _find = vpexcel.lookup(document)
+    steps = vpexcel.plan(records, exists)
+    question = <span class="s">'%s\n\nLengths are read in %s. One Ctrl+Z undoes the whole import.'</span> % (
+        vpexcel.plan_sentence(steps, errors), units.lower())
+    <span class="k">if</span> <span class="k">not</span> forms.confirm(question, TITLE):
+        <span class="k">return</span>
+    result = progress.run(TITLE, <span class="k">lambda</span> report: vpexcel.apply(document, steps, report), <span class="s">'Importing'</span>)
+    <span class="k">if</span> result <span class="k">is</span> progress.CANCELLED:
+        <span class="k">return</span>
+    failed = [(row, <span class="s">''</span>, name, problem) <span class="k">for</span> row, name, problem <span class="k">in</span> result[<span class="s">'failed'</span>]]
+    <span class="k">if</span> errors <span class="k">or</span> failed:
+        show_errors(sorted(errors + failed), units)
+    parts = []
+    <span class="k">if</span> result[<span class="s">'created'</span>]:
+        parts.append(<span class="s">'created %s'</span> % vp_common.count_text(result[<span class="s">'created'</span>]))
+    <span class="k">if</span> result[<span class="s">'updated'</span>]:
+        parts.append(<span class="s">'updated %s'</span> % vp_common.count_text(result[<span class="s">'updated'</span>]))
+    done = result[<span class="s">'created'</span>] + result[<span class="s">'updated'</span>]
+    summary = <span class="s">', '</span>.join(parts)
+    summary = (summary[0].upper() + summary[1:]) <span class="k">if</span> summary <span class="k">else</span> <span class="s">'Nothing imported'</span>
+    skipped = len(errors) + len(failed)
+    <span class="k">if</span> result[<span class="s">'stopped'</span>]:
+        toast.warning(<span class="s">'Stopped after %s'</span> % vp_common.plural(done, <span class="s">'viewpoint'</span>), <span class="s">'Ctrl+Z undoes what was imported.'</span>)
+    <span class="k">elif</span> skipped <span class="k">and</span> done:
+        toast.warning(<span class="s">'%s, skipped %s'</span> % (summary, vp_common.plural(skipped, <span class="s">'row'</span>)),
+                      <span class="s">'The skipped rows are listed in the output window.'</span>)
+    <span class="k">elif</span> skipped:
+        toast.error(<span class="s">'No row could be imported'</span>, <span class="s">'The problems are listed in the output window.'</span>)
+    <span class="k">else</span>:
+        toast.success(<span class="s">'%s %s'</span> % (summary, <span class="s">'viewpoint'</span> <span class="k">if</span> done == 1 <span class="k">else</span> <span class="s">'viewpoints'</span>),
+                      <span class="s">'One Ctrl+Z undoes the import.'</span>)
+
+
+<span class="k">def</span> run():
+    document = vp_common.active_doc()
+    <span class="k">if</span> <span class="k">not</span> vp_common.has_models(document):
+        toast.info(<span class="s">'No model open'</span>, <span class="s">'Open or append a model, then run Viewpoints from Excel again.'</span>)
+        <span class="k">return</span>
+    action = forms.ask_options(<span class="k">None</span>, ACTIONS, title=TITLE)
+    <span class="k">if</span> action == ACTIONS[0]:
+        export(document)
+    <span class="k">elif</span> action == ACTIONS[1]:
+        import_(document)
+    <span class="k">elif</span> action == ACTIONS[2]:
+        export(document, example=<span class="k">True</span>)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/dates.py" rel="noopener"><code>namo.dates</code></a><span class="mod-doc">Dates from anywhere (ISO text, typed dates, Excel serials, .NET DateTime) and the few calculations reports need.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/vp_common.py" rel="noopener"><code>namo.vp_common</code></a><span class="mod-doc">Shared helpers for the Views tools (Viewpoints, Capture and Navigate panels).</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/vpexcel.py" rel="noopener"><code>namo.vpexcel</code></a><span class="mod-doc">Viewpoints from Excel: saved viewpoints to a workbook and back.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Views.tab/Viewpoints.panel/Viewpoints_from_Excel.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Views.tab/Viewpoints.panel/Viewpoints_from_Excel.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Viewpoints\nfrom Excel
+tooltip: Exports saved viewpoints to an Excel workbook (folder, name, eye, target, up, lens, comment) in model units, or creates and updates viewpoints from one by folder and name.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="views-viewpoints-batch-viewpoints.html"><span class="dir">Previous</span><span class="ttl">Batch Viewpoints</span></a>
 <a class="next" href="views-viewpoints-export-viewpoints.html"><span class="dir">Next</span><span class="ttl">Export Viewpoints</span></a>

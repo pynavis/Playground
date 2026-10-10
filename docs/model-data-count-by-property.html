@@ -6,6 +6,7 @@
 <title>Count by Property - pyNavis Playground</title>
 <meta name="description" content="Counts objects by the values of one property, or by pairs of values of two (a two-level pivot), over the selection, the visible items or the whole model. Shows a sorted table with shares and a top 20 chart, then lets you select any group. Optional Excel export.">
 <link rel="stylesheet" href="_assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Count by Property", "description": "Counts objects by the values of one property, or by pairs of values of two (a two-level pivot), over the selection, the visible items or the whole model. Shows a sorted table with shares and a top 20 chart, then lets you select any group. Optional Excel export.", "programmingLanguage": "Python", "codeRepository": "https://github.com/pynavis/Playground", "license": "https://www.apache.org/licenses/LICENSE-2.0", "url": "https://playground.pynavis.com/model-data-count-by-property.html"}</script>
 </head>
 <body data-base="">
 <div class="layout">
@@ -197,7 +198,10 @@
 </nav>
   <div class="side-foot">
     <span>Playground 0.1.0</span>
-    <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a>
+    <span class="side-links"><a class="side-link" href="https://pynavis.com/">pyNavis</a>
+      <a class="side-link" href="https://docs.pynavis.com/">Docs</a>
+      <a class="side-link" href="https://tools.pynavis.com/">Tools</a>
+      <a class="side-link" href="https://github.com/pynavis/Playground">GitHub</a></span>
     <button id="theme-toggle" type="button" aria-label="Toggle colour theme">
       <span>Dark</span></button>
   </div>
@@ -220,6 +224,118 @@
 <li><strong>The whole extension.</strong> Download <a href="https://github.com/pynavis/Playground/releases/download/v0.1.0/Playground.extension.zip"><code>Playground.extension.zip</code></a>, unzip it, put the <code>Playground.extension</code> folder in <code>%APPDATA%\pyNavis\extensions\</code>, and click pyNavis &gt; Reload. Count by Property is on the Model tab, Data panel.</li>
 </ol><p>You need pyNavis 1.3.0 or later.</p>
 <div class="report"><p><strong>Tried it?</strong> Tell us whether it worked or not. That report is what moves a tool up the status ladder.</p><a class="button" href="https://github.com/pynavis/Playground/issues/new?template=1-tried-a-tool.yml&amp;title=%5BTried%5D%20Count%20by%20Property&amp;tool=Model.tab%2FData.panel%2FCount_by_Property.pushbutton" rel="noopener">Report</a></div>
+<h2 id="source">Source</h2>
+<p>The tool's own files, word for word as published in <a href="https://github.com/pynavis/Playground">pynavis/Playground</a>. Paths are relative to the <code>Playground.extension</code> folder.</p>
+<h3 id="src-script-py">script.py</h3><p class="src-note">The script that runs on a click.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Data.panel/Count_by_Property.pushbutton/script.py</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Data.panel/Count_by_Property.pushbutton/script.py" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-python"><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""Counts objects by the values of one or two properties and lets you select a group."""</span>
+<span class="k">from</span> pynavis <span class="k">import</span> script, toast
+
+<span class="k">from</span> namo <span class="k">import</span> data_common, items, progress, propindex, reports, ui
+<span class="k">from</span> namo <span class="k">import</span> rep_count_by_property <span class="k">as</span> rep
+
+NONE = <span class="s">'(none)'</span>
+DEFAULTS = {<span class="s">'category'</span>: <span class="s">'Element'</span>, <span class="s">'property'</span>: <span class="s">'Category'</span>, <span class="s">'category2'</span>: <span class="s">''</span>, <span class="s">'property2'</span>: <span class="s">''</span>,
+            <span class="s">'scope'</span>: <span class="s">'model'</span>, <span class="s">'level'</span>: <span class="s">'objects'</span>, <span class="s">'xlsx'</span>: <span class="k">False</span>}
+
+
+<span class="k">def</span> ask(doc, values):
+    <span class="s">"""The config for this run, or None when cancelled."""</span>
+    has_selection = data_common.selected_count(doc) &gt; 0
+    choices = propindex.property_choices(doc, scope=<span class="s">'selection'</span> <span class="k">if</span> has_selection <span class="k">else</span> <span class="s">'model'</span>)
+    <span class="k">if</span> <span class="k">not</span> choices:
+        toast.info(<span class="s">'No properties found'</span>, <span class="s">'The items in scope carry no properties to count.'</span>)
+        <span class="k">return</span> <span class="k">None</span>
+    rows = [{<span class="s">'cells'</span>: [c, p, n], <span class="s">'value'</span>: propindex.pair_text(c, p)} <span class="k">for</span> c, p, n <span class="k">in</span> choices]
+    first = propindex.pair_text(values[<span class="s">'category'</span>], values[<span class="s">'property'</span>])
+    picked = ui.choose(<span class="s">'Count by Property'</span>, rows, [<span class="s">'Tab'</span>, <span class="s">'Property'</span>, <span class="s">'Items seen'</span>], multiselect=<span class="k">False</span>,
+                       checked=[first], prompt=<span class="s">'Count objects by which property?'</span>, ok=<span class="s">'Next'</span>)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    category, prop = propindex.split_pair(picked[0])
+    seconds = [(NONE, NONE)] + [(r[<span class="s">'value'</span>], r[<span class="s">'value'</span>]) <span class="k">for</span> r <span class="k">in</span> rows <span class="k">if</span> r[<span class="s">'value'</span>] != picked[0]]
+    second = propindex.pair_text(values[<span class="s">'category2'</span>], values[<span class="s">'property2'</span>]) <span class="k">if</span> values.get(<span class="s">'property2'</span>) <span class="k">else</span> NONE
+    fields = [{<span class="s">'kind'</span>: <span class="s">'label'</span>, <span class="s">'text'</span>: <span class="s">'Counting by %s.'</span> % picked[0]},
+              {<span class="s">'kind'</span>: <span class="s">'choice'</span>, <span class="s">'key'</span>: <span class="s">'second'</span>, <span class="s">'label'</span>: <span class="s">'Then by (optional, for a two-level pivot)'</span>,
+               <span class="s">'options'</span>: seconds, <span class="s">'default'</span>: second <span class="k">if</span> second <span class="k">in</span> [s[1] <span class="k">for</span> s <span class="k">in</span> seconds] <span class="k">else</span> NONE}]
+    fields += data_common.scope_fields(has_selection, values.get(<span class="s">'scope'</span>), values.get(<span class="s">'level'</span>))
+    fields.append({<span class="s">'kind'</span>: <span class="s">'check'</span>, <span class="s">'key'</span>: <span class="s">'xlsx'</span>, <span class="s">'label'</span>: <span class="s">'Also save an Excel workbook'</span>,
+                   <span class="s">'default'</span>: bool(values.get(<span class="s">'xlsx'</span>))})
+    answer = ui.form(<span class="s">'Count by Property'</span>, fields, ok=<span class="s">'Count'</span>)
+    <span class="k">if</span> answer <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span> <span class="k">None</span>
+    config = {<span class="s">'category'</span>: category, <span class="s">'property'</span>: prop, <span class="s">'category2'</span>: <span class="s">''</span>, <span class="s">'property2'</span>: <span class="s">''</span>,
+              <span class="s">'scope'</span>: answer[<span class="s">'scope'</span>], <span class="s">'level'</span>: answer[<span class="s">'level'</span>], <span class="s">'xlsx'</span>: bool(answer[<span class="s">'xlsx'</span>])}
+    <span class="k">if</span> answer[<span class="s">'second'</span>] != NONE:
+        config[<span class="s">'category2'</span>], config[<span class="s">'property2'</span>] = propindex.split_pair(answer[<span class="s">'second'</span>])
+    <span class="k">return</span> config
+
+
+<span class="k">def</span> pick_group(result):
+    groups = result.get(<span class="s">'groups'</span>) <span class="k">or</span> []
+    <span class="k">if</span> len(groups) &lt; 2:
+        <span class="k">return</span>
+    rows = []
+    <span class="k">for</span> index, group <span class="k">in</span> enumerate(groups):
+        rows.append({<span class="s">'cells'</span>: list(group[<span class="s">'key'</span>]) + [group[<span class="s">'count'</span>]], <span class="s">'value'</span>: index})
+    headers = rep.headers_of(result.get(<span class="s">'config'</span>) <span class="k">or</span> {})[:-1]
+    picked = ui.choose(<span class="s">'Select a group'</span>, rows, headers, multiselect=<span class="k">False</span>,
+                       prompt=<span class="s">'Pick a group to select its items, or Cancel to keep the counts.'</span>, ok=<span class="s">'Select'</span>)
+    <span class="k">if</span> picked <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    group = groups[picked[0]]
+    count = items.select(group[<span class="s">'items'</span>])
+    toast.success(<span class="s">'Selected %s %s'</span> % (<span class="s">'{:,}'</span>.format(count), <span class="s">'item'</span> <span class="k">if</span> count == 1 <span class="k">else</span> <span class="s">'items'</span>),
+                  <span class="s">' / '</span>.join(group[<span class="s">'key'</span>]))
+
+
+<span class="k">def</span> run():
+    <span class="k">if</span> ui.is_runner():
+        result = reports.run(<span class="s">'count_by_property'</span>, script.get_config(DEFAULTS), interactive=<span class="k">False</span>)
+        <span class="k">if</span> <span class="k">not</span> result.get(<span class="s">'cancelled'</span>):
+            toast.show(result[<span class="s">'level'</span>], result[<span class="s">'message'</span>], result[<span class="s">'detail'</span>])
+        <span class="k">return</span>
+    doc = data_common.active_doc()
+    <span class="k">if</span> <span class="k">not</span> data_common.has_models(doc):
+        data_common.no_model_toast()
+        <span class="k">return</span>
+    values = script.get_config(DEFAULTS)
+    config = ask(doc, values)
+    <span class="k">if</span> config <span class="k">is</span> <span class="k">None</span>:
+        <span class="k">return</span>
+    script.save_config(config)
+    <span class="k">if</span> config[<span class="s">'xlsx'</span>]:
+        path = data_common.ask_save(<span class="s">'{file} - Count by property - {date}'</span>, <span class="s">'xlsx'</span>, <span class="s">'Save the counts'</span>, doc)
+        <span class="k">if</span> path <span class="k">is</span> <span class="k">None</span>:
+            <span class="k">return</span>
+        config[<span class="s">'path'</span>] = path
+    result = progress.run(<span class="s">'Count by Property'</span>, <span class="k">lambda</span> report: reports.run(
+        <span class="s">'count_by_property'</span>, config, doc=doc, interactive=<span class="k">True</span>, progress=report))
+    <span class="k">if</span> result <span class="k">is</span> progress.CANCELLED <span class="k">or</span> result.get(<span class="s">'cancelled'</span>):
+        <span class="k">return</span>
+    toast.show(result[<span class="s">'level'</span>], result[<span class="s">'message'</span>], result[<span class="s">'detail'</span>])
+    <span class="k">if</span> result[<span class="s">'level'</span>] <span class="k">in</span> (<span class="s">'success'</span>, <span class="s">'warning'</span>):
+        result[<span class="s">'config'</span>] = config
+        pick_group(result)
+
+
+run()
+</code></pre></div>
+<h3 id="src-library">Library modules this tool uses</h3>
+<p class="src-note">From the shared <code>namo</code> library, which installs with every tool. Each name opens the module on GitHub.</p><ul class="modules">
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/data_common.py" rel="noopener"><code>namo.data_common</code></a><span class="mod-doc">Shared plumbing for the Inspect and Data panel tools: progress stages, where files go by default, the scope dialog fields, and the small checks every button starts with.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/items.py" rel="noopener"><code>namo.items</code></a><span class="mod-doc">Model items: walking, collecting, identifying, measuring and showing them.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/progress.py" rel="noopener"><code>namo.progress</code></a><span class="mod-doc">Glue between pyNavis&#x27; cancellable progress window and Playground&#x27;s progress callbacks.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/propindex.py" rel="noopener"><code>namo.propindex</code></a><span class="mod-doc">Property scanning shared by Property Explorer, Count by Property, Data Validator and the Write Data tools: scopes, fast value reading, the category &gt; property &gt; value index.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/rep_count_by_property.py" rel="noopener"><code>namo.rep_count_by_property</code></a><span class="mod-doc">Count by Property: how many objects carry each value of one property (or each pair of values of two, as a two-level pivot), in the output window and/or an Excel file.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/reports.py" rel="noopener"><code>namo.reports</code></a><span class="mod-doc">The registry of automation-ready reports, and the helpers every report shares.</span></li>
+<li><a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/lib/namo/ui.py" rel="noopener"><code>namo.ui</code></a><span class="mod-doc">WPF building blocks for Playground tools, themed from the pyNavis design system.</span></li>
+</ul>
+<h3 id="src-bundle-yaml">bundle.yaml</h3><p class="src-note">The bundle contract: the keys pyNavis reads for this tool.</p>
+<div class="code src"><div class="code-head"><span class="code-cap"><code>Model.tab/Data.panel/Count_by_Property.pushbutton/bundle.yaml</code> <a href="https://github.com/pynavis/Playground/blob/main/Playground.extension/Model.tab/Data.panel/Count_by_Property.pushbutton/bundle.yaml" rel="noopener">View on GitHub</a></span><button type="button" class="copy-btn">Copy</button></div><pre><code class="language-yaml">title: Count by\nProperty
+tooltip: Counts objects by the values of one property, or by pairs of values of two (a two-level pivot), over the selection, the visible items or the whole model. Shows a sorted table with shares and a top 20 chart, then lets you select any group. Optional Excel export.
+context: doc
+</code></pre></div>
 <div class="pagenav">
 <a href="model-data-property-explorer.html"><span class="dir">Previous</span><span class="ttl">Property Explorer</span></a>
 <a class="next" href="model-data-property-exporter.html"><span class="dir">Next</span><span class="ttl">Property Exporter</span></a>
